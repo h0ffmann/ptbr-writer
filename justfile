@@ -127,6 +127,19 @@ plugin-check:
     bash skills/ptbr-routing/scripts/session-check.sh --self-test
     echo "plugin-check: ok (v$v)"
 
+# What ships in the plugin changed since the last v* tag: lists the files and exits 1; installs keep the old text until a release.
+release-due:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    files=$(find -L plugins/ptbr-writter .claude-plugin -type f -exec realpath --relative-to=. {} + | sort -u)
+    last=$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)
+    if [ -z "$last" ]; then changed=$files; since="(no release yet)"
+    else changed=$(git diff --name-only "$last" HEAD -- $files); since="since $last"; fi
+    [ -n "$changed" ] || { echo "release-due: nothing in the plugin changed $since"; exit 0; }
+    echo "release-due: the plugin changed $since; installs keep the old text until just release X.Y.Z:"
+    sed 's/^/  /' <<<"$changed"
+    exit 1
+
 # Release X.Y.Z in two runs: a chore/release-vX.Y.Z PR (plugin.json, CHANGELOG), then, after its merge, the tag on main.
 release version:
     #!/usr/bin/env bash
@@ -139,18 +152,22 @@ release version:
     now=$(git show "origin/main:$json" | python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')
     if [ "$now" != "$v" ]; then
         git switch -q -c "chore/release-v$v" origin/main
+        # A release with nothing new for the plugin would reach no one: refuse it.
+        due=$(just release-due | tail -n +2 || true)
+        [ -n "$due" ] || { git switch -q -; git branch -q -D "chore/release-v$v"; echo "release: nothing in the plugin changed since the last tag" >&2; exit 1; }
         python3 - "$json" "$v" <<'PY'
     import json, sys
     path, v = sys.argv[1], sys.argv[2]
     d = json.load(open(path)); d["version"] = v
     open(path, "w").write(json.dumps(d, indent=2, ensure_ascii=False) + "\n")
     PY
-        python3 - "$v" "$(date -u +%F)" <<'PY'
+        python3 - "$v" "$(date -u +%F)" "$due" <<'PY'
     import sys
-    v, day = sys.argv[1], sys.argv[2]
+    v, day, due = sys.argv[1], sys.argv[2], sys.argv[3]
     s = open("CHANGELOG.md").read()
     head, rest = s.split("\n## ", 1)
-    open("CHANGELOG.md", "w").write(f"{head}\n## v{v} — {day}\n\n- (descreva a release)\n\n## {rest}")
+    files = ", ".join(f"`{f.strip()}`" for f in due.splitlines())
+    open("CHANGELOG.md", "w").write(f"{head}\n## v{v} — {day}\n\n- (descreva a release) mudou: {files}\n\n## {rest}")
     PY
         ${EDITOR:-vi} CHANGELOG.md
         ! grep -q '(descreva a release)' CHANGELOG.md || { echo "release: CHANGELOG.md still has the placeholder" >&2; exit 1; }
