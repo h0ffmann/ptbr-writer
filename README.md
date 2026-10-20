@@ -97,6 +97,12 @@ repositório, o `ref`). O que muda em cada versão está no [`CHANGELOG.md`](CHA
 
 Ou descreva a tarefa: "reescreva este runbook em português controlado".
 
+A partir da v0.2.0, `ptbr` no pedido ("ptbr: reescreva este texto"), sem nível, faz o Claude
+perguntar os níveis e os formatos, os dois em múltipla escolha: `.txt`, `.md`, `.pdf` e `notes`
+(smart-note). Sai uma versão por nível em cada formato. O `.pdf` usa o pandoc da máquina; sem
+ele, pede antes de baixar ~730 MiB pelo Nix
+([`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) do picasso).
+
 ## níveis
 
 | Nível | Uso |
