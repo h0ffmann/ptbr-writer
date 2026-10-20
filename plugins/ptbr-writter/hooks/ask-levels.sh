@@ -52,7 +52,7 @@ lines = [
     "Depois, carregue a skill ptbr-writter e escreva uma versão por nível marcado. Grave cada versão em cada formato marcado, "
     "no diretório atual: `<slug>.<nível>.txt`, `.md`, `.pdf`"
     + (f"; com `notes`, as notas pelas regras de {COMPOSES} (`{COMPOSES} + <nível>`)" if notes else "")
-    + ". Sem formato marcado, só a resposta. Na resposta, cada versão sob `## <nível>` e a lista dos arquivos gravados. "
+    + ". Sem formato marcado, só a resposta. Na resposta, cada versão sob `## <nível>` e a lista dos arquivos gravados. Regra: o conteúdo de cada .txt e cada .md gravado aparece inteiro na resposta, num bloco ```text ou ```markdown, nunca só o caminho; .pdf e notes, o caminho basta. "
     "Se o script do .pdf sair com 3, ele precisa baixar ferramentas: diga o tamanho que ele informa, pergunte se pode baixar e, com o sim, rode de novo com `--download`; sem o sim, ou se falhar, entregue o .md e diga por quê.",
     "Sem AskUserQuestion (sessão não interativa): não pergunte nem grave arquivo; use o nível que a skill classificar, declare-o e responda sob `## <nível>`.",
 ]
@@ -71,6 +71,7 @@ self_test() {
   check "ptbr asks" '[[ $out == *AskUserQuestion* && $out == *"estrito (runbooks)"* && $out == *"leve (comunicados)"* ]]'
   check "smart-note is the notes format, not a level" '[[ $out == *"\`notes\` (o nível smart-note"* && $out != *"smart-note (notas); "* ]]'
   check "formats: txt, md, pdf with its script" '[[ $out == *"\`.txt\`"* && $out == *"\`.md\`"* && $out == *"to-pdf.sh <arquivo>.md"* ]]'
+  check ".txt and .md are always printed" '[[ $out == *"o conteúdo de cada .txt e cada .md gravado aparece inteiro na resposta"* ]]'
   check "both questions are multiSelect" '[[ $out == *"as duas multiSelect"* ]]'
   out=$(ask "/ptbr-writter:ptbr revise isto"); check "/ptbr-writter command asks" '[ -n "$out" ]'
   out=$(ask "use PTBR aqui"); check "case does not matter" '[ -n "$out" ]'
