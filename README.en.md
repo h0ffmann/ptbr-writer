@@ -99,6 +99,12 @@ repository, the `ref`). What changes in each version is in [`CHANGELOG.md`](CHAN
 
 Or describe the task: "reescreva este runbook em português controlado".
 
+From v0.2.0, `ptbr` in a request ("ptbr: reescreva este texto") with no level makes Claude ask
+for the levels and the formats, both multiple choice: `.txt`, `.md`, `.pdf` and `notes`
+(smart-note). You get one version per level in each format. `.pdf` uses the machine's pandoc;
+without it, Claude asks before a ~730 MiB download through Nix
+([`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) in picasso).
+
 ## levels
 
 | Level | Use |
