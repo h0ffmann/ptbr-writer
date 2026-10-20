@@ -31,6 +31,7 @@ marca o que não foi checado.
 | `descritivo` | documentação de sistema                    |
 | `leve`      | comunicados internos                        |
 | `científico` | artigos, propostas, relatórios técnicos com fontes |
+| `retórico` (WIP) | texto que precisa convencer: proposta, justificativa, comunicado de decisão; ainda não está na skill |
 
 ## regras
 
