@@ -1,4 +1,5 @@
 name	url	what	source
+kayquer/portugues-tecnico-controlado	https://github.com/kayquer/portugues-tecnico-controlado	o original: 8 regras de português técnico controlado, inspiradas no ASD-STE100, com modo bilíngue EN/PT	https://github.com/h0ffmann/ptbr-writter#licença
 fabricioctelles/skills	https://github.com/fabricioctelles/skills	skill "humanizar" para agentes: remove padrões de texto de IA em português do Brasil	https://github.com/heyjunpenn/awesome-jev
 vale-cli/vale	https://github.com/vale-cli/vale	linter de prosa com estilos próprios, base para regras de estilo pt-BR na documentação	https://github.com/writing-resources/awesome-scientific-writing
 hunspell/hunspell	https://github.com/hunspell/hunspell	motor de verificação ortográfica que usa dicionários pt-BR	https://github.com/writing-resources/awesome-scientific-writing
