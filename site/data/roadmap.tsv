@@ -1,6 +1,7 @@
 item	status	what	evidence
 SKILL.md	em andamento	regras PTW e níveis de rigor; as regras ainda estão marcadas como em desenvolvimento	SKILL.md
 evals	em andamento	um caso de regressão por regra científica, escrito e ainda não rodado por um harness ⚠	evals/cientifico.md
+skill científica	em andamento	skill própria para texto científico, com regras CIE; casos de regressão ainda não escritos	skills/cientifico/SKILL.md
 plugin	planejado	empacotar a skill como plugin do Claude Code e do OpenCode, instalável com um comando	
 distribuição	planejado	release com tag e instalação por URL em outros repositórios, sem copiar o SKILL.md à mão	
 retórica	planejado	skill de retórica a partir do Fédon e do Fedro, de Platão, e do Phaedrus de Robert M. Pirsig; só o esqueleto existe, sem regras	skills/retorica/SKILL.md
