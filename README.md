@@ -99,7 +99,19 @@ Ou descreva a tarefa: "reescreva este runbook em português controlado".
 
 A partir da v0.2.0, `ptbr` no pedido ("ptbr: reescreva este texto"), sem nível, faz o Claude
 perguntar os níveis e os formatos, os dois em múltipla escolha: `.txt`, `.md`, `.pdf` e `notes`
-(smart-note). Sai uma versão por nível em cada formato, e o texto do `.txt` e do `.md` aparece sempre no console, não só o arquivo. O `.pdf` usa o pandoc da máquina; sem
+(smart-note). Sai uma versão por nível em cada formato, e o texto do `.txt` e do `.md` aparece sempre no console, não só o arquivo.
+
+Os arquivos vão para a pasta onde a sessão está aberta, em geral a raiz do repositório, com um
+nome só:
+
+```text
+ptbr-writter-<AAAAMMDDThhmmZ>-<objetivo>-<nível>.<ext>
+ptbr-writter-20261020T2215Z-reinicio-servico-estrito.md
+```
+
+O carimbo é em UTC e o mesmo para todos os arquivos de um pedido. Com 2 níveis e 3 formatos, são 6
+arquivos. Para um `git add -A` não levá-los, ponha `ptbr-writter-*` no `.gitignore`. As notas de
+`notes` seguem as regras de smart-note (`<id>-<slug>.md`). O `.pdf` usa o pandoc da máquina; sem
 ele, pede antes de baixar ~730 MiB pelo Nix
 ([`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) do picasso).
 
