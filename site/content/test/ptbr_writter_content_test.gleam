@@ -161,10 +161,10 @@ pub fn data_errors_test() {
 }
 
 const origin_rows =
-  "id\torigin\trepo\tcreator\tprofile
-PTW-1\tPTC-1\tk/ptc\tK R\thttps://github.com/k
-PTW-2\tPTC-2\tk/ptc\tK R\thttps://github.com/k
-PTW-2\tregra\th/w\tM H\thttps://github.com/h
+  "id\torigin\trepo\tcreator
+PTW-1\tPTC-1\tk/ptc\tkayquer
+PTW-2\tPTC-2\tk/ptc\tkayquer
+PTW-2\tregra\th/w\th0ffmann
 "
 
 // A rule may have more than one origin; every rule needs one.
@@ -175,14 +175,17 @@ pub fn origins_test() {
   assert c.origin_errors(skill, origin_rows) == []
 }
 
+// A creator is a GitHub login, never a full name.
 pub fn origin_errors_test() {
   assert c.origin_errors(
       skill,
-      "h\nPTW-1\tPTC-1\tk/ptc\tK R\tk\nPTW-9\tx\tk/ptc\tK R\thttps://github.com/k\n",
+      "h\nPTW-1\tPTC-1\tk/ptc\tKayque R\nPTW-9\tx\tk/ptc\tkayquer\n",
     )
     == [
       "origins.tsv: PTW-2 has no origin",
-      "origins.tsv: K R has no GitHub profile",
+      "origins.tsv: \"Kayque R\" is not a GitHub login",
       "origins.tsv: SKILL.md has no rule PTW-9",
     ]
+  assert c.login("h0ffmann")
+  assert !c.login("@kayquer")
 }

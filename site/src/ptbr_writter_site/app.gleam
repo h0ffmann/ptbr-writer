@@ -181,7 +181,7 @@ fn rule(r: Rule) -> Element(msg) {
   ])
 }
 
-/// "PTC-1, de kayquer/portugues-tecnico-controlado, por Kayque Rotondo", each name a link.
+/// "PTC-1, de kayquer/portugues-tecnico-controlado, por @kayquer", each name a link.
 fn origin(o: Origin) -> List(Element(msg)) {
   [
     html.text(o.origin <> ", de "),
@@ -189,7 +189,9 @@ fn origin(o: Origin) -> List(Element(msg)) {
       html.text(o.repo),
     ]),
     html.text(", por "),
-    html.a([attribute.href(o.profile)], [html.text(o.creator)]),
+    html.a([attribute.href("https://github.com/" <> o.creator)], [
+      html.text("@" <> o.creator),
+    ]),
   ]
 }
 
