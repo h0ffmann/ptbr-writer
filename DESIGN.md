@@ -53,7 +53,7 @@ the usage, the levels, the rules and the output format from `SKILL.md`, the reci
 origin of the rules from `## Limites` and `## Origem` when `SKILL.md` has them. Three tables hold
 what no other file holds: `site/data/awesome.tsv`, the related repositories, each with the URL of
 the curated list it was found in; `site/data/origins.tsv`, where each rule comes from (the rule of the source repository, the
-repository and its creator, linked; a rule may have more than one row, and every rule needs one);
+repository and its creator as a GitHub login, never a full name, linked; a rule may have more than one row, and every rule needs one);
 `site/data/roadmap.tsv`, production readiness, each row with a
 status of `feito`, `em andamento` or `planejado` and the file that proves it. Never type a rule, a
 level, a recipe, a repository or a status into `site/src`. A `SKILL.md` that loses one of its
