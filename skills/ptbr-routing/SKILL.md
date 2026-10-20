@@ -1,11 +1,11 @@
 ---
-name: routing
+name: ptbr-routing
 description: Escolhe a skill e o nível de rigor antes de carregar uma skill de escrita em pt-BR. Use quando o pedido é escrever, reescrever ou revisar texto em português e não diz o nível nem a skill.
 ---
 
 # Roteamento de um pedido de escrita
 
-`route` é `python3 .claude/skills/routing/scripts/route.py "<pedido>"`, sem dependências. A
+`route` é `python3 .claude/skills/ptbr-routing/scripts/route.py "<pedido>"`, sem dependências. A
 resposta é uma linha: a skill a carregar e o nível.
 
 - Carregue só a skill que a linha nomeia. Não leia as outras.
