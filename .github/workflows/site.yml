@@ -24,11 +24,16 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4 # the footer names the commit the page was read from
+        with:
+          fetch-depth: 0 # release-due compares with the last v* tag
       - uses: cachix/install-nix-action@v31
       - name: just quality (justfile, flake, pins)
         run: nix develop --no-update-lock-file --command just quality
       - name: just site (content, Gleam tests, prerender)
         run: nix develop --no-update-lock-file --command just site
+      - name: release due (a warning, never a failure)
+        if: github.ref == 'refs/heads/main'
+        run: nix develop --no-update-lock-file --command just release-due || echo "::warning title=release due::o plugin mudou desde a última tag e quem o instalou não vê a mudança; rode just release X.Y.Z"
       - uses: actions/upload-pages-artifact@v4
         if: github.event_name != 'pull_request'
         with:
