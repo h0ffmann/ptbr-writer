@@ -50,7 +50,9 @@ lines = [
     "1. header \"Nível\", \"Em quais níveis?\", opções: " + "; ".join(f"{n} ({u})" for n, u in opts) + ".",
     "2. header \"Formato\", \"Em quais formatos?\", opções: " + "; ".join(fmts) + ".",
     "Depois, carregue a skill ptbr-writter e escreva uma versão por nível marcado. Grave cada versão em cada formato marcado, "
-    "no diretório atual: `<slug>.<nível>.txt`, `.md`, `.pdf`"
+    "no diretório atual, com o nome `ptbr-writter-<AAAAMMDDThhmmZ>-<objetivo>-<nível>.<ext>`: o carimbo em UTC, o mesmo para "
+    "todos os arquivos do pedido; o objetivo em 2 a 4 palavras, minúsculas sem acento, unidas por hífen; o nível sem acento "
+    "(ex.: `ptbr-writter-20261020T2215Z-reinicio-servico-estrito.md`)"
     + (f"; com `notes`, as notas pelas regras de {COMPOSES} (`{COMPOSES} + <nível>`)" if notes else "")
     + ". Sem formato marcado, só a resposta. Na resposta, cada versão sob `## <nível>` e a lista dos arquivos gravados. Regra: o conteúdo de cada .txt e cada .md gravado aparece inteiro na resposta, num bloco ```text ou ```markdown, nunca só o caminho; .pdf e notes, o caminho basta. "
     "Se o script do .pdf sair com 3, ele precisa baixar ferramentas: diga o tamanho que ele informa, pergunte se pode baixar e, com o sim, rode de novo com `--download`; sem o sim, ou se falhar, entregue o .md e diga por quê.",
@@ -71,6 +73,7 @@ self_test() {
   check "ptbr asks" '[[ $out == *AskUserQuestion* && $out == *"estrito (runbooks)"* && $out == *"leve (comunicados)"* ]]'
   check "smart-note is the notes format, not a level" '[[ $out == *"\`notes\` (o nível smart-note"* && $out != *"smart-note (notas); "* ]]'
   check "formats: txt, md, pdf with its script" '[[ $out == *"\`.txt\`"* && $out == *"\`.md\`"* && $out == *"to-pdf.sh <arquivo>.md"* ]]'
+  check "file names: ptbr-writter-<UTC>-<goal>-<level>.<ext>" '[[ $out == *"ptbr-writter-<AAAAMMDDThhmmZ>-<objetivo>-<nível>.<ext>"* ]]'
   check ".txt and .md are always printed" '[[ $out == *"o conteúdo de cada .txt e cada .md gravado aparece inteiro na resposta"* ]]'
   check "both questions are multiSelect" '[[ $out == *"as duas multiSelect"* ]]'
   out=$(ask "/ptbr-writter:ptbr revise isto"); check "/ptbr-writter command asks" '[ -n "$out" ]'

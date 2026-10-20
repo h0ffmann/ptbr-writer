@@ -101,7 +101,19 @@ Or describe the task: "reescreva este runbook em português controlado".
 
 From v0.2.0, `ptbr` in a request ("ptbr: reescreva este texto") with no level makes Claude ask
 for the levels and the formats, both multiple choice: `.txt`, `.md`, `.pdf` and `notes`
-(smart-note). You get one version per level in each format, and the text of the `.txt` and `.md` always shows in the console, not only the file. `.pdf` uses the machine's pandoc;
+(smart-note). You get one version per level in each format, and the text of the `.txt` and `.md` always shows in the console, not only the file.
+
+The files go to the folder the session is open in, usually the repository root, under one name
+pattern:
+
+```text
+ptbr-writter-<YYYYMMDDThhmmZ>-<goal>-<level>.<ext>
+ptbr-writter-20261020T2215Z-reinicio-servico-estrito.md
+```
+
+The timestamp is UTC and the same for every file of one request. Two levels in three formats make
+six files. So a `git add -A` does not pick them up, add `ptbr-writter-*` to `.gitignore`. Notes from
+`notes` follow the smart-note rules (`<id>-<slug>.md`). `.pdf` uses the machine's pandoc;
 without it, Claude asks before a ~730 MiB download through Nix
 ([`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) in picasso).
 
