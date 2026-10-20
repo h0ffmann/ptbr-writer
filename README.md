@@ -205,7 +205,8 @@ pasta de skills do agente.
 - Retórica: a epígrafe é de Pirsig, *Zen and the Art of Motorcycle Maintenance* (1974), conferida em
   duas reproduções públicas, não na edição impressa ⚠. Base: o *Fédon* e o *Fedro*, de Platão.
 - Nível por autor: a skill [orwell-writing](https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing), de @tamdogood (MIT).
-- Plugin e roteamento no molde de [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit).
+- Plugin e roteamento no molde do plugin e do `routing` de [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit),
+  de [@brunogbv](https://github.com/brunogbv).
   Layout do README: [h0ffmann/picasso](https://github.com/h0ffmann/picasso) e ww3-gpu. Stack do
   site: closed-source e ww3-gpu; Lustre (MIT) e a stdlib do Gleam (Apache-2.0) só no build; fontes
   do Google Fonts (SIL OFL); bandeira e assinatura de Machado de Assis do Wikimedia Commons, em

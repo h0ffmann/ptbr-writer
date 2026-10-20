@@ -208,7 +208,8 @@ the agent's skills folder.
 - Rhetoric: the epigraph is from Pirsig, *Zen and the Art of Motorcycle Maintenance* (1974), checked
   against two public reproductions, not the printed edition ⚠. Basis: Plato's *Phaedo* and *Phaedrus*.
 - Author level: the skill [orwell-writing](https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing), by @tamdogood (MIT).
-- Plugin and routing in the mould of [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit).
+- Plugin and routing in the mould of the plugin and the `routing` skill of [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit),
+  by [@brunogbv](https://github.com/brunogbv).
   README layout: [h0ffmann/picasso](https://github.com/h0ffmann/picasso) and ww3-gpu. Site stack:
   closed-source and ww3-gpu; Lustre (MIT) and the Gleam stdlib (Apache-2.0) only at build time;
   Google Fonts (SIL OFL); the flag and signature of Machado de Assis from Wikimedia Commons, in the
