@@ -1,0 +1,55 @@
+/* ptbr-writter: uma folha, uma caneta e a caneta da revisão. The rules are DESIGN.md. */
+:root {
+  /* the ground */
+  --paper: #fbf8f1;
+  --sheet: #ffffff;
+  --rule: #e4ddcd;
+  --ink: #1b1a17;
+  --muted: #6b665c;
+  /* the two pens, each with one meaning */
+  --pen: #1d3fd0; /* the writer: the title, the links, the commands */
+  --review: #c8102e; /* the correction: a rule's id, the levels of rigor */
+  --display: "Fraunces", Georgia, serif;
+  --prose: "Source Serif 4", Georgia, serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { background: var(--paper); }
+body { margin: 0; color: var(--ink); font: 400 1.15rem/1.6 var(--prose); background: var(--paper); }
+.wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+a { color: var(--pen); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--ink); }
+a:focus-visible { outline: 2px solid var(--pen); outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.1; margin: 0; }
+h1 { font-size: clamp(3rem, 12vw, 6.5rem); font-weight: 800; color: var(--pen); letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.7rem, 5vw, 2.4rem); font-weight: 800; margin-bottom: 0.3em; }
+h3 { font-size: 1.25rem; font-weight: 600; margin: 0.1em 0 0.3em; }
+code, .chip, .id, .jump, .foot { font-family: var(--mono); font-size: 0.85em; }
+code { background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 0 0.3em; }
+.cover { padding: 56px 24px 32px; }
+.mark { width: 72px; height: 72px; }
+.lede { max-width: 38em; font-size: 1.3rem; }
+.jump { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 1em 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 1.4em 0; }
+.button, .ghost { font: 600 1rem var(--display); padding: 0.55em 1.2em; border-radius: 999px; text-decoration: none; }
+.button { background: var(--pen); color: var(--sheet); }
+.button:hover { background: var(--ink); color: var(--sheet); }
+.ghost { border: 1px solid var(--pen); }
+section { padding: 32px 24px; border-top: 1px solid var(--rule); }
+.intro { color: var(--muted); margin-top: 0; }
+.asks { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.levels, .recipes { display: grid; grid-template-columns: max-content 1fr; gap: 10px 20px; align-items: baseline; }
+.levels dd, .recipes dd { margin: 0; }
+.chip { color: var(--review); border: 1px solid var(--review); border-radius: 999px; padding: 0.1em 0.7em; }
+.rules { list-style: none; padding: 0; display: grid; gap: 22px; }
+.rules p { margin: 0; }
+.id { color: var(--review); font-weight: 600; }
+.steps { padding-left: 1.4em; }
+.foot { color: var(--muted); padding: 32px 24px 48px; border-top: 1px solid var(--rule); }
+.foot p { margin: 0.3em 0; }
+.fork { font-size: 0.8em; }
+@media (max-width: 520px) {
+  .levels, .recipes { grid-template-columns: 1fr; gap: 2px; }
+  .levels dd, .recipes dd { margin-bottom: 10px; }
+}

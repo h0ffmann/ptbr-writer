@@ -1,0 +1,49 @@
+# site — build the website (site/, Gleam + Lustre) with `just site` on each pull request and push to
+# main, and publish site/dist to GitHub Pages from main. Every fact on the page is read from
+# SKILL.md and the justfile, so a change to either that breaks the page fails here.
+# Needs Settings → Pages → Source: GitHub Actions. The toolchain comes from picasso's gleam-website
+# lab through flake.nix, pinned in flake.lock to the forks/picasso submodule (`just pins`).
+name: site
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: false # a deploy cut halfway leaves Pages on neither version
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4 # the footer names the commit the page was read from
+      - uses: cachix/install-nix-action@v31
+      - name: just quality (justfile, flake, pins)
+        run: nix develop --no-update-lock-file --command just quality
+      - name: just site (content, Gleam tests, prerender)
+        run: nix develop --no-update-lock-file --command just site
+      - uses: actions/upload-pages-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          path: site/dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

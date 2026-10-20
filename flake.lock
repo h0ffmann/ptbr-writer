@@ -18,7 +18,43 @@
         "type": "github"
       }
     },
+    "gleam-website": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "dir": "labs/gleam-website",
+        "lastModified": 1792420784,
+        "narHash": "sha256-DCVkPDKiQzdwndLP7ZNhJoYokYjK8Vyp7hqYfa+XkUk=",
+        "owner": "h0ffmann",
+        "repo": "picasso",
+        "rev": "4bd3b2221aedf6bb814670bfde3ad705a0e60101",
+        "type": "github"
+      },
+      "original": {
+        "dir": "labs/gleam-website",
+        "owner": "h0ffmann",
+        "repo": "picasso",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
+      "locked": {
+        "lastModified": 1791594108,
+        "narHash": "sha256-XK4KceonkwD8LuMAt/vNrz982mXJM5jeHAxMwsUXXAQ=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "6510408d147d8c5e6d76043e899e9251756f6a75",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
       "locked": {
         "lastModified": 1792210252,
         "narHash": "sha256-Mh0PUaIv4nFY+8wAGonaEh8iBzwsmdNlwjVHmFg1Biw=",
@@ -37,7 +73,8 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "gleam-website": "gleam-website",
+        "nixpkgs": "nixpkgs_2"
       }
     },
     "systems": {
