@@ -37,14 +37,25 @@ The fonts load from Google Fonts, as on the sister sites. No font file is stored
 
 - **Portuguese, lower case** for what the page says in its own voice: headings, buttons, intros.
   A fact read from a file keeps its own case (a rule's title, a recipe's comment).
-- **Round.** Buttons and level chips are pills. A section is set apart by a line, not a box.
+- **Round.** Buttons, level chips and roadmap statuses are pills. A section is set apart by a
+  line, not a box.
+- **Status by shape, then colour.** A roadmap row says its status in words first. `feito` is a
+  filled `--pen` pill, `em andamento` an outlined one, `planejado` a **dashed** `--muted` one:
+  dashed means "not there yet".
+- **Star me.** The second button is the GitHub pill, "★ star me no github", with the star count
+  drawn by shields.io as an image. It is the only image from another host.
 
 ## Facts
 
 Every fact on the page comes from a file of this repository, through `site/content`: the lede,
 the usage, the levels, the rules and the output format from `SKILL.md`, the recipes from the
-`justfile` (each recipe with a comment line above it). Never type a rule, a level or a recipe into
-`site/src`. A `SKILL.md` that loses one of those sections stops the build.
+`justfile` (each recipe with a comment block above it, its first line), and the limits and the
+origin of the rules from `## Limites` and `## Origem` when `SKILL.md` has them. Two tables hold
+what no other file holds: `site/data/awesome.tsv`, the related repositories, each with the URL of
+the curated list it was found in; `site/data/roadmap.tsv`, production readiness, each row with a
+status of `feito`, `em andamento` or `planejado` and the file that proves it. Never type a rule, a
+level, a recipe, a repository or a status into `site/src`. A `SKILL.md` that loses one of its
+sections, or a table row that is malformed, stops the build.
 
 ## Credit
 

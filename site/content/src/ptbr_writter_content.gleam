@@ -1,4 +1,4 @@
-//// `gleam run` in site/content: reads SKILL.md and the justfile of this repository and writes
+//// `gleam run` in site/content: reads SKILL.md, the justfile and site/data/*.tsv and writes
 //// ../src/ptbr_writter_site/content.gleam, the only place the site takes its facts from. Nothing in
 //// site/src is typed by hand: a rule, a level, a step or a recipe that the page shows is read here.
 //// The pattern is h0ffmann/ww3-gpu's `site/content`.
@@ -24,6 +24,19 @@ pub type Level {
 pub type Recipe {
   Recipe(name: String, doc: String)
 }
+
+/// A row of site/data/awesome.tsv: a related repository and the curated list it was found in.
+pub type Link {
+  Link(name: String, url: String, what: String, source: String)
+}
+
+/// A row of site/data/roadmap.tsv: a piece of production readiness, its status and its file.
+pub type Step {
+  Step(item: String, status: String, what: String, evidence: String)
+}
+
+/// The statuses a roadmap row may have, in the order of the work.
+pub const statuses = ["feito", "em andamento", "planejado"]
 
 @external(javascript, "./ptbr_writter_content_ffi.mjs", "read")
 fn read(path: String) -> String
@@ -59,6 +72,14 @@ pub fn title(text: String) -> String {
       Error(_) -> ""
     }
   }
+}
+
+/// The text of a `## ` section as one paragraph, or "" when SKILL.md has no such section.
+pub fn paragraph(text: String, name: String) -> String {
+  section(text, name)
+  |> list.map(string.trim)
+  |> list.filter(fn(line) { line != "" })
+  |> string.join(" ")
 }
 
 /// The first paragraph after the `# ` heading.
@@ -197,6 +218,78 @@ pub fn recipe_name(line: String) -> Result(String, Nil) {
   }
 }
 
+// ---- reading site/data ------------------------------------------------------------------------
+
+/// The rows of a TSV file, its header dropped; a blank line is no row.
+pub fn tsv(text: String) -> List(List(String)) {
+  text
+  |> string.split("\n")
+  |> list.drop(1)
+  |> list.filter(fn(line) { string.trim(line) != "" })
+  |> list.map(fn(line) { string.split(line, "\t") })
+}
+
+pub fn links(text: String) -> List(Link) {
+  tsv(text)
+  |> list.filter_map(fn(cells) {
+    case cells {
+      [name, url, what, source] -> Ok(Link(name, url, what, source))
+      _ -> Error(Nil)
+    }
+  })
+}
+
+pub fn steps(text: String) -> List(Step) {
+  tsv(text)
+  |> list.filter_map(fn(cells) {
+    case cells {
+      [item, status, what, evidence] -> Ok(Step(item, status, what, evidence))
+      _ -> Error(Nil)
+    }
+  })
+}
+
+/// What is wrong with the two tables: a row that is not four cells, a link that is not a GitHub
+/// repository, a source that is not a URL, a status outside `statuses`, or a table with no row.
+pub fn data_errors(awesome: String, roadmap: String) -> List(String) {
+  let shape = fn(file, text) {
+    case tsv(text) {
+      [] -> [file <> ": no row"]
+      rows ->
+        list.filter_map(rows, fn(cells) {
+          case list.length(cells) {
+            4 -> Error(Nil)
+            _ ->
+              Ok(file <> ": a row needs 4 cells: " <> string.join(cells, " | "))
+          }
+        })
+    }
+  }
+  list.flatten([
+    shape("awesome.tsv", awesome),
+    shape("roadmap.tsv", roadmap),
+    list.flat_map(links(awesome), fn(l) {
+      list.flatten([
+        case string.starts_with(l.url, "https://github.com/" <> l.name) {
+          True -> []
+          False -> ["awesome.tsv: " <> l.name <> " is not at " <> l.url]
+        },
+        case string.starts_with(l.source, "https://") {
+          True -> []
+          False -> ["awesome.tsv: " <> l.name <> " has no source list"]
+        },
+      ])
+    }),
+    list.filter_map(steps(roadmap), fn(s) {
+      case list.contains(statuses, s.status) {
+        True -> Error(Nil)
+        False ->
+          Ok("roadmap.tsv: " <> s.item <> ": status is " <> lit(s.status))
+      }
+    }),
+  ])
+}
+
 // ---- rendering ---------------------------------------------------------------------------------
 
 /// A Gleam string literal.
@@ -233,10 +326,24 @@ pub type Level {
 pub type Recipe {
   Recipe(name: String, doc: String)
 }
+
+pub type Link {
+  Link(name: String, url: String, what: String, source: String)
+}
+
+pub type Step {
+  Step(item: String, status: String, what: String, evidence: String)
+}
 "
 
 /// The content module, from the text of SKILL.md and of the justfile.
-pub fn module(skill: String, justfile: String, rev: String) -> String {
+pub fn module(
+  skill: String,
+  justfile: String,
+  awesome: String,
+  roadmap: String,
+  rev: String,
+) -> String {
   string.join(
     [
       "//// Written by site/content from SKILL.md and the justfile. Do not edit: `just site`.\n",
@@ -244,6 +351,8 @@ pub fn module(skill: String, justfile: String, rev: String) -> String {
       "pub const title = " <> lit(title(skill)) <> "\n",
       "pub const lede = " <> lit(lede(skill)) <> "\n",
       "pub const revision = " <> lit(rev) <> "\n",
+      "pub const limits = " <> lit(paragraph(skill, "Limites")) <> "\n",
+      "pub const origin = " <> lit(paragraph(skill, "Origem")) <> "\n",
       items(
         "levels",
         "Level",
@@ -260,6 +369,20 @@ pub fn module(skill: String, justfile: String, rev: String) -> String {
         "recipes",
         "Recipe",
         list.map(recipes(justfile), fn(r) { call("Recipe", [r.name, r.doc]) }),
+      ),
+      items(
+        "awesome",
+        "Link",
+        list.map(links(awesome), fn(l) {
+          call("Link", [l.name, l.url, l.what, l.source])
+        }),
+      ),
+      items(
+        "roadmap",
+        "Step",
+        list.map(steps(roadmap), fn(s) {
+          call("Step", [s.item, s.status, s.what, s.evidence])
+        }),
       ),
     ],
     "\n",
@@ -291,11 +414,13 @@ pub fn errors(skill: String, justfile: String) -> List(String) {
 pub fn main() -> Nil {
   let skill = read(root <> "SKILL.md")
   let justfile = read(root <> "justfile")
-  case errors(skill, justfile) {
+  let awesome = read("../data/awesome.tsv")
+  let roadmap = read("../data/roadmap.tsv")
+  case list.append(errors(skill, justfile), data_errors(awesome, roadmap)) {
     [] ->
       write(
         "../src/ptbr_writter_site/content.gleam",
-        module(skill, justfile, revision()),
+        module(skill, justfile, awesome, roadmap, revision()),
       )
     found -> {
       list.each(found, io.println_error)
