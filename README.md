@@ -59,6 +59,17 @@ há uma quinta: a lista de `⚠`. Os casos de regressão estão em [`evals/cient
 A origem de cada regra está em [`site/data/origins.tsv`](site/data/origins.tsv), que o site também
 mostra; [`SKILL.md`](SKILL.md) diz em que commit as regras científicas foram lidas.
 
+## a skill de retórica
+
+[`skills/retorica/SKILL.md`](skills/retorica/SKILL.md), em desenvolvimento e ainda sem regras. A
+epígrafe é de Robert M. Pirsig, *Zen and the Art of Motorcycle Maintenance* (1974), e se dirige ao
+Phaedrus dele; o texto foi conferido em duas reproduções públicas, não na edição impressa ⚠.
+
+Base: o *Fédon* e o *Fedro*, de Platão, e o Phaedrus de Pirsig. Cada regra futura vai citar seu
+trecho aqui, não na skill: Platão pela numeração de Stephanus, Pirsig pelo capítulo. A fazer: ler
+as três obras e anotar cada edição; propor as regras numa nota revisada pelo dono; escrever um caso
+de regressão por regra em `evals/`.
+
 ## roadmap
 
 Prontidão para produção. A fonte é [`site/data/roadmap.tsv`](site/data/roadmap.tsv); o
@@ -70,6 +81,7 @@ Prontidão para produção. A fonte é [`site/data/roadmap.tsv`](site/data/roadm
 | [`evals/`](evals/cientifico.md) | em andamento | um caso de regressão por regra científica, escrito e ainda não rodado por um harness ⚠ |
 | plugin | planejado | empacotar a skill como plugin do Claude Code e do OpenCode, instalável com um comando |
 | distribuição | planejado | release com tag e instalação por URL em outros repositórios, sem copiar o `SKILL.md` à mão |
+| [retórica](skills/retorica/SKILL.md) | planejado | skill de retórica a partir do *Fédon* e do *Fedro*, de Platão, e do Phaedrus de Robert M. Pirsig; só o esqueleto existe, sem regras |
 
 ## awesome-ptbr-writter
 
@@ -155,6 +167,7 @@ justfile                receitas
 flake.nix, flake.lock   shell reprodutível e pins
 DESIGN.md               regras visuais do site
 evals/                  casos de regressão das regras (ainda sem harness)
+skills/retorica/        skill de retórica, em desenvolvimento (Fédon, Fedro, Pirsig)
 forks/picasso/          submódulo: toolchain do site
 site/
   content/              gerador: SKILL.md + justfile + data/ -> content.gleam
