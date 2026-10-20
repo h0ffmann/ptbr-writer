@@ -61,6 +61,9 @@ mostra. Os commits lidos estão em [créditos](#créditos).
 
 ## a skill científica
 
+<details>
+<summary>regras CIE, base e origem</summary>
+
 [`skills/cientifico/SKILL.md`](skills/cientifico/SKILL.md) é uma skill própria para texto científico com fontes. A base de estrutura e de orientação é a skill `scientific-writing` de [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing) @ a1043ef (MIT, "Copyright (c) 2025 K-Dense Inc."): as ideias foram adaptadas ao português e a textos técnicos (artigo, proposta, relatório), sem copiar texto. A skill aplica PTW-1 a PTW-13 e acrescenta as regras CIE. O corpo da skill só tem instruções; os créditos ficam aqui.
 
 Como pede o autor da base: Kassis, T., Agarwal, V., He, Y., Patel, D., & Brueckner, A. M. (2026). *Scientific Agent Skills: A Library of Procedural Knowledge for Research Agents*. arXiv:2609.00065. <https://doi.org/10.48550/arXiv.2609.00065>
@@ -83,6 +86,8 @@ Referência em português usada, só pelas ideias, parafraseadas: a skill `artig
 | CIE-12 | Figura e tabela carregam a evidência | `scientific-writing`: figures_tables, [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing) @ a1043ef<br>AGENTS.md: Figures, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
 
 O fluxo, a estrutura do texto e a revisão vêm de `scientific-writing` (workflow, imrad_structure, Revision and peer review). O estilo `research` de [ouroboric-dev/ouroboric](https://github.com/ouroboric-dev/ouroboric) @ 2858c11 (`docs/4-ways-of-working/writing-styles.md`) sustenta a separação de fato e análise de PTW-13. Autor das regras próprias: [@h0ffmann](https://github.com/h0ffmann).
+
+</details>
 
 ## a skill de retórica
 
