@@ -37,6 +37,7 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 - `README.md` — human-facing documentation.
 - `lint/saramago/` — Vale prose linter for Saramago's punctuation; `just saramago FILE`, self-test `just saramago-check` (part of `just quality`).
 - `REUSE.md` — reuse rules for the author levels (citation, public domain, style only).
+- `skills/routing/` — the `routing` skill: `scripts/route.py` (stdlib) picks the skill and the level from `routes.tsv`; outside any plugin, vendored as `.claude/skills/routing` (here a symlink). A new level in `SKILL.md` needs its row, or `just quality` fails.
 - `skills/retorica/SKILL.md` — a second skill, rhetoric from Plato's *Phaedo* and *Phaedrus* and Pirsig's Phaedrus (ZAMM); a skeleton with no rules yet.
 - `site/` — the website (Gleam + Lustre, prerendered). `site/content` writes its facts from `SKILL.md`, `justfile` and `site/data/*.tsv` (`awesome.tsv`: related repos, each with its curated source; `roadmap.tsv`: production readiness; `origins.tsv`: each rule's source repo and creator's GitHub login (never a full name) — a new rule needs its row or the build fails); never type a rule, level, recipe, repo or status into `site/src`. Look rules: `DESIGN.md`.
 - `forks/picasso` — submodule; its `labs/gleam-website` is the site toolchain, pinned in `flake.lock` to the same revision (`just pins`).

@@ -111,7 +111,13 @@ saramago-check:
     echo "saramago-check: ok"
 
 # Basic quality gate: justfile parses, required files exist, toolchain pins agree, linters self-test.
+# Pick the skill and the level for a writing request: just route "reescreva este runbook".
+route +request:
+    python3 skills/routing/scripts/route.py "{{ request }}"
+
 quality: pins saramago-check
+    python3 skills/routing/scripts/route.py --self-test
+    python3 skills/routing/scripts/route.py --check
     just --list >/dev/null
     test -f .opencode.json
     test -f flake.nix
