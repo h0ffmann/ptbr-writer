@@ -113,6 +113,17 @@ pub fn cover_images_test() {
   assert string.contains(page, "assinatura de Machado de Assis (1839–1908)")
 }
 
+// smart-note is a level of SKILL.md, and its policy has its own section.
+pub fn smart_note_test() {
+  let page = prerender.render()
+  assert string.contains(page, "id=\"smart-note\"")
+  assert content.smart_note != []
+  list.each(content.levels, fn(l) {
+    assert string.contains(page, l.name)
+  })
+  assert list.any(content.levels, fn(l) { l.name == "smart-note" })
+}
+
 pub fn star_pill_test() {
   let page = prerender.render()
   assert string.contains(page, "star me")

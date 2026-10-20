@@ -153,7 +153,12 @@ fn join(a: String, b: String) -> String {
 
 /// The steps of `## Formato de saída`: `1. Nível e destinatário assumidos.`
 pub fn output(text: String) -> List(String) {
-  section(text, "Formato de saída")
+  numbered(text, "Formato de saída")
+}
+
+/// The numbered lines of a `## ` section, without their numbers.
+pub fn numbered(text: String, name: String) -> List(String) {
+  section(text, name)
   |> list.filter_map(fn(line) {
     case string.split_once(line, ". ") {
       Ok(#(n, step)) if n != "" ->
@@ -164,6 +169,15 @@ pub fn output(text: String) -> List(String) {
       _ -> Error(Nil)
     }
   })
+}
+
+/// The paragraph of a `## ` section before its numbered list, or "".
+pub fn preamble(text: String, name: String) -> String {
+  section(text, name)
+  |> list.take_while(fn(line) { numbered("## x\n" <> line, "x") == [] })
+  |> list.map(string.trim)
+  |> list.filter(fn(line) { line != "" })
+  |> string.join(" ")
 }
 
 fn is_digit(g: String) -> Bool {
@@ -483,6 +497,14 @@ pub fn module(
         list.map(rules(skill), fn(r) { call("Rule", [r.id, r.title, r.body]) }),
       ),
       items("output", "String", list.map(output(skill), lit)),
+      "pub const smart_note_intro = "
+        <> lit(preamble(skill, "Smart note"))
+        <> "\n",
+      items(
+        "smart_note",
+        "String",
+        list.map(numbered(skill, "Smart note"), lit),
+      ),
       items("usage", "String", list.map(usage(skill), lit)),
       items(
         "recipes",
