@@ -4,10 +4,11 @@ Reescreva texto técnico em português brasileiro para leitura única, com sujei
 
 ## Uso
 
-Invoque pelo nome:
+Invoque pelo nome ou pelo alias:
 
 ```
 /ptbr-writter
+/ptbr
 ```
 
 Ou descreva a tarefa:
