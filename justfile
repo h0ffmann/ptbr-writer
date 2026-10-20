@@ -131,7 +131,7 @@ plugin-check:
 release-due:
     #!/usr/bin/env bash
     set -euo pipefail
-    files=$(find -L plugins/ptbr-writter .claude-plugin -type f -exec realpath --relative-to=. {} + | sort -u)
+    files=$(find -L plugins/ptbr-writter .claude-plugin -path "*/evals" -prune -o -type f -exec realpath --relative-to=. {} + | sort -u)
     last=$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)
     if [ -z "$last" ]; then changed=$files; since="(no release yet)"
     else changed=$(git diff --name-only "$last" HEAD -- $files); since="since $last"; fi
@@ -139,6 +139,14 @@ release-due:
     echo "release-due: the plugin changed $since; installs keep the old text until just release X.Y.Z:"
     sed 's/^/  /' <<<"$changed"
     exit 1
+
+# Install the plugin from this checkout into an empty Claude Code config and check what a third party gets.
+plugin-smoke:
+    scripts/plugin-smoke.sh
+
+# Run the plugin's eval cases on your own Claude login, once each: just plugin-eval --case 'estrito*'.
+plugin-eval *args:
+    claude plugin eval plugins/ptbr-writter --trust-plugin --no-publish --runs 1 {{ args }}
 
 # Release X.Y.Z in two runs: a chore/release-vX.Y.Z PR (plugin.json, CHANGELOG), then, after its merge, the tag on main.
 release version:
