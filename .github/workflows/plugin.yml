@@ -1,0 +1,68 @@
+# plugin — what a third party gets from the plugin.
+# smoke: on a PR or push that touches what the plugin ships, install it from the checkout into an
+#   empty Claude Code config (scripts/plugin-smoke.sh). No login, no tokens, under a minute.
+# eval: only by hand (Actions → plugin → Run workflow). Runs plugins/ptbr-writter/evals/ against a
+#   model, with and without the plugin, on ANTHROPIC_API_KEY: a key from the Console organization
+#   linked to a Max plan draws on its monthly API credits. --max-cost-usd caps the run.
+name: plugin
+
+on:
+  pull_request:
+    paths: [SKILL.md, "skills/**", "plugins/**", ".claude-plugin/**", scripts/plugin-smoke.sh, .github/workflows/plugin.yml]
+  push:
+    branches: [main]
+    paths: [SKILL.md, "skills/**", "plugins/**", ".claude-plugin/**", scripts/plugin-smoke.sh, .github/workflows/plugin.yml]
+  workflow_dispatch:
+    inputs:
+      eval:
+        description: "Run the eval suite (costs API credits)"
+        type: boolean
+        default: true
+      runs:
+        description: "Runs per case"
+        default: "1"
+      max_cost_usd:
+        description: "Hard cost ceiling for the eval, in USD"
+        default: "2"
+      case:
+        description: "Case name glob (empty: all)"
+        default: ""
+
+permissions:
+  contents: read
+
+env:
+  CLAUDE_CODE_VERSION: 2.1.305
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install -g "@anthropic-ai/claude-code@$CLAUDE_CODE_VERSION"
+      - run: scripts/plugin-smoke.sh
+
+  eval:
+    if: github.event_name == 'workflow_dispatch' && inputs.eval
+    needs: smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install -g "@anthropic-ai/claude-code@$CLAUDE_CODE_VERSION"
+      - env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RUNS: ${{ inputs.runs }}
+          MAX_COST: ${{ inputs.max_cost_usd }}
+          CASE: ${{ inputs.case }}
+        run: |
+          [ -n "$ANTHROPIC_API_KEY" ] || { echo "::error::set the ANTHROPIC_API_KEY secret first"; exit 1; }
+          claude plugin eval plugins/ptbr-writter --trust-plugin --no-publish \
+            --runs "$RUNS" --max-cost-usd "$MAX_COST" ${CASE:+--case "$CASE"} \
+            --output-dir eval-results --report eval-results/report.html
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: plugin-eval
+          path: eval-results/
