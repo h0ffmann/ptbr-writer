@@ -8,3 +8,4 @@ result-*
 __pycache__/
 *.pyc
 .pytest_cache/
+plugins/ptbr-writter/evals/results/
