@@ -1,0 +1,8 @@
+{
+  "provider": "llamacpp",
+  "model": "qwen3.6-27b",
+  "api_base": "http://127.0.0.1:8080/v1",
+  "limit": {
+    "context": 131072
+  }
+}
