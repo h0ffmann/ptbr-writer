@@ -20,6 +20,9 @@ sua documentação técnica em PT-BR e EN gastando menos tokens.
 
 ## a skill
 
+<details>
+<summary>níveis de rigor e limites</summary>
+
 [`SKILL.md`](SKILL.md) é o prompt que o agente carrega. Invoque com `/ptbr-writter` ou descreva a
 tarefa ("reescreva este runbook em português controlado"). Sem nível explícito, a skill classifica
 o texto e declara o que assumiu. A skill não muda tese, autoria nem conclusões, e não busca fontes:
@@ -32,8 +35,14 @@ marca o que não foi checado.
 | `leve`      | comunicados internos                        |
 | `científico` | artigos, propostas, relatórios técnicos com fontes |
 | `retórico` (WIP) | texto que precisa convencer: proposta, justificativa, comunicado de decisão; ainda não está na skill |
+| `ensaístico` (WIP) | ensaio: o autor pensa por escrito, em primeira pessoa, à maneira de *The Essays* (*Os Ensaios*), de Michel de Montaigne; ainda não está na skill |
+
+</details>
 
 ## regras
+
+<details>
+<summary>PTW-1 a PTW-13, com origem e criador</summary>
 
 O texto completo de cada regra está [no site](https://h0ffmann.github.io/ptbr-writter/).
 
@@ -60,6 +69,8 @@ há uma quinta: a lista de `⚠`. Os casos de regressão estão em [`evals/cient
 A origem de cada regra está em [`site/data/origins.tsv`](site/data/origins.tsv), que o site também
 mostra. Os commits lidos estão em [créditos](#créditos).
 
+</details>
+
 ## a skill científica
 
 [`skills/cientifico/SKILL.md`](skills/cientifico/SKILL.md) é uma skill própria para texto científico com fontes: aplica PTW-1 a PTW-13 e acrescenta as regras CIE. O corpo da skill só tem instruções; os créditos ficam aqui.
@@ -82,6 +93,9 @@ O estilo `research` de [ouroboric-dev/ouroboric](https://github.com/ouroboric-de
 
 ## a skill de retórica
 
+<details>
+<summary>status, epígrafe e base</summary>
+
 [`skills/retorica/SKILL.md`](skills/retorica/SKILL.md), em desenvolvimento e ainda sem regras. A
 epígrafe é de Robert M. Pirsig, *Zen and the Art of Motorcycle Maintenance* (1974), e se dirige ao
 Phaedrus dele; o texto foi conferido em duas reproduções públicas, não na edição impressa ⚠.
@@ -90,6 +104,8 @@ Base: o *Fédon* e o *Fedro*, de Platão, e o Phaedrus de Pirsig. Cada regra fut
 trecho aqui, não na skill: Platão pela numeração de Stephanus, Pirsig pelo capítulo. A fazer: ler
 as três obras e anotar cada edição; propor as regras numa nota revisada pelo dono; escrever um caso
 de regressão por regra em `evals/`.
+
+</details>
 
 ## roadmap
 
