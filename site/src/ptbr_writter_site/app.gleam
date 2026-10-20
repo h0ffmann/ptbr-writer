@@ -222,7 +222,7 @@ fn awesome() -> Element(msg) {
   section(
     "awesome",
     "awesome-ptbr-writter",
-    "outros projetos para quem escreve texto técnico em português. cada um foi achado numa lista curada, que vai ao lado.",
+    "outros projetos para quem escreve texto técnico em português. o primeiro é o PTC original, de onde este fork vem; os outros foram achados numa lista curada, que vai ao lado.",
     [html.ul([attribute.class("awesome")], list.map(content.awesome, link))],
   )
 }

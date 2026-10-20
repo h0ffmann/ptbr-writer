@@ -73,11 +73,13 @@ Prontidão para produção. A fonte é [`site/data/roadmap.tsv`](site/data/roadm
 
 ## awesome-ptbr-writter
 
-Outros projetos para quem escreve texto técnico em português, cada um achado numa lista curada. A
-fonte é [`site/data/awesome.tsv`](site/data/awesome.tsv).
+Outros projetos para quem escreve texto técnico em português. O primeiro é o PTC original, de onde
+este fork vem; os outros foram achados numa lista curada. A fonte é
+[`site/data/awesome.tsv`](site/data/awesome.tsv).
 
 | Repositório | O que dá | Achado em |
 | :---------- | :------- | :-------- |
+| [kayquer/portugues-tecnico-controlado](https://github.com/kayquer/portugues-tecnico-controlado) | o original: 8 regras de português técnico controlado, inspiradas no ASD-STE100, com modo bilíngue EN/PT | a origem deste fork |
 | [fabricioctelles/skills](https://github.com/fabricioctelles/skills) | skill "humanizar" para agentes: remove padrões de texto de IA em pt-BR | [awesome-jev](https://github.com/heyjunpenn/awesome-jev) |
 | [vale-cli/vale](https://github.com/vale-cli/vale) | linter de prosa com estilos próprios, base para regras pt-BR | [awesome-scientific-writing](https://github.com/writing-resources/awesome-scientific-writing) |
 | [languagetool-org/languagetool](https://github.com/languagetool-org/languagetool) | corretor gramatical e de estilo com suporte a pt-BR | [awesome-selfhosted](https://github.com/awesome-selfhosted/awesome-selfhosted) |
