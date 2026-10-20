@@ -101,6 +101,18 @@ pub fn made_with_test() {
   assert string.contains(page, "https://claude.com/claude-code")
 }
 
+// pt-BR first: the flag and the calligraphy are on the cover, and both are credited, Machado de
+// Assis by name (REUSE.md).
+pub fn cover_images_test() {
+  let page = prerender.render()
+  assert string.contains(page, "img/bandeira-do-brasil.svg")
+  assert string.contains(page, "pt-BR first")
+  assert string.contains(page, "img/assinatura-machado-de-assis.png")
+  assert string.contains(page, "File:Flag_of_Brazil.svg")
+  assert string.contains(page, "File:Assinatura_de_Machado_de_Assis.png")
+  assert string.contains(page, "assinatura de Machado de Assis (1839–1908)")
+}
+
 pub fn star_pill_test() {
   let page = prerender.render()
   assert string.contains(page, "star me")
