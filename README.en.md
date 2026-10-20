@@ -113,9 +113,16 @@ ptbr-writter-20261020T2215Z-reinicio-servico-estrito.md
 
 The timestamp is UTC and the same for every file of one request. Two levels in three formats make
 six files. So a `git add -A` does not pick them up, add `ptbr-writter-*` to `.gitignore`. Notes from
-`notes` follow the smart-note rules (`<id>-<slug>.md`). `.pdf` uses the machine's pandoc;
-without it, Claude asks before a ~730 MiB download through Nix
-([`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) in picasso).
+`notes` follow the smart-note rules (`<id>-<slug>.md`). `.pdf` uses the machine's pandoc.
+Without it, Claude asks before downloading, through Nix, picasso's
+[`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) (pandoc and a
+minimal XeLaTeX). Measured with `just pdf-bench` (x86_64-linux):
+
+| download | on disk | built on the machine | first run, fresh GitHub runner (4 cores) |
+| :------- | :------ | :------------------- | :--------------------------------------- |
+| 206 MiB, 271 paths from cache.nixos.org | 729 MiB, 284 paths | 27 MiB, 13 paths (the TeX tree) | 27 s |
+
+The time depends on the network. From the second run on, Nix reuses the store.
 
 ## levels
 
