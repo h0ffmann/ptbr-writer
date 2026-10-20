@@ -57,7 +57,27 @@ original, reescrita); texto final; nota sobre o que foi mantido de propósito. N
 há uma quinta: a lista de `⚠`. Os casos de regressão estão em [`evals/cientifico.md`](evals/cientifico.md).
 
 A origem de cada regra está em [`site/data/origins.tsv`](site/data/origins.tsv), que o site também
-mostra; [`SKILL.md`](SKILL.md) diz em que commit as regras científicas foram lidas.
+mostra. Os commits lidos estão em [créditos](#créditos).
+
+## a skill científica
+
+[`skills/cientifico/SKILL.md`](skills/cientifico/SKILL.md) é uma skill própria para texto científico com fontes: aplica PTW-1 a PTW-13 e acrescenta as regras CIE. O corpo da skill só tem instruções; os créditos ficam aqui.
+
+| id | regra | origem |
+| :- | :---- | :----- |
+| CIE-1 | Fonte lida antes de citada | ouro-paper: regras duras, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd<br>AGENTS.md: invariantes, [h0ffmann/closed-source](https://github.com/h0ffmann/closed-source) @ 563c339 |
+| CIE-2 | Procurado e não citado | ouro-paper: passo 3, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd |
+| CIE-3 | DOI é link | AGENTS.md: regras duras de citação, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd |
+| CIE-4 | Fato que envelhece leva data | AGENTS.md: Audience and evidence, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
+| CIE-5 | Código é `arquivo:linha` num commit | AGENTS.md: Audience and evidence; Third-party issues and pull requests, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
+| CIE-6 | Issue e PR de terceiros não são fonte | AGENTS.md: Third-party issues and pull requests, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
+| CIE-7 | Plano não é medição | ouro-paper: regras duras (sem resultado antes de paridade, tipos de afirmação), [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd<br>AGENTS.md: Audience and evidence, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
+| CIE-8 | Fonte privada fica privada | ouro-paper: regras duras; AGENTS.md: regra 8, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd |
+| CIE-9 | Humano decide | AGENTS.md: invariantes 1 e 3, [h0ffmann/closed-source](https://github.com/h0ffmann/closed-source) @ 563c339<br>AGENTS.md: invariante 1, [ouroboric-dev/ouroboric](https://github.com/ouroboric-dev/ouroboric) @ 2858c11 |
+| CIE-10 | Voz ativa, frase curta, número | .vale/styles/fabric: ActiveVoice, ShortSentences, PlainWords, NumbersOverAdjectives, [h0ffmann/closed-source](https://github.com/h0ffmann/closed-source) @ 563c339<br>.vale/styles/research, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd |
+| CIE-11 | Figura carrega a evidência | AGENTS.md: Figures, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
+
+O estilo `research` de [ouroboric-dev/ouroboric](https://github.com/ouroboric-dev/ouroboric) @ 2858c11 (`docs/4-ways-of-working/writing-styles.md`: afirmação atribuída, fato separado de análise) sustenta a mesma separação de PTW-13. Os autores são [@h0ffmann](https://github.com/h0ffmann).
 
 ## roadmap
 
@@ -68,6 +88,7 @@ Prontidão para produção. A fonte é [`site/data/roadmap.tsv`](site/data/roadm
 | :--- | :----- | :---------------------- |
 | [`SKILL.md`](SKILL.md) | em andamento | regras PTW e níveis de rigor; as regras ainda estão marcadas como em desenvolvimento |
 | [`evals/`](evals/cientifico.md) | em andamento | um caso de regressão por regra científica, escrito e ainda não rodado por um harness ⚠ |
+| [skill científica](skills/cientifico/SKILL.md) | em andamento | skill própria para texto científico, com regras CIE; casos de regressão ainda não escritos |
 | plugin | planejado | empacotar a skill como plugin do Claude Code e do OpenCode, instalável com um comando |
 | distribuição | planejado | release com tag e instalação por URL em outros repositórios, sem copiar o `SKILL.md` à mão |
 
@@ -157,6 +178,7 @@ flake.nix, flake.lock   shell reprodutível e pins
 DESIGN.md               regras visuais do site
 evals/                  casos de regressão das regras (ainda sem harness)
 forks/picasso/          submódulo: toolchain do site
+skills/cientifico/      skill científica (regras CIE)
 site/
   content/              gerador: SKILL.md + justfile + data/ -> content.gleam
   data/                 awesome.tsv e roadmap.tsv

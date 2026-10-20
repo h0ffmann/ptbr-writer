@@ -11,6 +11,7 @@ Instructions for AI agents working on `ptbr-writter`.
 - **No secrets in code.** Placeholders only; use `.env.example` if needed.
 - **One feature, one PR.** Keep commits small and focused.
 - **Commit trailers.** Use `Tested:` and `Co-Authored-By: Claude <noreply@anthropic.com>`.
+- **No credits in a skill's body.** A skill file (`SKILL.md`, `skills/*/SKILL.md`) holds instructions only: no credits, sources, links, commit pins, author names or history. They are loaded into other people's context. Credits go to `README.md` and `site/data/origins.tsv`.
 - **No paid resources** without explicit human confirmation.
 
 ## Setup
@@ -26,6 +27,7 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 ## Repo layout
 
 - `SKILL.md` — the skill prompt consumed by OpenCode / Claude Code.
+- `skills/cientifico/SKILL.md` — the scientific-writing skill (rules CIE); applies PTW-1..13 and adds its own.
 - `.opencode.json` — OpenCode configuration pointing to local `llamacpp/qwen3.6-27b`.
 - `justfile` — recipes for running OpenCode, serving Qwen, and quality checks.
 - `flake.nix` / `flake.lock` — reproducible dev shell.
