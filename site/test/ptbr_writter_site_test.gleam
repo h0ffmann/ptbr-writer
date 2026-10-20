@@ -66,6 +66,12 @@ pub fn rule_origins_test() {
   assert string.contains(page, "PTC-1, de ")
 }
 
+// awesome-ptbr-writter opens with the original PTC, the source of this fork.
+pub fn awesome_starts_with_ptc_test() {
+  let assert [first, ..] = content.awesome
+  assert first.name == "kayquer/portugues-tecnico-controlado"
+}
+
 pub fn star_pill_test() {
   let page = prerender.render()
   assert string.contains(page, "star me")
