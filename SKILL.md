@@ -22,6 +22,7 @@ Ou descreva a tarefa:
 - `descritivo`: documentação de sistema.
 - `leve`: comunicados internos.
 - `científico`: artigos, propostas, relatórios técnicos com fontes.
+- `smart-note`: notas para um segundo cérebro; combina com outro nível (`smart-note + estrito`).
 
 ## Regras (em desenvolvimento)
 
@@ -82,6 +83,21 @@ Cada frase é fato com fonte ou leitura do autor, e diz qual. `A fonte não diz`
 ## Limites
 
 A skill não muda tese, autoria nem conclusões: quem decide é o humano. Ela não busca fontes; marca o que não foi checado.
+
+## Smart note
+
+Combina com outro nível: aplica as regras dele e entrega em notas. Duas saídas, `RAW` (só o texto) e `nota` (indexável, com front matter); sem pedido, entregue as duas.
+
+1. Uma ideia, uma nota: uma afirmação, um fato ou uma pergunta. Cinco ideias, cinco notas.
+2. Palavras próprias. Cite literal só o que precisa ficar exato, entre aspas, com a fonte.
+3. Nome permanente `<id>-<slug>.md`; `id` é a hora UTC da criação, `AAAAMMDDhhmm`. O id não muda; o título pode.
+4. Front matter: `id`, `title`, `type`, `status`, `source`, `tags`, `created` (ISO 8601).
+5. `type`: `fleeting` (ideia crua, como veio), `literature` (o que uma fonte diz, com link ou DOI), `permanent` (afirmação própria, feita de outras notas).
+6. `status`: `unverified`, `partial`, `verified`, `open-question` ou `approved`. `approved` é a palavra do dono, não checagem de fato; só o dono dá, e a nota diz quando.
+7. Links: toda nota liga a pelo menos uma outra com `[[<id>-<slug>]]`, que existe. Sem vizinha conhecida, proponha o link e marque `⚠`.
+8. Verdade: afirmação factual fica `unverified` até a fonte ser lida e citada na nota. Nunca invente fonte, citação ou número.
+9. Pessoas: quem não é figura pública aparece por apelido (`friend1`, `prof1`), nunca pelo nome.
+10. Tags: minúsculas, com hífen, poucas; reuse as que o cofre já tem.
 
 ## Formato de saída
 

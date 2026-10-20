@@ -201,3 +201,13 @@ pub fn planned_test() {
     == ["planned.tsv: leve is in SKILL.md now; delete its row"]
   assert c.planned_errors(skill, "name\twhat\n") == ["planned.tsv: no row"]
 }
+
+// A section with a paragraph and a numbered list: the smart-note policy's shape.
+pub fn numbered_and_preamble_test() {
+  let text =
+    "## Smart note\n\nCombina com outro nível.\n\n1. Uma ideia, uma nota.\n2. Palavras próprias.\n\n## Fim\n"
+  assert c.numbered(text, "Smart note")
+    == ["Uma ideia, uma nota.", "Palavras próprias."]
+  assert c.preamble(text, "Smart note") == "Combina com outro nível."
+  assert c.numbered(text, "Ausente") == []
+}

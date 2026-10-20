@@ -34,6 +34,7 @@ marca o que não foi checado.
 | `descritivo` | IMPLEMENTADO | documentação de sistema |
 | `leve` | IMPLEMENTADO | comunicados internos |
 | `científico` | IMPLEMENTADO | artigos, propostas, relatórios técnicos com fontes |
+| `smart-note` | IMPLEMENTADO | notas para um segundo cérebro (2nd-brain); combina com outro nível e entrega o texto `RAW` e/ou a `nota` indexável, com tags e links |
 | `retórico` | PLANEJADO | texto que precisa convencer: proposta, justificativa, comunicado de decisão |
 | `ensaístico` | PLANEJADO | ensaio: o autor pensa por escrito, em primeira pessoa, à maneira de *The Essays* (*Os Ensaios*), de Michel de Montaigne |
 | `crônico` | PLANEJADO | crônica: o cotidiano observado de perto, em tom de conversa com o leitor |
@@ -114,6 +115,28 @@ Referência em português usada, só pelas ideias, parafraseadas: a skill `artig
 | CIE-12 | Figura e tabela carregam a evidência | `scientific-writing`: figures_tables, [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing) @ a1043ef<br>AGENTS.md: Figures, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
 
 O fluxo, a estrutura do texto e a revisão vêm de `scientific-writing` (workflow, imrad_structure, Revision and peer review). O estilo `research` de [ouroboric-dev/ouroboric](https://github.com/ouroboric-dev/ouroboric) @ 2858c11 (`docs/4-ways-of-working/writing-styles.md`) sustenta a separação de fato e análise de PTW-13. Autor das regras próprias: [@h0ffmann](https://github.com/h0ffmann).
+
+</details>
+
+## smart-note
+
+<details>
+<summary>o nível para quem mantém um segundo cérebro</summary>
+
+`smart-note` é um nível para quem mantém um segundo cérebro (2nd-brain). Ele combina com os outros:
+`smart-note + estrito` aplica as regras de `estrito` e entrega o resultado em notas. A pessoa escolhe
+a saída:
+
+- **`RAW`**: só o texto, pronto para colar.
+- **`nota`**: conhecimento indexável, uma ideia por nota, com front matter (`id`, `type`, `status`,
+  `source`, `tags`), links `[[id-slug]]` entre notas e nome permanente.
+
+Sem pedido, a skill entrega as duas. As regras estão na seção `## Smart note` da
+[`SKILL.md`](SKILL.md) e no [site](https://h0ffmann.github.io/ptbr-writter/#smart-note).
+
+Base: *How to Take Smart Notes*, de Sönke Ahrens; o Zettelkasten (o fichário) de Niklas Luhmann; e o
+fichário analógico de Robert M. Pirsig, as fichas com que ele organizou as ideias de *Lila* ⚠. Os
+casos de regressão estão em [`evals/smart-note.md`](evals/smart-note.md).
 
 </details>
 
