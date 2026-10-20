@@ -4,7 +4,7 @@
 
 # ptbr-writter
 
-<sub><a href="#instalar">instalar</a> · <a href="#usar">usar</a> · <a href="#níveis">níveis</a> · <a href="#regras">regras</a> · <a href="#outras-skills">outras skills</a> · <a href="#versões-e-release">versões</a> · <a href="#roadmap">roadmap</a> · <a href="#desenvolvimento">desenvolvimento</a> · <a href="#créditos">créditos</a> · <a href="https://h0ffmann.github.io/ptbr-writter/">o site</a></sub>
+<sub><a href="#instalar">instalar</a> · <a href="#usar">usar</a> · <a href="#níveis">níveis</a> · <a href="#regras">regras</a> · <a href="#outras-skills">outras skills</a> · <a href="#versões-e-release">versões</a> · <a href="#qualidade-do-plugin">qualidade</a> · <a href="#roadmap">roadmap</a> · <a href="#desenvolvimento">desenvolvimento</a> · <a href="#créditos">créditos</a> · <a href="https://h0ffmann.github.io/ptbr-writter/">o site</a></sub>
 
 [![site](https://github.com/h0ffmann/ptbr-writter/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writter/actions/workflows/site.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
@@ -198,6 +198,28 @@ número da versão. Por isso a release está amarrada ao que o plugin entrega:
 Quem instalou pelo `main` recebe a versão nova no merge do PR de release; quem pinou, quando troca
 o `ref`. O site publica do `main` a cada merge.
 
+## qualidade do plugin
+
+Dois checks, cada um quando faz sentido ([`plugin.yml`](.github/workflows/plugin.yml)):
+
+| Check | Quando | Custo | O que garante |
+| :---- | :----- | :---- | :------------ |
+| `plugin-smoke` | PR ou push que muda o que o plugin entrega | zero: sem login, sem tokens | instala do checkout num Claude Code vazio: manifestos válidos, as três skills em arquivos reais com `description`, custo fixo abaixo de 300 tokens por sessão |
+| `eval` | só à mão: Actions → plugin → Run workflow | créditos de API, com teto (`max_cost_usd`, padrão US$ 2) | os casos de [`plugins/ptbr-writter/evals/`](plugins/ptbr-writter/evals), com e sem o plugin, avaliados por um juiz (Haiku) |
+
+Para o `eval` no CI com um plano Max:
+
+1. Em claude.ai → Settings → Billing, vincule uma organização do Console ao plano. O Max 5x traz
+   US$ 100 por mês de créditos de API e o Max 20x, US$ 200. A oferta aparece depois de 7 dias no plano.
+2. No Console dessa organização, crie uma API key.
+3. No GitHub, guarde a chave como secret `ANTHROPIC_API_KEY` (Settings → Secrets and variables →
+   Actions).
+
+Sem crédito comprado na organização, uma chamada sem saldo para, e nada é cobrado no plano. Não
+está claro se o eval no Actions conta como uso do Claude Code, que os créditos não cobrem ⚠: confira
+na página de uso do Console depois da primeira execução. Localmente, `just plugin-eval` roda os
+mesmos casos no seu login (um caso custou cerca de US$ 0,09).
+
 ## roadmap
 
 Fonte: [`site/data/roadmap.tsv`](site/data/roadmap.tsv).
@@ -252,7 +274,8 @@ forks/picasso/          submódulo: toolchain do site, pinado no flake.lock
 ```
 
 CI: [`site.yml`](.github/workflows/site.yml) roda `just quality` e `just site` em todo PR e publica
-o site do `main`; [`release.yml`](.github/workflows/release.yml) publica uma release por tag.
+o site do `main`; [`plugin.yml`](.github/workflows/plugin.yml) instala o plugin quando ele muda e
+roda o eval sob demanda; [`release.yml`](.github/workflows/release.yml) publica uma release por tag.
 
 ## créditos
 
