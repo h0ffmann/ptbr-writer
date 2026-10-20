@@ -33,9 +33,37 @@ Tornar textos técnicos em português brasileiro mais claros, menos ambíguos e 
 - [x] Criação do repositório
 - [x] Licença MIT
 - [x] README com créditos ao PTC original
-- [ ] Definição do escopo do fork
-- [ ] Implementação da skill/plugin
+- [x] Configuração para OpenCode + Qwen local
+- [x] `justfile` com receitas de desenvolvimento
+- [x] `flake.nix` para shell reprodutível
+- [ ] Implementação completa da skill (`SKILL.md`)
 - [ ] Casos de teste e regressão
+
+---
+
+## Desenvolvimento com OpenCode + Qwen
+
+O repositório é desenvolvido e mantido com [OpenCode](https://github.com/opencode-ai) rodando contra um modelo Qwen local servido pelo `llama.cpp`.
+
+### Requisitos
+
+- [Nix](https://nixos.org/download/) com flakes habilitados
+- NVIDIA driver e GPU com ~24 GB de VRAM (padrão: Qwen3.6-27B Q4_K_M, contexto 131072)
+- OpenCode instalado e disponível no `PATH`
+
+### Comandos
+
+```bash
+nix develop                # entra no shell de desenvolvimento
+just                       # lista as receitas
+just quality               # valida justfile, flake e configuração
+just opencode-qwen         # sobe Qwen3.6-27B e abre o OpenCode
+just opencode-status       # verifica se o servidor está saudável
+just opencode-stop         # para o servidor na porta 8080
+just opencode-logs         # acompanha o log do llama-server
+```
+
+A configuração do OpenCode está em `.opencode.json` (provider `llamacpp`, model `qwen3.6-27b`).
 
 ---
 
