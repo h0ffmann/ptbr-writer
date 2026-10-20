@@ -92,6 +92,8 @@ pins:
     lock="$(jq -r '.nodes["gleam-website"].locked.rev' flake.lock)"
     sub="$(git ls-files -s forks/picasso | cut -d' ' -f2)"
     [ "$lock" = "$sub" ] || { echo "pins: flake.lock has picasso $lock, forks/picasso is $sub" >&2; exit 1; }
+    pdf="$(sed -n 's/^PICASSO_REV=//p' plugins/ptbr-writter/scripts/to-pdf.sh)"
+    [ "$pdf" = "$sub" ] || { echo "pins: to-pdf.sh has picasso $pdf, forks/picasso is $sub" >&2; exit 1; }
     echo "pins: picasso $sub"
 
 # Lint prose against Saramago's punctuation: no dash, quotes, ? ! ; : or ellipsis.
@@ -125,6 +127,7 @@ plugin-check:
     grep -q "^## v$v " CHANGELOG.md || { echo "plugin-check: CHANGELOG.md has no v$v" >&2; exit 1; }
     for f in plugins/ptbr-writter/skills/*/SKILL.md; do test -e "$f" || { echo "plugin-check: $f is a broken link" >&2; exit 1; }; done
     bash skills/ptbr-routing/scripts/session-check.sh --self-test
+    bash plugins/ptbr-writter/hooks/ask-levels.sh --self-test
     echo "plugin-check: ok (v$v)"
 
 # What ships in the plugin changed since the last v* tag: lists the files and exits 1; installs keep the old text until a release.
