@@ -10,7 +10,7 @@
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
 [![skill: OpenCode](https://img.shields.io/badge/skill-OpenCode-1682D4?style=flat-square)](SKILL.md)
 [![star me](https://img.shields.io/github/stars/h0ffmann/ptbr-writter?style=social&label=star%20me)](https://github.com/h0ffmann/ptbr-writter)
-[![site: Gleam + Lustre](https://img.shields.io/badge/site-Gleam%20%2B%20Lustre-FFAFF3?style=flat-square)](#o-site)
+[![site: Gleam + Lustre](https://img.shields.io/badge/site-Gleam%20%2B%20Lustre-FFAFF3?style=flat-square)](https://h0ffmann.github.io/ptbr-writter/)
 
 Uma skill que reescreve texto técnico em português brasileiro para leitura única: sujeito explícito,
 uma proposição por frase, termos consistentes. Feita para OpenCode e Claude Code, e pensada para
@@ -188,44 +188,6 @@ este fork vem; os outros foram achados numa lista curada. A fonte é
 | [languagetool-org/languagetool](https://github.com/languagetool-org/languagetool) | corretor gramatical e de estilo com suporte a pt-BR | [awesome-selfhosted](https://github.com/awesome-selfhosted/awesome-selfhosted) |
 | [hunspell/hunspell](https://github.com/hunspell/hunspell) | verificação ortográfica com dicionários pt-BR | [awesome-scientific-writing](https://github.com/writing-resources/awesome-scientific-writing) |
 | [ajdavidl/Portuguese-NLP](https://github.com/ajdavidl/Portuguese-NLP) | índice de recursos de PLN para português | [awesome-nlp](https://github.com/keon/awesome-nlp) |
-
-## o site
-
-Gleam no alvo JavaScript e [Lustre](https://lustre.build), pré-renderizado para HTML estático. O
-leitor não recebe JavaScript. Todo fato da página (regras, níveis, formato de saída, exemplos de
-uso, limites, receitas do `just`) é lido de `SKILL.md` e do `justfile` por `site/content`, um gerador em
-Gleam que escreve `site/src/ptbr_writter_site/content.gleam`. Nada em `site/src` é digitado à mão.
-As regras visuais estão em [`DESIGN.md`](DESIGN.md).
-
-Duas tabelas guardam o que nenhum outro arquivo guarda: [`site/data/awesome.tsv`](site/data/awesome.tsv)
-(a seção awesome-ptbr-writter: repositórios relacionados, cada um com a lista curada onde foi
-achado) e [`site/data/roadmap.tsv`](site/data/roadmap.tsv) (a prontidão para produção: SKILL.md,
-evals, plugin, distribuição). O build falha se uma linha estiver malformada.
-
-[`.github/workflows/site.yml`](.github/workflows/site.yml) publica no GitHub Pages: um pull request
-só compila; um push na `main` compila e publica.
-
-```console
-git submodule update --init --depth 1 forks/picasso   # uma vez, raso
-just site             # site/dist: formata, testa, gera o conteúdo, pré-renderiza
-just site-serve       # compila e serve em http://localhost:8000
-just pins             # o pin do flake.lock == o submódulo forks/picasso
-```
-
-<details>
-<summary>Detalhes do ambiente</summary>
-
-| Tipo       | Programa |
-| :--------- | :-----: |
-| Linguagem  | [Gleam 1.19.1](https://gleam.run/) no alvo JavaScript; [Lustre](https://lustre.build) do Hex |
-| Runtime    | [Node.js 24](https://nodejs.org/) (`gleam test`, `gleam run` para a pré-renderização) |
-| Scripting  | [just](https://github.com/casey/just), python 3 |
-| Origem     | lab `labs/gleam-website` do [picasso](https://github.com/h0ffmann/picasso), pelo input `gleam-website` do flake |
-
-</details>
-
-O `flake.lock` fixa o `gleam-website` na mesma revisão do submódulo `forks/picasso`. Se as duas
-diferirem, `just pins` falha.
 
 ## desenvolvimento
 

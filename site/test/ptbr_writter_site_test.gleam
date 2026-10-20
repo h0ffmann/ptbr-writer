@@ -92,6 +92,15 @@ pub fn level_states_test() {
   assert string.contains(page, "blob/main/REUSE.md")
 }
 
+// Made with Gleam and Claude Code, each with its owner's icon, as on h0ffmann/closed-source.
+pub fn made_with_test() {
+  let page = prerender.render()
+  assert string.contains(page, "gleam-lang/branding")
+  assert string.contains(page, "favicons/claude-code")
+  assert string.contains(page, "https://gleam.run")
+  assert string.contains(page, "https://claude.com/claude-code")
+}
+
 pub fn star_pill_test() {
   let page = prerender.render()
   assert string.contains(page, "star me")
