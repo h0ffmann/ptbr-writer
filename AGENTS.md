@@ -29,6 +29,7 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 - `.opencode.json` — OpenCode configuration pointing to local `llamacpp/qwen3.6-27b`.
 - `justfile` — recipes for running OpenCode, serving Qwen, and quality checks.
 - `flake.nix` / `flake.lock` — reproducible dev shell.
+- `evals/` — regression cases for rules (not yet run by a harness).
 - `README.md` — human-facing documentation.
 - `site/` — the website (Gleam + Lustre, prerendered). `site/content` writes its facts from `SKILL.md` and `justfile`; never type a rule, level or recipe into `site/src`. Look rules: `DESIGN.md`.
 - `forks/picasso` — submodule; its `labs/gleam-website` is the site toolchain, pinned in `flake.lock` to the same revision (`just pins`).
