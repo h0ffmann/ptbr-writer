@@ -111,9 +111,16 @@ ptbr-writter-20261020T2215Z-reinicio-servico-estrito.md
 
 O carimbo é em UTC e o mesmo para todos os arquivos de um pedido. Com 2 níveis e 3 formatos, são 6
 arquivos. Para um `git add -A` não levá-los, ponha `ptbr-writter-*` no `.gitignore`. As notas de
-`notes` seguem as regras de smart-note (`<id>-<slug>.md`). O `.pdf` usa o pandoc da máquina; sem
-ele, pede antes de baixar ~730 MiB pelo Nix
-([`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) do picasso).
+`notes` seguem as regras de smart-note (`<id>-<slug>.md`). O `.pdf` usa o pandoc da máquina. Sem
+ele, o Claude pergunta antes de baixar, pelo Nix, o
+[`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) do picasso (pandoc
+e um XeLaTeX mínimo). Medido com `just pdf-bench` (x86_64-linux):
+
+| download | em disco | montado na máquina | primeira vez, runner novo do GitHub (4 núcleos) |
+| :------- | :------- | :----------------- | :---------------------------------------------- |
+| 206 MiB, 271 caminhos do cache.nixos.org | 729 MiB, 284 caminhos | 27 MiB, 13 caminhos (a árvore do TeX) | 27 s |
+
+O tempo depende da rede. Da segunda vez em diante, o Nix reusa o store.
 
 ## níveis
 

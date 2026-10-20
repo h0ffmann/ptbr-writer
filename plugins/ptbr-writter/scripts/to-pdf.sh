@@ -8,7 +8,7 @@
 set -euo pipefail
 
 PICASSO_REV=dcacdde558475d9c403d670b69a4cb8bfcf01b66
-SIZE="~730 MiB"  # labs/ptbr-pdf's closure on disk, x86_64-linux (nix path-info -Sh)
+SIZE="~206 MiB (729 MiB on disk)"  # labs/ptbr-pdf at PICASSO_REV, x86_64-linux: scripts/pdf-bench.sh
 download=false
 [ "${1-}" = --download ] && { download=true; shift; }
 in=${1:?usage: to-pdf.sh [--download] texto.md [saida.pdf]}
@@ -22,7 +22,7 @@ elif ! command -v nix >/dev/null; then
   echo "to-pdf: no pandoc+xelatex and no nix; deliver $in, and install pandoc and TeX Live (xelatex) for PDFs" >&2
   exit 1
 elif ! $download; then
-  echo "to-pdf: no pandoc+xelatex here; the PDF needs a one-time download of $SIZE through nix (pandoc and a minimal TeX). Ask the person; if they agree, rerun with --download" >&2
+  echo "to-pdf: no pandoc+xelatex here; the PDF needs a one-time download of $SIZE through nix, about half a minute on a fast link, (pandoc and a minimal TeX). Ask the person; if they agree, rerun with --download" >&2
   exit 3
 else
   nix --extra-experimental-features 'nix-command flakes' run \
