@@ -188,9 +188,9 @@ de regressão por regra em `evals/`.
 <details>
 <summary>uma skill e um nível, antes de carregar qualquer outra</summary>
 
-[`skills/routing/`](skills/routing/SKILL.md) escolhe a skill e o nível de um pedido de escrita, para
+[`skills/ptbr-routing/`](skills/ptbr-routing/SKILL.md) escolhe a skill e o nível de um pedido de escrita, para
 que só essa skill entre no contexto. `route` é Python sem dependências e lê
-[`routes.tsv`](skills/routing/routes.tsv), uma linha por nível com as palavras que o indicam.
+[`routes.tsv`](skills/ptbr-routing/routes.tsv), uma linha por nível com as palavras que o indicam.
 `smart-note` combina com o nível que empatar no topo.
 
 ```console
@@ -200,10 +200,17 @@ $ just route "transforme em notas do Obsidian este comunicado"
 ptbr-writter · smart-note + leve
 ```
 
-Fica fora do plugin, como o `routing` do [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit):
-um repositório copia `skills/routing/` para `.claude/skills/routing/` e ela carrega sem plugin.
-Aqui, `.claude/skills/routing` é um link para `skills/routing`. `just quality` roda o self-test e
-confere que cada nível de `SKILL.md` tem uma linha em `routes.tsv`.
+Fica fora do plugin, como o `routing` do [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit)
+(v0.20.4): um repositório copia `skills/ptbr-routing/` para `.claude/skills/ptbr-routing/` e a fixa
+num commit no `skills.lock`, com o `skills-vendor` do devkit:
+
+```console
+$ skills_vendor.py init ptbr-routing --upstream h0ffmann/ptbr-writter --path skills/ptbr-routing --paths LICENSE=LICENSE
+```
+
+O nome é `ptbr-routing`, não `routing`, para conviver com o `routing` do devkit no mesmo
+`.claude/skills/`. Aqui, `.claude/skills/ptbr-routing` é um link para `skills/ptbr-routing`.
+`just quality` roda o self-test e confere que cada nível de `SKILL.md` tem uma linha em `routes.tsv`.
 
 </details>
 
@@ -217,7 +224,7 @@ Prontidão para produção. A fonte é [`site/data/roadmap.tsv`](site/data/roadm
 | [`SKILL.md`](SKILL.md) | em andamento | regras PTW e níveis de rigor; as regras ainda estão marcadas como em desenvolvimento |
 | [`evals/`](evals/cientifico.md) | em andamento | um caso de regressão por regra científica, escrito e ainda não rodado por um harness ⚠ |
 | [skill científica](skills/cientifico/SKILL.md) | em andamento | skill própria para texto científico, com regras CIE; casos de regressão em `evals/cientifico-cie.md`, escritos e ainda não rodados ⚠ |
-| [roteamento](skills/routing/SKILL.md) | feito | `route` escolhe a skill e o nível antes de carregar uma skill, para que só ela entre no contexto |
+| [roteamento](skills/ptbr-routing/SKILL.md) | feito | `route` escolhe a skill e o nível antes de carregar uma skill, para que só ela entre no contexto |
 | plugin | planejado | empacotar a skill como plugin do Claude Code e do OpenCode, instalável com um comando |
 | distribuição | planejado | release com tag e instalação por URL em outros repositórios, sem copiar o `SKILL.md` à mão |
 | [retórica](skills/retorica/SKILL.md) | planejado | skill de retórica a partir do *Fédon* e do *Fedro*, de Platão, e do Phaedrus de Robert M. Pirsig; só o esqueleto existe, sem regras |
@@ -274,7 +281,7 @@ skills/retorica/        skill de retórica, em desenvolvimento (Fédon, Fedro, P
 forks/picasso/          submódulo: toolchain do site
 skills/cientifico/      skill científica (regras CIE)
 skills/ptbr/            alias /ptbr: link para SKILL.md
-skills/routing/         roteamento: skill e nível de um pedido (route, routes.tsv)
+skills/ptbr-routing/    roteamento: skill e nível de um pedido (route, routes.tsv)
 site/
   content/              gerador: SKILL.md + justfile + data/ -> content.gleam
   data/                 awesome.tsv e roadmap.tsv

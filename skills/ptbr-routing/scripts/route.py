@@ -5,7 +5,7 @@ route "<pedido>"     one line: `<skill> · <nível>`, from routes.tsv beside the
 route --check        routes.tsv against SKILL.md: one row per level, every skill exists
 route --self-test    the answers for a few known requests
 
-Stdlib only: a repo that vendors skills/routing/ into .claude/skills/ runs it with no Nix.
+Stdlib only: a repo that vendors skills/ptbr-routing/ into .claude/skills/ runs it with no Nix.
 """
 
 from __future__ import annotations
