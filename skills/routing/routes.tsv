@@ -1,0 +1,6 @@
+skill	level	words
+ptbr-writter	estrito	runbook,runbooks,procedimento,passo a passo,playbook,checklist,prompt,agente,agentes,instrução,instruções,incidente,on-call,plantão
+ptbr-writter	descritivo	documentação,documente,arquitetura,readme,design doc,adr,api,sistema,módulo,serviço
+ptbr-writter	leve	comunicado,anúncio,e-mail,email,aviso,newsletter,slack,mensagem,post
+cientifico	científico	artigo,paper,proposta,relatório,tese,dissertação,citação,citações,referências,doi,abstract,revisão por pares,revisor,revisores,bibliografia
+ptbr-writter	smart-note	nota,notas,zettelkasten,obsidian,segundo cérebro,second brain,slip box,fichamento,vault,fichas
