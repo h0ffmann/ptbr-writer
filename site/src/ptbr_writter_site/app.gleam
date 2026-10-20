@@ -85,12 +85,17 @@ fn section(
 
 fn cover() -> Element(msg) {
   html.header([attribute.class("cover wrap")], [
-    html.img([
-      attribute.src("favicon.svg"),
-      attribute.alt("uma pena de escrever, numa linha só"),
-      attribute.class("mark"),
+    html.p([attribute.class("kicker")], [
+      html.text("skill de escrita técnica · português brasileiro"),
     ]),
-    html.h1([], [html.text(content.title)]),
+    html.div([attribute.class("brand")], [
+      html.img([
+        attribute.src("favicon.svg"),
+        attribute.alt("uma pena de escrever, numa linha só"),
+        attribute.class("mark"),
+      ]),
+      html.h1([], [html.text(content.title)]),
+    ]),
     html.p([attribute.class("lede")], inline(content.lede)),
     html.nav([attribute.class("jump")], [
       html.a([attribute.href("#uso")], [html.text("uso")]),
@@ -114,6 +119,38 @@ fn cover() -> Element(msg) {
         ]),
       ]),
     ]),
+    made_with_line("made-with"),
+  ])
+}
+
+// Each project's own site icon, loaded from where the project publishes it and never copied
+// here: the names and icons are their owners' marks, not licensed with this repository. The
+// pattern and the two URLs are h0ffmann/closed-source's.
+const gleam_icon =
+  "https://raw.githubusercontent.com/gleam-lang/branding/01ae432a99a83216c23c34dfe666ea4c4e651582/lucy/lucy-circle.svg"
+
+const claude_code_icon =
+  "https://code.claude.com/docs/_mintlify/favicons/claude-code/pLsy-mRpNksna2sx/_generated/favicon/favicon-32x32.png"
+
+fn made_with(name: String, icon: String, href: String) -> Element(msg) {
+  html.a([attribute.href(href), attribute.rel("noopener")], [
+    html.img([
+      attribute.src(icon),
+      attribute.alt(""),
+      attribute.width(18),
+      attribute.height(18),
+    ]),
+    html.text(" " <> name),
+  ])
+}
+
+/// "feito com [lucy] Gleam e [claude] Claude Code", on the cover and again in the footer.
+fn made_with_line(class: String) -> Element(msg) {
+  html.p([attribute.class(class)], [
+    html.text("feito com "),
+    made_with("Gleam", gleam_icon, "https://gleam.run"),
+    html.text(" e "),
+    made_with("Claude Code", claude_code_icon, "https://claude.com/claude-code"),
   ])
 }
 
@@ -345,6 +382,12 @@ fn footer() -> Element(msg) {
       ]),
       html.text(" · MIT · "),
       html.a([attribute.href(repo)], [html.text("h0ffmann/ptbr-writter")]),
+    ]),
+    made_with_line("made-with"),
+    html.p([], [
+      html.text(
+        "os nomes e os ícones de Gleam e de Claude Code são marcas dos seus donos, não licenciadas aqui; os ícones carregam dos sites deles.",
+      ),
     ]),
     html.p([attribute.class("fork")], [
       html.text("fork conceitual do "),
