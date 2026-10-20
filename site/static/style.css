@@ -64,3 +64,4 @@ section { padding: 32px 24px; border-top: 1px solid var(--rule); }
 .done .status { background: var(--pen); color: var(--sheet); }
 .doing .status { border: 1px solid var(--pen); color: var(--pen); }
 .todo .status { border: 1px dashed var(--muted); color: var(--muted); }
+.from { font-size: 0.85em; color: var(--muted); margin-top: 0.2em !important; }

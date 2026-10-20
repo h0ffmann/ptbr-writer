@@ -55,6 +55,17 @@ pub fn every_fact_test() {
   })
 }
 
+// Every rule names where it comes from and who made it, with links.
+pub fn rule_origins_test() {
+  let page = prerender.render()
+  list.each(content.origins, fn(o) {
+    assert string.contains(page, "https://github.com/" <> o.repo)
+    assert string.contains(page, o.creator)
+    assert string.contains(page, o.profile)
+  })
+  assert string.contains(page, "PTC-1, de ")
+}
+
 pub fn star_pill_test() {
   let page = prerender.render()
   assert string.contains(page, "star me")
