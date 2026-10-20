@@ -35,6 +35,7 @@ pub fn view() -> Element(msg) {
     levels(),
     rules(),
     output(),
+    smart_note(),
     limits(),
     recipes(),
     awesome(),
@@ -118,6 +119,7 @@ fn cover() -> Element(msg) {
       html.a([attribute.href("#niveis")], [html.text("níveis")]),
       html.a([attribute.href("#regras")], [html.text("regras")]),
       html.a([attribute.href("#saida")], [html.text("saída")]),
+      html.a([attribute.href("#smart-note")], [html.text("smart-note")]),
       html.a([attribute.href("#receitas")], [html.text("receitas")]),
       html.a([attribute.href("#awesome")], [html.text("awesome")]),
       html.a([attribute.href("#roadmap")], [html.text("roadmap")]),
@@ -304,6 +306,26 @@ fn output() -> Element(msg) {
       ),
     ],
   )
+}
+
+/// The smart-note level's policy, read from SKILL.md's `## Smart note`; absent there, absent here.
+fn smart_note() -> Element(msg) {
+  case content.smart_note {
+    [] -> element.none()
+    steps ->
+      section(
+        "smart-note",
+        "smart-note",
+        "para quem mantém um segundo cérebro. a ideia vem de how to take smart notes, do zettelkasten e do fichário analógico de pirsig: o texto sai cru, e também como conhecimento indexável, com tags e links.",
+        [
+          html.p([], inline(content.smart_note_intro)),
+          html.ol(
+            [attribute.class("steps")],
+            list.map(steps, fn(s) { html.li([], inline(s)) }),
+          ),
+        ],
+      )
+  }
 }
 
 fn limits() -> Element(msg) {
