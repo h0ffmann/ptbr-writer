@@ -90,7 +90,3 @@ A skill não muda tese, autoria nem conclusões: quem decide é o humano. Ela n�
 3. Texto final.
 4. Nota sobre o que foi mantido de propósito.
 5. Lista de `⚠`: afirmações sem checagem e referências a buscar, no nível `científico`.
-
-## Origem das regras científicas
-
-PTW-9 a PTW-13 adaptam, com palavras próprias, a skill `ouro-paper` e o estilo `.vale/styles/research` de [marola-dev/marola-research](https://github.com/marola-dev/marola-research) (`041cedd`), e a seção "Audience and evidence" do AGENTS.md de [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) (`319e4e2`).
