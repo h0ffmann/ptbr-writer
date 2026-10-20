@@ -35,15 +35,10 @@ pub type Step {
   Step(item: String, status: String, what: String, evidence: String)
 }
 
-/// A row of site/data/origins.tsv: where a rule comes from, and who made that.
+/// A row of site/data/origins.tsv: where a rule comes from, and the GitHub login of who made it.
+/// A login, never a full name: a name is not stated by the source as reliably as a login is.
 pub type Origin {
-  Origin(
-    id: String,
-    origin: String,
-    repo: String,
-    creator: String,
-    profile: String,
-  )
+  Origin(id: String, origin: String, repo: String, creator: String)
 }
 
 /// The statuses a roadmap row may have, in the order of the work.
@@ -264,24 +259,23 @@ pub fn origins(text: String) -> List(Origin) {
   tsv(text)
   |> list.filter_map(fn(cells) {
     case cells {
-      [id, origin, repo, creator, profile] ->
-        Ok(Origin(id, origin, repo, creator, profile))
+      [id, origin, repo, creator] -> Ok(Origin(id, origin, repo, creator))
       _ -> Error(Nil)
     }
   })
 }
 
-/// What is wrong with origins.tsv: a row that is not five cells, a rule of SKILL.md with no
-/// origin, a row for a rule SKILL.md does not have, or a creator with no GitHub profile.
+/// What is wrong with origins.tsv: a row that is not four cells, a rule of SKILL.md with no
+/// origin, a row for a rule SKILL.md does not have, or a creator that is not a GitHub login.
 pub fn origin_errors(skill: String, text: String) -> List(String) {
   let ids = list.map(rules(skill), fn(r) { r.id })
   let found = origins(text)
   list.flatten([
     list.filter_map(tsv(text), fn(cells) {
       case list.length(cells) {
-        5 -> Error(Nil)
+        4 -> Error(Nil)
         _ ->
-          Ok("origins.tsv: a row needs 5 cells: " <> string.join(cells, " | "))
+          Ok("origins.tsv: a row needs 4 cells: " <> string.join(cells, " | "))
       }
     }),
     list.filter_map(ids, fn(id) {
@@ -296,13 +290,27 @@ pub fn origin_errors(skill: String, text: String) -> List(String) {
           True -> []
           False -> ["origins.tsv: SKILL.md has no rule " <> o.id]
         },
-        case string.starts_with(o.profile, "https://github.com/") {
+        case login(o.creator) {
           True -> []
-          False -> ["origins.tsv: " <> o.creator <> " has no GitHub profile"]
+          False -> [
+            "origins.tsv: " <> lit(o.creator) <> " is not a GitHub login",
+          ]
         },
       ])
     }),
   ])
+}
+
+/// A GitHub login: letters, digits and single hyphens, never a name with a space or an `@`.
+pub fn login(s: String) -> Bool {
+  s != ""
+  && string.to_graphemes(s)
+  |> list.all(fn(g) {
+    string.contains(
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-",
+      g,
+    )
+  })
 }
 
 /// What is wrong with the two tables: a row that is not four cells, a link that is not a GitHub
@@ -392,7 +400,7 @@ pub type Step {
 }
 
 pub type Origin {
-  Origin(id: String, origin: String, repo: String, creator: String, profile: String)
+  Origin(id: String, origin: String, repo: String, creator: String)
 }
 "
 
@@ -442,7 +450,7 @@ pub fn module(
         "origins",
         "Origin",
         list.map(origins(origin_rows), fn(o) {
-          call("Origin", [o.id, o.origin, o.repo, o.creator, o.profile])
+          call("Origin", [o.id, o.origin, o.repo, o.creator])
         }),
       ),
       items(
