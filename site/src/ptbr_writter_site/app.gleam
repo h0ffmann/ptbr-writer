@@ -1,17 +1,24 @@
-//// The page. Every fact it shows comes from `content`, which site/content writes from SKILL.md and
-//// the justfile; the sentences that tell the story are written here, in lower case (DESIGN.md).
+//// The page. Every fact it shows comes from `content`, which site/content writes from SKILL.md,
+//// the justfile and site/data/*.tsv; the sentences that tell the story are written here, in lower case (DESIGN.md).
 //// The page is prerendered and needs no JavaScript.
 
 import gleam/list
+import gleam/result
 import gleam/string
 import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
-import ptbr_writter_site/content.{type Level, type Recipe, type Rule}
+import ptbr_writter_site/content.{
+  type Level, type Link, type Recipe, type Rule, type Step,
+}
 
 pub const repo = "https://github.com/h0ffmann/ptbr-writter"
 
 const blob = "https://github.com/h0ffmann/ptbr-writter/blob/main/"
+
+/// The star count, drawn by shields.io: an image, so the page still loads no JavaScript.
+const stars =
+  "https://img.shields.io/github/stars/h0ffmann/ptbr-writter?style=social&label=star"
 
 pub fn view() -> Element(msg) {
   html.main([], [
@@ -20,21 +27,42 @@ pub fn view() -> Element(msg) {
     levels(),
     rules(),
     output(),
+    limits(),
     recipes(),
+    awesome(),
+    roadmap(),
     footer(),
   ])
 }
 
-/// Markdown's inline code, the only markup SKILL.md uses inside a sentence: `a` → <code>a</code>.
+/// The markup SKILL.md uses inside a sentence: `a` → <code>a</code>, [t](u) → <a href="u">t</a>.
 pub fn inline(text: String) -> List(Element(msg)) {
   text
   |> string.split("`")
   |> list.index_map(fn(part, i) {
     case i % 2 {
-      1 -> html.code([], [html.text(part)])
-      _ -> html.text(part)
+      1 -> [html.code([], [html.text(part)])]
+      _ -> anchors(part)
     }
   })
+  |> list.flatten
+}
+
+fn anchors(text: String) -> List(Element(msg)) {
+  let found = {
+    use #(before, rest) <- result.try(string.split_once(text, "["))
+    use #(label, rest) <- result.try(string.split_once(rest, "]("))
+    use #(url, after) <- result.map(string.split_once(rest, ")"))
+    #(before, label, url, after)
+  }
+  case found {
+    Ok(#(before, label, url, after)) -> [
+      html.text(before),
+      html.a([attribute.href(url)], [html.text(label)]),
+      ..anchors(after)
+    ]
+    Error(_) -> [html.text(text)]
+  }
 }
 
 fn section(
@@ -65,13 +93,20 @@ fn cover() -> Element(msg) {
       html.a([attribute.href("#regras")], [html.text("regras")]),
       html.a([attribute.href("#saida")], [html.text("saída")]),
       html.a([attribute.href("#receitas")], [html.text("receitas")]),
+      html.a([attribute.href("#awesome")], [html.text("awesome")]),
+      html.a([attribute.href("#roadmap")], [html.text("roadmap")]),
     ]),
     html.div([attribute.class("actions")], [
       html.a([attribute.class("button"), attribute.href(blob <> "SKILL.md")], [
         html.text("ler a SKILL.md"),
       ]),
-      html.a([attribute.class("ghost"), attribute.href(repo)], [
-        html.text("código no github"),
+      html.a([attribute.class("ghost star"), attribute.href(repo)], [
+        html.text("★ star me no github"),
+        html.img([
+          attribute.src(stars),
+          attribute.alt(""),
+          attribute.class("count"),
+        ]),
       ]),
     ]),
   ])
@@ -114,8 +149,19 @@ fn rules() -> Element(msg) {
     "regras",
     "regras",
     "cada regra corrige um tipo de ambiguidade. a tabela de violações da saída cita a regra pelo id.",
-    [html.ol([attribute.class("rules")], list.map(content.rules, rule))],
+    [
+      html.ol([attribute.class("rules")], list.map(content.rules, rule)),
+      ..optional("origin", content.origin)
+    ],
   )
+}
+
+/// A paragraph of SKILL.md that may not be there: no text, no element.
+fn optional(class: String, text: String) -> List(Element(msg)) {
+  case text {
+    "" -> []
+    _ -> [html.p([attribute.class(class)], inline(text))]
+  }
 }
 
 fn rule(r: Rule) -> Element(msg) {
@@ -138,6 +184,68 @@ fn output() -> Element(msg) {
       ),
     ],
   )
+}
+
+fn limits() -> Element(msg) {
+  section(
+    "limites",
+    "limites",
+    "o que a skill não faz, em nenhum nível.",
+    optional("limits", content.limits),
+  )
+}
+
+fn awesome() -> Element(msg) {
+  section(
+    "awesome",
+    "awesome-ptbr-writter",
+    "outros projetos para quem escreve texto técnico em português. cada um foi achado numa lista curada, que vai ao lado.",
+    [html.ul([attribute.class("awesome")], list.map(content.awesome, link))],
+  )
+}
+
+fn link(l: Link) -> Element(msg) {
+  html.li([], [
+    html.a([attribute.href(l.url)], [html.code([], [html.text(l.name)])]),
+    html.span([], [html.text(" " <> l.what <> " ")]),
+    html.a([attribute.class("source"), attribute.href(l.source)], [
+      html.text("fonte"),
+    ]),
+  ])
+}
+
+fn roadmap() -> Element(msg) {
+  section(
+    "roadmap",
+    "roadmap: prontidão para produção",
+    "o objetivo: outro repositório instala a skill e mantém sua documentação técnica em PT-BR e EN gastando menos tokens, sem reescrever regras de estilo no próprio código.",
+    [html.ol([attribute.class("roadmap")], list.map(content.roadmap, step))],
+  )
+}
+
+/// The status is a word first; its class only draws it (DESIGN.md).
+fn step(s: Step) -> Element(msg) {
+  let class = case s.status {
+    "feito" -> "done"
+    "em andamento" -> "doing"
+    _ -> "todo"
+  }
+  html.li([attribute.class(class)], [
+    html.span([attribute.class("status")], [html.text(s.status)]),
+    html.h3([], [html.text(s.item)]),
+    html.p([], [
+      html.text(s.what),
+      ..case s.evidence {
+        "" -> []
+        file -> [
+          html.text(" · "),
+          html.a([attribute.href(blob <> file)], [
+            html.code([], [html.text(file)]),
+          ]),
+        ]
+      }
+    ]),
+  ])
 }
 
 fn recipes() -> Element(msg) {

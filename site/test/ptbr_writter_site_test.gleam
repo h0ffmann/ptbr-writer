@@ -13,9 +13,21 @@ pub fn main() -> Nil {
 
 pub fn every_section_test() {
   let page = prerender.render()
-  list.each(["uso", "niveis", "regras", "saida", "receitas"], fn(id) {
-    assert string.contains(page, "id=\"" <> id <> "\"")
-  })
+  list.each(
+    [
+      "uso",
+      "niveis",
+      "regras",
+      "saida",
+      "limites",
+      "receitas",
+      "awesome",
+      "roadmap",
+    ],
+    fn(id) {
+      assert string.contains(page, "id=\"" <> id <> "\"")
+    },
+  )
   assert string.contains(page, "<html lang=\"pt-BR\">")
 }
 
@@ -34,6 +46,30 @@ pub fn every_fact_test() {
     assert string.contains(page, "just " <> r.name)
   })
   assert content.output != []
+  list.each(content.awesome, fn(l) {
+    assert string.contains(page, l.url)
+    assert string.contains(page, l.source)
+  })
+  list.each(content.roadmap, fn(s) {
+    assert string.contains(page, s.item)
+  })
+}
+
+pub fn star_pill_test() {
+  let page = prerender.render()
+  assert string.contains(page, "star me")
+  assert string.contains(
+    page,
+    "img.shields.io/github/stars/h0ffmann/ptbr-writter",
+  )
+}
+
+pub fn inline_link_test() {
+  let shown =
+    html.p([], app.inline("de [a/b](https://x.y/a) (`041cedd`)"))
+    |> element.to_string
+  assert shown
+    == "<p>de <a href=\"https://x.y/a\">a/b</a> (<code>041cedd</code>)</p>"
 }
 
 pub fn inline_code_test() {
