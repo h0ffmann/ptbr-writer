@@ -1,5 +1,5 @@
 import gleeunit
-import ptbr_writter_content.{Level, Recipe, Rule} as c
+import ptbr_writter_content.{Level, Link, Recipe, Rule, Step} as c
 
 pub fn main() -> Nil {
   gleeunit.main()
@@ -108,4 +108,53 @@ pub fn lit_escapes_test() {
 pub fn errors_test() {
   assert c.errors(skill, "# Run it.\nopencode:\n") == []
   assert c.errors("# t\n\nlede\n", "") != []
+}
+
+pub fn paragraph_test() {
+  assert c.paragraph(skill, "Níveis")
+    == "- `estrito`: runbooks. - `leve`: comunicados."
+  assert c.paragraph(skill, "Limites") == ""
+}
+
+const awesome =
+  "name\turl\twhat\tsource
+a/b\thttps://github.com/a/b\tum linter\thttps://github.com/x/awesome
+"
+
+const roadmap =
+  "item\tstatus\twhat\tevidence
+evals\tem andamento\tcasos\tevals/x.md
+plugin\tplanejado\tum comando\t
+"
+
+// The evidence cell may be empty: a planned step has no file yet.
+pub fn tables_test() {
+  assert c.links(awesome)
+    == [
+      Link(
+        "a/b",
+        "https://github.com/a/b",
+        "um linter",
+        "https://github.com/x/awesome",
+      ),
+    ]
+  assert c.steps(roadmap)
+    == [
+      Step("evals", "em andamento", "casos", "evals/x.md"),
+      Step("plugin", "planejado", "um comando", ""),
+    ]
+  assert c.data_errors(awesome, roadmap) == []
+}
+
+pub fn data_errors_test() {
+  assert c.data_errors("h\n", roadmap) == ["awesome.tsv: no row"]
+  assert c.data_errors(
+      "h\na/b\thttps://github.com/z/q\tw\tlist\n",
+      "h\nx\tquase\tw\t\n",
+    )
+    == [
+      "awesome.tsv: a/b is not at https://github.com/z/q",
+      "awesome.tsv: a/b has no source list",
+      "roadmap.tsv: x: status is \"quase\"",
+    ]
 }
