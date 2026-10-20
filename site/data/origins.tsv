@@ -1,16 +1,16 @@
-id	origin	repo	creator	profile
-PTW-1	PTC-1	kayquer/portugues-tecnico-controlado	Kayque Rotondo	https://github.com/kayquer
-PTW-2	PTC-2	kayquer/portugues-tecnico-controlado	Kayque Rotondo	https://github.com/kayquer
-PTW-3	PTC-3	kayquer/portugues-tecnico-controlado	Kayque Rotondo	https://github.com/kayquer
-PTW-4	PTC-4	kayquer/portugues-tecnico-controlado	Kayque Rotondo	https://github.com/kayquer
-PTW-5	PTC-5	kayquer/portugues-tecnico-controlado	Kayque Rotondo	https://github.com/kayquer
-PTW-6	PTC-6	kayquer/portugues-tecnico-controlado	Kayque Rotondo	https://github.com/kayquer
-PTW-7	PTC-7	kayquer/portugues-tecnico-controlado	Kayque Rotondo	https://github.com/kayquer
-PTW-8	PTC-8	kayquer/portugues-tecnico-controlado	Kayque Rotondo	https://github.com/kayquer
-PTW-9	ouro-paper: toda afirmação tem marca	marola-dev/marola-research	Matheus Hoffmann	https://github.com/h0ffmann
-PTW-9	AGENTS.md: Audience and evidence	h0ffmann/ww3-gpu	Matheus Hoffmann	https://github.com/h0ffmann
-PTW-10	ouro-paper: nunca inventar referência	marola-dev/marola-research	Matheus Hoffmann	https://github.com/h0ffmann
-PTW-11	ouro-paper: todo número tem seu comando	marola-dev/marola-research	Matheus Hoffmann	https://github.com/h0ffmann
-PTW-11	AGENTS.md: Audience and evidence	h0ffmann/ww3-gpu	Matheus Hoffmann	https://github.com/h0ffmann
-PTW-12	.vale/styles/research/PriorityClaims	marola-dev/marola-research	Matheus Hoffmann	https://github.com/h0ffmann
-PTW-13	ouro-paper: fatos e análise separados	marola-dev/marola-research	Matheus Hoffmann	https://github.com/h0ffmann
+id	origin	repo	creator
+PTW-1	PTC-1	kayquer/portugues-tecnico-controlado	kayquer
+PTW-2	PTC-2	kayquer/portugues-tecnico-controlado	kayquer
+PTW-3	PTC-3	kayquer/portugues-tecnico-controlado	kayquer
+PTW-4	PTC-4	kayquer/portugues-tecnico-controlado	kayquer
+PTW-5	PTC-5	kayquer/portugues-tecnico-controlado	kayquer
+PTW-6	PTC-6	kayquer/portugues-tecnico-controlado	kayquer
+PTW-7	PTC-7	kayquer/portugues-tecnico-controlado	kayquer
+PTW-8	PTC-8	kayquer/portugues-tecnico-controlado	kayquer
+PTW-9	ouro-paper: toda afirmação tem marca	marola-dev/marola-research	h0ffmann
+PTW-9	AGENTS.md: Audience and evidence	h0ffmann/ww3-gpu	h0ffmann
+PTW-10	ouro-paper: nunca inventar referência	marola-dev/marola-research	h0ffmann
+PTW-11	ouro-paper: todo número tem seu comando	marola-dev/marola-research	h0ffmann
+PTW-11	AGENTS.md: Audience and evidence	h0ffmann/ww3-gpu	h0ffmann
+PTW-12	.vale/styles/research/PriorityClaims	marola-dev/marola-research	h0ffmann
+PTW-13	ouro-paper: fatos e análise separados	marola-dev/marola-research	h0ffmann

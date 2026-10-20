@@ -60,8 +60,8 @@ pub fn rule_origins_test() {
   let page = prerender.render()
   list.each(content.origins, fn(o) {
     assert string.contains(page, "https://github.com/" <> o.repo)
-    assert string.contains(page, o.creator)
-    assert string.contains(page, o.profile)
+    assert string.contains(page, "https://github.com/" <> o.creator)
+    assert string.contains(page, "@" <> o.creator)
   })
   assert string.contains(page, "PTC-1, de ")
 }
