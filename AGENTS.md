@@ -34,7 +34,8 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 - `justfile` — recipes for running OpenCode, serving Qwen, and quality checks.
 - `flake.nix` / `flake.lock` — reproducible dev shell.
 - `evals/` — regression cases for rules (not yet run by a harness).
-- `README.md` — human-facing documentation.
+- `README.md` — human-facing documentation (pt-BR); `README.en.md` is its English mirror.
+- `.claude/skills/figure/` — the `figure` dev skill (not in the plugin): the rules for a Mermaid figure and its reading card.
 - `lint/saramago/` — Vale prose linter for Saramago's punctuation; `just saramago FILE`, self-test `just saramago-check` (part of `just quality`).
 - `REUSE.md` — reuse rules for the author levels (citation, public domain, style only).
 - `plugins/ptbr-writter/` — the Claude Code plugin, listed by `.claude-plugin/marketplace.json`; its `skills/` are symlinks to the repo's skills (no copies). Code and plugin share one version: `plugin.json`'s `version`, a `CHANGELOG.md` heading and the tag `vX.Y.Z` (`just release X.Y.Z`: a release PR, then the tag on main; `release.yml` runs `just release-check`). Installs see a change only when the version moves: a change to a plugin file (`just release-due` lists them) is not out until a release. A new skill in the plugin needs its link.
@@ -49,3 +50,22 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 - Read the original PTC rules to understand the lineage.
 - Keep changes scoped to one rule or one level of rigor at a time.
 - Add a regression case when a rule changes behavior.
+
+## Audience and evidence (hard rule)
+
+- `⚠` marks a claim that was not checked. Never remove a `⚠` without doing the check, and never
+  promote a projection to a measurement.
+- A number without a command or a source does not enter a table.
+- Prose is plain and direct. Cut a sentence because it repeats or teaches nothing, never to hit a
+  length, and never pad one language's version to match the other's.
+- `README.md` and `README.en.md` mirror each other: same sections, same facts. A change to one
+  changes the other in the same PR.
+
+## Figures (hard rule)
+
+A diagram is a ```` ```mermaid ```` fence in the page it illustrates, starting with
+`%% figure: <id>` and `%% title: <question>`, followed by a *How to read this figure* card
+(*Como ler esta figura* in the pt-BR page): takeaway, how to read, not shown, evidence. The
+`figure` skill (`.claude/skills/figure/`) has the visual grammar. Where a figure and its prose
+disagree, the figure is the bug. An interactive twin is drawn with the person's own `archify`
+skill, and only its `docs/archify/<slug>.json` is committed, never the HTML.
