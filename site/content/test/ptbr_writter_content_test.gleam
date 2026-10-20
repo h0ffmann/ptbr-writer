@@ -1,5 +1,6 @@
+import gleam/list
 import gleeunit
-import ptbr_writter_content.{Level, Link, Recipe, Rule, Step} as c
+import ptbr_writter_content.{type Origin, Level, Link, Recipe, Rule, Step} as c
 
 pub fn main() -> Nil {
   gleeunit.main()
@@ -156,5 +157,32 @@ pub fn data_errors_test() {
       "awesome.tsv: a/b is not at https://github.com/z/q",
       "awesome.tsv: a/b has no source list",
       "roadmap.tsv: x: status is \"quase\"",
+    ]
+}
+
+const origin_rows =
+  "id\torigin\trepo\tcreator\tprofile
+PTW-1\tPTC-1\tk/ptc\tK R\thttps://github.com/k
+PTW-2\tPTC-2\tk/ptc\tK R\thttps://github.com/k
+PTW-2\tregra\th/w\tM H\thttps://github.com/h
+"
+
+// A rule may have more than one origin; every rule needs one.
+pub fn origins_test() {
+  assert c.origins(origin_rows)
+    |> list.map(fn(o: Origin) { o.id })
+    == ["PTW-1", "PTW-2", "PTW-2"]
+  assert c.origin_errors(skill, origin_rows) == []
+}
+
+pub fn origin_errors_test() {
+  assert c.origin_errors(
+      skill,
+      "h\nPTW-1\tPTC-1\tk/ptc\tK R\tk\nPTW-9\tx\tk/ptc\tK R\thttps://github.com/k\n",
+    )
+    == [
+      "origins.tsv: PTW-2 has no origin",
+      "origins.tsv: K R has no GitHub profile",
+      "origins.tsv: SKILL.md has no rule PTW-9",
     ]
 }

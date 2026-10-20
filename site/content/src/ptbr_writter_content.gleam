@@ -35,6 +35,17 @@ pub type Step {
   Step(item: String, status: String, what: String, evidence: String)
 }
 
+/// A row of site/data/origins.tsv: where a rule comes from, and who made that.
+pub type Origin {
+  Origin(
+    id: String,
+    origin: String,
+    repo: String,
+    creator: String,
+    profile: String,
+  )
+}
+
 /// The statuses a roadmap row may have, in the order of the work.
 pub const statuses = ["feito", "em andamento", "planejado"]
 
@@ -249,6 +260,51 @@ pub fn steps(text: String) -> List(Step) {
   })
 }
 
+pub fn origins(text: String) -> List(Origin) {
+  tsv(text)
+  |> list.filter_map(fn(cells) {
+    case cells {
+      [id, origin, repo, creator, profile] ->
+        Ok(Origin(id, origin, repo, creator, profile))
+      _ -> Error(Nil)
+    }
+  })
+}
+
+/// What is wrong with origins.tsv: a row that is not five cells, a rule of SKILL.md with no
+/// origin, a row for a rule SKILL.md does not have, or a creator with no GitHub profile.
+pub fn origin_errors(skill: String, text: String) -> List(String) {
+  let ids = list.map(rules(skill), fn(r) { r.id })
+  let found = origins(text)
+  list.flatten([
+    list.filter_map(tsv(text), fn(cells) {
+      case list.length(cells) {
+        5 -> Error(Nil)
+        _ ->
+          Ok("origins.tsv: a row needs 5 cells: " <> string.join(cells, " | "))
+      }
+    }),
+    list.filter_map(ids, fn(id) {
+      case list.any(found, fn(o) { o.id == id }) {
+        True -> Error(Nil)
+        False -> Ok("origins.tsv: " <> id <> " has no origin")
+      }
+    }),
+    list.flat_map(found, fn(o) {
+      list.flatten([
+        case list.contains(ids, o.id) {
+          True -> []
+          False -> ["origins.tsv: SKILL.md has no rule " <> o.id]
+        },
+        case string.starts_with(o.profile, "https://github.com/") {
+          True -> []
+          False -> ["origins.tsv: " <> o.creator <> " has no GitHub profile"]
+        },
+      ])
+    }),
+  ])
+}
+
 /// What is wrong with the two tables: a row that is not four cells, a link that is not a GitHub
 /// repository, a source that is not a URL, a status outside `statuses`, or a table with no row.
 pub fn data_errors(awesome: String, roadmap: String) -> List(String) {
@@ -334,6 +390,10 @@ pub type Link {
 pub type Step {
   Step(item: String, status: String, what: String, evidence: String)
 }
+
+pub type Origin {
+  Origin(id: String, origin: String, repo: String, creator: String, profile: String)
+}
 "
 
 /// The content module, from the text of SKILL.md and of the justfile.
@@ -342,6 +402,7 @@ pub fn module(
   justfile: String,
   awesome: String,
   roadmap: String,
+  origin_rows: String,
   rev: String,
 ) -> String {
   string.join(
@@ -375,6 +436,13 @@ pub fn module(
         "Link",
         list.map(links(awesome), fn(l) {
           call("Link", [l.name, l.url, l.what, l.source])
+        }),
+      ),
+      items(
+        "origins",
+        "Origin",
+        list.map(origins(origin_rows), fn(o) {
+          call("Origin", [o.id, o.origin, o.repo, o.creator, o.profile])
         }),
       ),
       items(
@@ -416,11 +484,18 @@ pub fn main() -> Nil {
   let justfile = read(root <> "justfile")
   let awesome = read("../data/awesome.tsv")
   let roadmap = read("../data/roadmap.tsv")
-  case list.append(errors(skill, justfile), data_errors(awesome, roadmap)) {
+  let origin_rows = read("../data/origins.tsv")
+  case
+    list.flatten([
+      errors(skill, justfile),
+      data_errors(awesome, roadmap),
+      origin_errors(skill, origin_rows),
+    ])
+  {
     [] ->
       write(
         "../src/ptbr_writter_site/content.gleam",
-        module(skill, justfile, awesome, roadmap, revision()),
+        module(skill, justfile, awesome, roadmap, origin_rows, revision()),
       )
     found -> {
       list.each(found, io.println_error)

@@ -101,6 +101,6 @@ quality: pins
     test -f flake.nix
     test -f flake.lock
     python3 -m json.tool .opencode.json >/dev/null
-    # The README copies two tables of site/data/ by hand: each repo and each roadmap item must be in it.
-    tail -n +2 site/data/awesome.tsv site/data/roadmap.tsv | grep -v '^==>' | cut -f1 | grep . | while read -r x; do grep -qF -- "$x" README.md || { echo "quality: README.md lacks $x" >&2; exit 1; }; done
+    # The README copies the tables of site/data/ by hand: each repo, roadmap item and rule must be in it.
+    tail -n +2 site/data/awesome.tsv site/data/roadmap.tsv site/data/origins.tsv | grep -v '^==>' | cut -f1 | grep . | while read -r x; do grep -qF -- "$x" README.md || { echo "quality: README.md lacks $x" >&2; exit 1; }; done
     echo "quality: ok"
