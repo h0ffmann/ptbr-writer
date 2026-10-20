@@ -115,7 +115,23 @@ saramago-check:
 route +request:
     python3 skills/ptbr-routing/scripts/route.py "{{ request }}"
 
-quality: pins saramago-check
+# Check the Claude Code plugin: manifests parse, every skill link resolves, the version has a CHANGELOG entry.
+plugin-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    python3 -m json.tool .claude-plugin/marketplace.json >/dev/null
+    v=$(python3 -c 'import json; print(json.load(open("plugins/ptbr-writter/.claude-plugin/plugin.json"))["version"])')
+    [[ $v =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "plugin-check: version $v is not X.Y.Z" >&2; exit 1; }
+    grep -q "^## v$v " CHANGELOG.md || { echo "plugin-check: CHANGELOG.md has no v$v" >&2; exit 1; }
+    for f in plugins/ptbr-writter/skills/*/SKILL.md; do test -e "$f" || { echo "plugin-check: $f is a broken link" >&2; exit 1; }; done
+    bash skills/ptbr-routing/scripts/session-check.sh --self-test
+    echo "plugin-check: ok (v$v)"
+
+# The tag a release pushes must be the plugin's version: just release-check v0.1.0 (release.yml runs it).
+release-check tag: plugin-check
+    test "{{ tag }}" = "v$(python3 -c 'import json; print(json.load(open("plugins/ptbr-writter/.claude-plugin/plugin.json"))["version"])')"
+
+quality: pins saramago-check plugin-check
     python3 skills/ptbr-routing/scripts/route.py --self-test
     python3 skills/ptbr-routing/scripts/route.py --check
     just --list >/dev/null
