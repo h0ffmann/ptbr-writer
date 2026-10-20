@@ -73,23 +73,33 @@ mostra. Os commits lidos estão em [créditos](#créditos).
 
 ## a skill científica
 
-[`skills/cientifico/SKILL.md`](skills/cientifico/SKILL.md) é uma skill própria para texto científico com fontes: aplica PTW-1 a PTW-13 e acrescenta as regras CIE. O corpo da skill só tem instruções; os créditos ficam aqui.
+<details>
+<summary>regras CIE, base e origem</summary>
+
+[`skills/cientifico/SKILL.md`](skills/cientifico/SKILL.md) é uma skill própria para texto científico com fontes. A base de estrutura e de orientação é a skill `scientific-writing` de [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing) @ a1043ef (MIT, "Copyright (c) 2025 K-Dense Inc."): as ideias foram adaptadas ao português e a textos técnicos (artigo, proposta, relatório), sem copiar texto. A skill aplica PTW-1 a PTW-13 e acrescenta as regras CIE. O corpo da skill só tem instruções; os créditos ficam aqui.
+
+Como pede o autor da base: Kassis, T., Agarwal, V., He, Y., Patel, D., & Brueckner, A. M. (2026). *Scientific Agent Skills: A Library of Procedural Knowledge for Research Agents*. arXiv:2609.00065. <https://doi.org/10.48550/arXiv.2609.00065>
+
+Referência em português usada, só pelas ideias, parafraseadas: a skill `artigo` de [labdaps/labskills](https://github.com/labdaps/labskills/tree/246c1646a51a5a754aedf786fef0544d528064e7/skills/artigo) @ 246c164 (MIT, "Copyright (c) 2026 LABDAPS"), a lista de enchimento e de padrões de texto de IA em português (CIE-11). Procurei outras skills em português (buscas por "escrita científica", "redação científica", "ABNT", "português acadêmico"): `GCNatureza/COautorIA` (MIT) é um aplicativo web, não uma skill, e os demais repositórios achados não têm licença ou não são material para agente.
 
 | id | regra | origem |
 | :- | :---- | :----- |
-| CIE-1 | Fonte lida antes de citada | ouro-paper: regras duras, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd<br>AGENTS.md: invariantes, [h0ffmann/closed-source](https://github.com/h0ffmann/closed-source) @ 563c339 |
-| CIE-2 | Procurado e não citado | ouro-paper: passo 3, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd |
-| CIE-3 | DOI é link | AGENTS.md: regras duras de citação, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd |
-| CIE-4 | Fato que envelhece leva data | AGENTS.md: Audience and evidence, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
+| CIE-1 | Nada inventado | `scientific-writing`: No fabrication, [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing) @ a1043ef<br>ouro-paper: nunca inventar referência, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd<br>AGENTS.md: invariante 2, [h0ffmann/closed-source](https://github.com/h0ffmann/closed-source) @ 563c339 |
+| CIE-2 | Fonte lida antes de citada | `scientific-writing`: Evidence binding, [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing) @ a1043ef<br>ouro-paper: regras duras, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd |
+| CIE-3 | Procurado e não citado | ouro-paper: passo 3 e o registro "Looked for and not cited", [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd |
+| CIE-4 | DOI é link, fato que envelhece leva data | AGENTS.md: regras duras de citação, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd<br>AGENTS.md: Audience and evidence, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
 | CIE-5 | Código é `arquivo:linha` num commit | AGENTS.md: Audience and evidence; Third-party issues and pull requests, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
 | CIE-6 | Issue e PR de terceiros não são fonte | AGENTS.md: Third-party issues and pull requests, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
-| CIE-7 | Plano não é medição | ouro-paper: regras duras (sem resultado antes de paridade, tipos de afirmação), [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd<br>AGENTS.md: Audience and evidence, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
-| CIE-8 | Fonte privada fica privada | ouro-paper: regras duras; AGENTS.md: regra 8, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd |
-| CIE-9 | Humano decide | AGENTS.md: invariantes 1 e 3, [h0ffmann/closed-source](https://github.com/h0ffmann/closed-source) @ 563c339<br>AGENTS.md: invariante 1, [ouroboric-dev/ouroboric](https://github.com/ouroboric-dev/ouroboric) @ 2858c11 |
-| CIE-10 | Voz ativa, frase curta, número | .vale/styles/fabric: ActiveVoice, ShortSentences, PlainWords, NumbersOverAdjectives, [h0ffmann/closed-source](https://github.com/h0ffmann/closed-source) @ 563c339<br>.vale/styles/research, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd |
-| CIE-11 | Figura carrega a evidência | AGENTS.md: Figures, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
+| CIE-7 | Fidelidade científica | `scientific-writing`: Scientific fidelity e writing_principles, [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing) @ a1043ef<br>ouro-paper: regras duras (paridade, tolerância), [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd<br>AGENTS.md: Audience and evidence, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
+| CIE-8 | Confidencial fica confidencial | `scientific-writing`: Confidentiality, [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing) @ a1043ef<br>ouro-paper: fonte privada, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd |
+| CIE-9 | Humano decide | `scientific-writing`: autoria e IA, declarações, [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing) @ a1043ef<br>AGENTS.md: invariantes 1 e 3, [h0ffmann/closed-source](https://github.com/h0ffmann/closed-source) @ 563c339<br>AGENTS.md: invariante 1, [ouroboric-dev/ouroboric](https://github.com/ouroboric-dev/ouroboric) @ 2858c11 |
+| CIE-10 | Número completo | `scientific-writing`: writing_principles, Numbers and units, [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing) @ a1043ef<br>ouro-paper: todo número tem seu comando, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd |
+| CIE-11 | Estilo | `scientific-writing`: Language review, [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing) @ a1043ef<br>`artigo`: padrões de texto de IA em português, [labdaps/labskills](https://github.com/labdaps/labskills/tree/246c1646a51a5a754aedf786fef0544d528064e7/skills/artigo) @ 246c164<br>.vale/styles/fabric, [h0ffmann/closed-source](https://github.com/h0ffmann/closed-source) @ 563c339; .vale/styles/research, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) @ 041cedd |
+| CIE-12 | Figura e tabela carregam a evidência | `scientific-writing`: figures_tables, [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing) @ a1043ef<br>AGENTS.md: Figures, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
 
-O estilo `research` de [ouroboric-dev/ouroboric](https://github.com/ouroboric-dev/ouroboric) @ 2858c11 (`docs/4-ways-of-working/writing-styles.md`: afirmação atribuída, fato separado de análise) sustenta a mesma separação de PTW-13. Os autores são [@h0ffmann](https://github.com/h0ffmann).
+O fluxo, a estrutura do texto e a revisão vêm de `scientific-writing` (workflow, imrad_structure, Revision and peer review). O estilo `research` de [ouroboric-dev/ouroboric](https://github.com/ouroboric-dev/ouroboric) @ 2858c11 (`docs/4-ways-of-working/writing-styles.md`) sustenta a separação de fato e análise de PTW-13. Autor das regras próprias: [@h0ffmann](https://github.com/h0ffmann).
+
+</details>
 
 ## a skill de retórica
 
@@ -116,7 +126,7 @@ Prontidão para produção. A fonte é [`site/data/roadmap.tsv`](site/data/roadm
 | :--- | :----- | :---------------------- |
 | [`SKILL.md`](SKILL.md) | em andamento | regras PTW e níveis de rigor; as regras ainda estão marcadas como em desenvolvimento |
 | [`evals/`](evals/cientifico.md) | em andamento | um caso de regressão por regra científica, escrito e ainda não rodado por um harness ⚠ |
-| [skill científica](skills/cientifico/SKILL.md) | em andamento | skill própria para texto científico, com regras CIE; casos de regressão ainda não escritos |
+| [skill científica](skills/cientifico/SKILL.md) | em andamento | skill própria para texto científico, com regras CIE; casos de regressão em `evals/cientifico-cie.md`, escritos e ainda não rodados ⚠ |
 | plugin | planejado | empacotar a skill como plugin do Claude Code e do OpenCode, instalável com um comando |
 | distribuição | planejado | release com tag e instalação por URL em outros repositórios, sem copiar o `SKILL.md` à mão |
 | [retórica](skills/retorica/SKILL.md) | planejado | skill de retórica a partir do *Fédon* e do *Fedro*, de Platão, e do Phaedrus de Robert M. Pirsig; só o esqueleto existe, sem regras |
@@ -231,7 +241,7 @@ O layout deste README vem do [h0ffmann/picasso](https://github.com/h0ffmann/pica
 disciplina do site vêm de [h0ffmann/closed-source](https://github.com/h0ffmann/closed-source) e
 [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu). Lustre (MIT) e a stdlib do Gleam
 (Apache-2.0) rodam só no build; a página publicada não leva o código deles. As fontes vêm do Google Fonts (SIL OFL).
-As regras PTW-9 a PTW-13 adaptam a skill `ouro-paper` e o estilo `.vale/styles/research` de
+A skill científica adapta, em palavras próprias, `scientific-writing` de [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) (`a1043ef`, MIT, Copyright (c) 2025 K-Dense Inc.) e `artigo` de [labdaps/labskills](https://github.com/labdaps/labskills) (`246c164`, MIT, Copyright (c) 2026 LABDAPS). As regras PTW-9 a PTW-13 adaptam a skill `ouro-paper` e o estilo `.vale/styles/research` de
 [marola-dev/marola-research](https://github.com/marola-dev/marola-research) (`041cedd`) e a seção
 "Audience and evidence" de [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) (`319e4e2`).
 
