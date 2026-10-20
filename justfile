@@ -11,7 +11,6 @@ opencode *args:
 
 # Serve Qwen3.6-27B (Q4_K_M) with llama.cpp CUDA and run OpenCode against it.
 # Requires: nix, NVIDIA driver, ~24 GB GPU, 16 GB RAM, 17 GB disk for the one-time download.
-
 # Override llamacpp parameters with LLAMA_ARG_* env vars.
 opencode-qwen *args:
     #!/usr/bin/env bash
@@ -78,8 +77,25 @@ nix-update *args="":
 fmt:
     just --fmt --unstable
 
-# Basic quality gate: justfile parses, required files exist.
-quality:
+# Build the site into site/dist/ in picasso's gleam-website toolchain: content, tests, prerender.
+site:
+    nix develop --no-update-lock-file .#site --command just --justfile site/justfile --working-directory site ci
+
+# Build the site and serve it on http://localhost:8000.
+site-serve: site
+    nix develop --no-update-lock-file .#site --command python3 -m http.server -d site/dist 8000
+
+# Check that flake.lock pins gleam-website to the forks/picasso submodule's revision.
+pins:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    lock="$(jq -r '.nodes["gleam-website"].locked.rev' flake.lock)"
+    sub="$(git ls-files -s forks/picasso | cut -d' ' -f2)"
+    [ "$lock" = "$sub" ] || { echo "pins: flake.lock has picasso $lock, forks/picasso is $sub" >&2; exit 1; }
+    echo "pins: picasso $sub"
+
+# Basic quality gate: justfile parses, required files exist, toolchain pins agree.
+quality: pins
     just --list >/dev/null
     test -f .opencode.json
     test -f flake.nix
