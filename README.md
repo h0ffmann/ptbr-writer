@@ -36,29 +36,28 @@ marca o que não foi checado.
 
 O texto completo de cada regra está [no site](https://h0ffmann.github.io/ptbr-writter/).
 
-| id    | regra                       |
-| :---- | :-------------------------- |
-| PTW-1 | Quem faz, aparece           |
-| PTW-2 | Uma proposição por frase    |
-| PTW-3 | Modalidade e quantidade explícitas |
-| PTW-4 | Verbo pleno                 |
-| PTW-5 | Sintaxe plana               |
-| PTW-6 | Termos congelados           |
-| PTW-7 | Números, datas e unidades   |
-| PTW-8 | Ortografia PT-BR vigente    |
-| PTW-9 | Toda afirmação tem marca    |
-| PTW-10 | Nenhuma referência inventada |
-| PTW-11 | Número com unidade e origem |
-| PTW-12 | Sem alegação de pioneirismo |
-| PTW-13 | Fato separado de análise   |
+| id | regra | origem | criador |
+| :- | :---- | :----- | :------ |
+| PTW-1 | Quem faz, aparece | PTC-1, [kayquer/portugues-tecnico-controlado](https://github.com/kayquer/portugues-tecnico-controlado) | [Kayque Rotondo](https://github.com/kayquer) |
+| PTW-2 | Uma proposição por frase | PTC-2, [kayquer/portugues-tecnico-controlado](https://github.com/kayquer/portugues-tecnico-controlado) | [Kayque Rotondo](https://github.com/kayquer) |
+| PTW-3 | Modalidade e quantidade explícitas | PTC-3, [kayquer/portugues-tecnico-controlado](https://github.com/kayquer/portugues-tecnico-controlado) | [Kayque Rotondo](https://github.com/kayquer) |
+| PTW-4 | Verbo pleno | PTC-4, [kayquer/portugues-tecnico-controlado](https://github.com/kayquer/portugues-tecnico-controlado) | [Kayque Rotondo](https://github.com/kayquer) |
+| PTW-5 | Sintaxe plana | PTC-5, [kayquer/portugues-tecnico-controlado](https://github.com/kayquer/portugues-tecnico-controlado) | [Kayque Rotondo](https://github.com/kayquer) |
+| PTW-6 | Termos congelados | PTC-6, [kayquer/portugues-tecnico-controlado](https://github.com/kayquer/portugues-tecnico-controlado) | [Kayque Rotondo](https://github.com/kayquer) |
+| PTW-7 | Números, datas e unidades | PTC-7, [kayquer/portugues-tecnico-controlado](https://github.com/kayquer/portugues-tecnico-controlado) | [Kayque Rotondo](https://github.com/kayquer) |
+| PTW-8 | Ortografia PT-BR vigente | PTC-8, [kayquer/portugues-tecnico-controlado](https://github.com/kayquer/portugues-tecnico-controlado) | [Kayque Rotondo](https://github.com/kayquer) |
+| PTW-9 | Toda afirmação tem marca | ouro-paper: toda afirmação tem marca, [marola-dev/marola-research](https://github.com/marola-dev/marola-research)<br>AGENTS.md: Audience and evidence, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) | [Matheus Hoffmann](https://github.com/h0ffmann) |
+| PTW-10 | Nenhuma referência inventada | ouro-paper: nunca inventar referência, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) | [Matheus Hoffmann](https://github.com/h0ffmann) |
+| PTW-11 | Número com unidade e origem | ouro-paper: todo número tem seu comando, [marola-dev/marola-research](https://github.com/marola-dev/marola-research)<br>AGENTS.md: Audience and evidence, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) | [Matheus Hoffmann](https://github.com/h0ffmann) |
+| PTW-12 | Sem alegação de pioneirismo | .vale/styles/research/PriorityClaims, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) | [Matheus Hoffmann](https://github.com/h0ffmann) |
+| PTW-13 | Fato separado de análise | ouro-paper: fatos e análise separados, [marola-dev/marola-research](https://github.com/marola-dev/marola-research) | [Matheus Hoffmann](https://github.com/h0ffmann) |
 
 A saída tem quatro partes: nível e destinatário assumidos; tabela de violações (regra, trecho
 original, reescrita); texto final; nota sobre o que foi mantido de propósito. No nível `científico`
 há uma quinta: a lista de `⚠`. Os casos de regressão estão em [`evals/cientifico.md`](evals/cientifico.md).
 
-PTW-9 a PTW-13 adaptam regras de [marola-dev/marola-research](https://github.com/marola-dev/marola-research)
-(`ouro-paper`, `.vale/styles/research`) e de [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu)
-("Audience and evidence"); [`SKILL.md`](SKILL.md) diz em que commit.
+A origem de cada regra está em [`site/data/origins.tsv`](site/data/origins.tsv), que o site também
+mostra; [`SKILL.md`](SKILL.md) diz em que commit as regras científicas foram lidas.
 
 ## roadmap
 
