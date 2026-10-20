@@ -17,6 +17,9 @@ pub const repo = "https://github.com/h0ffmann/ptbr-writter"
 
 const blob = "https://github.com/h0ffmann/ptbr-writter/blob/main/"
 
+/// The two public-domain images of the cover, credited to their Wikimedia Commons pages.
+const commons = "https://commons.wikimedia.org/wiki/File:"
+
 /// The skill that applies Orwell's six rules, pinned: the model of an author level.
 const orwell =
   "https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing"
@@ -86,7 +89,20 @@ fn section(
 fn cover() -> Element(msg) {
   html.header([attribute.class("cover wrap")], [
     html.p([attribute.class("kicker")], [
+      html.img([
+        attribute.src("img/bandeira-do-brasil.svg"),
+        attribute.alt("bandeira do Brasil"),
+        attribute.class("flag"),
+      ]),
+      html.span([attribute.class("first")], [html.text("pt-BR first")]),
       html.text("skill de escrita técnica · português brasileiro"),
+    ]),
+    // Calligraphy on the page: Machado de Assis's signature, public domain, credited in the
+    // footer as REUSE.md asks.
+    html.img([
+      attribute.src("img/assinatura-machado-de-assis.png"),
+      attribute.alt("assinatura de Machado de Assis"),
+      attribute.class("calligraphy"),
     ]),
     html.div([attribute.class("brand")], [
       html.img([
@@ -386,8 +402,16 @@ fn footer() -> Element(msg) {
     made_with_line("made-with"),
     html.p([], [
       html.text(
-        "os nomes e os ícones de Gleam e de Claude Code são marcas dos seus donos, não licenciadas aqui; os ícones carregam dos sites deles.",
+        "os nomes e os ícones de Gleam e de Claude Code são marcas dos seus donos, não licenciadas aqui; os ícones carregam dos sites deles. a ",
       ),
+      html.a([attribute.href(commons <> "Flag_of_Brazil.svg")], [
+        html.text("bandeira do Brasil"),
+      ]),
+      html.text(" e a "),
+      html.a([attribute.href(commons <> "Assinatura_de_Machado_de_Assis.png")], [
+        html.text("assinatura de Machado de Assis (1839–1908)"),
+      ]),
+      html.text(" vêm do Wikimedia Commons, em domínio público."),
     ]),
     html.p([attribute.class("fork")], [
       html.text("fork conceitual do "),
