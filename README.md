@@ -246,7 +246,8 @@ Runners hospedados pelo GitHub. [`site.yml`](.github/workflows/site.yml):
 A ideia de um nível por autor vem da skill [orwell-writing](https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing), de @tamdogood (MIT). O layout deste README vem do [h0ffmann/picasso](https://github.com/h0ffmann/picasso). A stack e a
 disciplina do site vêm de [h0ffmann/closed-source](https://github.com/h0ffmann/closed-source) e
 [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu). Lustre (MIT) e a stdlib do Gleam
-(Apache-2.0) rodam só no build; a página publicada não leva o código deles. As fontes vêm do Google Fonts (SIL OFL).
+(Apache-2.0) rodam só no build; a página publicada não leva o código deles. As fontes vêm do Google Fonts (SIL OFL). A bandeira do Brasil e a assinatura de Machado de Assis (1839–1908) no site vêm do
+Wikimedia Commons, em domínio público.
 A skill científica adapta, em palavras próprias, `scientific-writing` de [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) (`a1043ef`, MIT, Copyright (c) 2025 K-Dense Inc.) e `artigo` de [labdaps/labskills](https://github.com/labdaps/labskills) (`246c164`, MIT, Copyright (c) 2026 LABDAPS). As regras PTW-9 a PTW-13 adaptam a skill `ouro-paper` e o estilo `.vale/styles/research` de
 [marola-dev/marola-research](https://github.com/marola-dev/marola-research) (`041cedd`) e a seção
 "Audience and evidence" de [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) (`319e4e2`).

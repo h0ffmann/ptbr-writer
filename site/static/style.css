@@ -12,6 +12,10 @@
   --display: "Fraunces", Georgia, serif;
   --prose: "Source Serif 4", Georgia, serif;
   --mono: "JetBrains Mono", ui-monospace, monospace;
+  /* the notebook: its rules and its margin, visible but under the text */
+  --rule-ink: rgba(29, 63, 208, 0.16);
+  --margin-ink: rgba(200, 16, 46, 0.35);
+  --margin: max(12px, calc((100vw - 960px) / 2 - 16px));
   color-scheme: light;
 }
 * { box-sizing: border-box; }
@@ -20,11 +24,12 @@ body {
   margin: 0;
   color: var(--ink);
   font: 400 1.15rem/1.6 var(--prose);
-  /* faint ruled lines, like a notebook page, fading out below the cover */
+  /* a notebook page: blue rules every 32px over the whole page, and the red margin line */
   background:
-    linear-gradient(to bottom, transparent 0, var(--paper) 520px),
-    repeating-linear-gradient(to bottom, transparent 0 31px, rgba(29, 63, 208, 0.06) 31px 32px),
+    linear-gradient(to right, transparent 0 var(--margin), var(--margin-ink) var(--margin) calc(var(--margin) + 2px), transparent calc(var(--margin) + 2px)),
+    repeating-linear-gradient(to bottom, transparent 0 31px, var(--rule-ink) 31px 32px),
     var(--paper);
+  background-attachment: local;
 }
 main { counter-reset: sec; }
 .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
@@ -68,7 +73,13 @@ code, .chip, .id, .jump, .foot, .kicker, .state, .status { font-family: var(--mo
 code { font-size: 0.85em; background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 0 0.3em; }
 
 /* the cover */
-.cover { padding: 72px 24px 40px; }
+.cover { padding: 72px 24px 40px; position: relative; }
+/* pt-BR first: the flag leads the kicker */
+.kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.flag { width: 42px; height: auto; border-radius: 3px; box-shadow: 0 0 0 1px rgba(27, 26, 23, 0.15), 0 2px 6px rgba(27, 26, 23, 0.12); }
+.first { font-weight: 600; color: var(--sheet); background: #009c3b; border-radius: 999px; padding: 0.15em 0.7em; letter-spacing: 0.04em; }
+/* calligraphy: Machado de Assis's signature, in ink, on the page */
+.calligraphy { position: absolute; right: 24px; top: 150px; width: 260px; height: auto; transform: rotate(-6deg); opacity: 0.8; mix-blend-mode: multiply; pointer-events: none; }
 .kicker { color: var(--muted); font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 18px; }
 .brand { display: flex; align-items: center; gap: clamp(12px, 3vw, 28px); }
 .mark { width: clamp(56px, 11vw, 104px); height: auto; flex: none; }
@@ -90,6 +101,7 @@ code { font-size: 0.85em; background: var(--sheet); border: 1px solid var(--rule
 
 /* the sections */
 section { padding: 44px 24px; border-top: 1px solid var(--rule); }
+section, .foot { background: transparent; }
 .intro { color: var(--muted); margin-top: 0; max-width: 46em; }
 .asks { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
 .levels, .recipes { display: grid; grid-template-columns: max-content 1fr; gap: 12px 22px; align-items: baseline; }
@@ -139,6 +151,10 @@ section { padding: 44px 24px; border-top: 1px solid var(--rule); }
 @keyframes draw { from { transform: rotate(-1.2deg) scaleX(0); } }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
 
+/* beside the title only when there is room; otherwise on its own line, under the kicker */
+@media (max-width: 1000px) {
+  .calligraphy { position: static; display: block; width: min(70%, 300px); margin: 4px 0 8px auto; }
+}
 @media (max-width: 560px) {
   .cover { padding-top: 40px; }
   .levels, .recipes { grid-template-columns: 1fr; gap: 2px; }
