@@ -94,13 +94,29 @@ pins:
     [ "$lock" = "$sub" ] || { echo "pins: flake.lock has picasso $lock, forks/picasso is $sub" >&2; exit 1; }
     echo "pins: picasso $sub"
 
-# Basic quality gate: justfile parses, required files exist, toolchain pins agree.
-quality: pins
+# Lint prose against Saramago's punctuation: no dash, quotes, ? ! ; : or ellipsis.
+saramago +files:
+    vale --config lint/saramago/.vale.ini {{ files }}
+
+# Self-test of the Saramago linter: the fixture in his manner passes, the plain one trips every rule.
+saramago-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cfg=lint/saramago/.vale.ini
+    vale --config "$cfg" lint/saramago/fixtures/saramaguiano.md >/dev/null
+    out="$(vale --config "$cfg" --no-exit --output=line lint/saramago/fixtures/convencional.md)"
+    for rule in Travessao Aspas Entonacao Pausa; do
+        grep -q "Saramago.$rule:" <<<"$out" || { echo "saramago-check: Saramago.$rule did not fire" >&2; exit 1; }
+    done
+    echo "saramago-check: ok"
+
+# Basic quality gate: justfile parses, required files exist, toolchain pins agree, linters self-test.
+quality: pins saramago-check
     just --list >/dev/null
     test -f .opencode.json
     test -f flake.nix
     test -f flake.lock
     python3 -m json.tool .opencode.json >/dev/null
-    # The README copies the tables of site/data/ by hand: each repo, roadmap item and rule must be in it.
-    tail -n +2 site/data/awesome.tsv site/data/roadmap.tsv site/data/origins.tsv | grep -v '^==>' | cut -f1 | grep . | while read -r x; do grep -qF -- "$x" README.md || { echo "quality: README.md lacks $x" >&2; exit 1; }; done
+    # The README copies the tables of site/data/ by hand: each repo, roadmap item, rule and planned level must be in it.
+    tail -n +2 site/data/awesome.tsv site/data/roadmap.tsv site/data/origins.tsv site/data/planned.tsv | grep -v '^==>' | cut -f1 | grep . | while read -r x; do grep -qF -- "$x" README.md || { echo "quality: README.md lacks $x" >&2; exit 1; }; done
     echo "quality: ok"

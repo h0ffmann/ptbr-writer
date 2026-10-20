@@ -28,14 +28,30 @@ tarefa ("reescreva este runbook em português controlado"). Sem nível explícit
 o texto e declara o que assumiu. A skill não muda tese, autoria nem conclusões, e não busca fontes:
 marca o que não foi checado.
 
-| Nível       | Uso                                         |
-| :---------- | :------------------------------------------ |
-| `estrito`   | runbooks, procedimentos, saídas para agentes |
-| `descritivo` | documentação de sistema                    |
-| `leve`      | comunicados internos                        |
-| `científico` | artigos, propostas, relatórios técnicos com fontes |
-| `retórico` (WIP) | texto que precisa convencer: proposta, justificativa, comunicado de decisão; ainda não está na skill |
-| `ensaístico` (WIP) | ensaio: o autor pensa por escrito, em primeira pessoa, à maneira de *The Essays* (*Os Ensaios*), de Michel de Montaigne; ainda não está na skill |
+| Nível | Status | Uso |
+| :---- | :----- | :-- |
+| `estrito` | IMPLEMENTADO | runbooks, procedimentos, saídas para agentes |
+| `descritivo` | IMPLEMENTADO | documentação de sistema |
+| `leve` | IMPLEMENTADO | comunicados internos |
+| `científico` | IMPLEMENTADO | artigos, propostas, relatórios técnicos com fontes |
+| `retórico` | PLANEJADO | texto que precisa convencer: proposta, justificativa, comunicado de decisão |
+| `ensaístico` | PLANEJADO | ensaio: o autor pensa por escrito, em primeira pessoa, à maneira de *The Essays* (*Os Ensaios*), de Michel de Montaigne |
+| `crônico` | PLANEJADO | crônica: o cotidiano observado de perto, em tom de conversa com o leitor |
+| `anedótico` | PLANEJADO | anedota: um caso curto e concreto que ilustra uma ideia |
+| `machado-writter` | PLANEJADO | o estilo de Machado de Assis (1839–1908): ironia, digressão, o narrador que conversa com o leitor. Obra em domínio público; o texto produzido cita Machado de Assis ([REUSE.md](REUSE.md)) |
+| `saramago-writter` | PLANEJADO | o estilo de José Saramago (1922–2010): períodos longos, pontuação mínima, diálogo sem travessão. Obra protegida por direito autoral: imita o estilo, nunca copia trecho ([REUSE.md](REUSE.md)) |
+
+Um nível PLANEJADO ainda não está na [`SKILL.md`](SKILL.md), então não custa contexto a quem instala
+a skill; a fonte da lista é [`site/data/planned.tsv`](site/data/planned.tsv). Talvez venha um
+orwell-writer, como a skill [orwell-writing](https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing) (as seis regras de Orwell com o ASD-STE100), mas feito para
+os grandes escritores da língua portuguesa: um nível por autor, para
+imitar estilos idiossincráticos de escrita. Os primeiros são Machado de Assis e José Saramago.
+
+> [!WARNING]
+> Um nível de autor imita um estilo, nunca copia texto, e respeita os direitos do autor. Obra em
+> domínio público, de quem morreu há muito tempo, como a de Machado de Assis, pode servir de base, e
+> o autor é citado sempre que o texto for usado. Obra protegida, como a de José Saramago, serve só
+> de modelo de estilo. As regras estão em [`REUSE.md`](REUSE.md).
 
 </details>
 
@@ -98,6 +114,33 @@ Referência em português usada, só pelas ideias, parafraseadas: a skill `artig
 | CIE-12 | Figura e tabela carregam a evidência | `scientific-writing`: figures_tables, [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing) @ a1043ef<br>AGENTS.md: Figures, [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) @ 319e4e2 |
 
 O fluxo, a estrutura do texto e a revisão vêm de `scientific-writing` (workflow, imrad_structure, Revision and peer review). O estilo `research` de [ouroboric-dev/ouroboric](https://github.com/ouroboric-dev/ouroboric) @ 2858c11 (`docs/4-ways-of-working/writing-styles.md`) sustenta a separação de fato e análise de PTW-13. Autor das regras próprias: [@h0ffmann](https://github.com/h0ffmann).
+
+</details>
+
+## o linter saramaguiano
+
+<details>
+<summary>a pontuação de Saramago, em regras de Vale</summary>
+
+O estilo de Saramago pode ser decodificado: a prosa dele abre mão de quase toda pontuação e fica com
+a vírgula e o ponto. [`lint/saramago/`](lint/saramago) traduz isso em quatro regras de
+[Vale](https://vale.sh), que valem para o nível `saramago-writter`:
+
+| Regra | O que sinaliza | O que fazer |
+| :---- | :------------- | :---------- |
+| `Travessao` | travessão (`—`) | a fala segue no período, depois de uma vírgula, com maiúscula |
+| `Aspas` | aspas (`"`, `“ ”`, `« »`) | a fala e o pensamento se marcam pela maiúscula depois da vírgula |
+| `Entonacao` | `?` e `!` | a entonação fica nas palavras |
+| `Pausa` | `;`, `:` e reticências | só vírgula e ponto |
+
+```console
+just saramago texto.md   # aponta cada marca que Saramago não usaria
+just saramago-check      # autoteste: o exemplo saramaguiano passa, o convencional dispara as 4 regras
+```
+
+Os dois exemplos em `lint/saramago/fixtures/` foram escritos para este repositório; nenhum é trecho
+de Saramago ([REUSE.md](REUSE.md)). As regras descrevem a pontuação, não o vocabulário nem a
+sintaxe: um texto pode passar no linter e não soar como Saramago ⚠.
 
 </details>
 
@@ -215,6 +258,7 @@ justfile                receitas
 flake.nix, flake.lock   shell reprodutível e pins
 DESIGN.md               regras visuais do site
 evals/                  casos de regressão das regras (ainda sem harness)
+lint/saramago/          linter de prosa saramaguiano (Vale)
 skills/retorica/        skill de retórica, em desenvolvimento (Fédon, Fedro, Pirsig)
 forks/picasso/          submódulo: toolchain do site
 skills/cientifico/      skill científica (regras CIE)
@@ -237,7 +281,7 @@ Runners hospedados pelo GitHub. [`site.yml`](.github/workflows/site.yml):
 
 ## créditos
 
-O layout deste README vem do [h0ffmann/picasso](https://github.com/h0ffmann/picasso). A stack e a
+A ideia de um nível por autor vem da skill [orwell-writing](https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing), de @tamdogood (MIT). O layout deste README vem do [h0ffmann/picasso](https://github.com/h0ffmann/picasso). A stack e a
 disciplina do site vêm de [h0ffmann/closed-source](https://github.com/h0ffmann/closed-source) e
 [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu). Lustre (MIT) e a stdlib do Gleam
 (Apache-2.0) rodam só no build; a página publicada não leva o código deles. As fontes vêm do Google Fonts (SIL OFL).
