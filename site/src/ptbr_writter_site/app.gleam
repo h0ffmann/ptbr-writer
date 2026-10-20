@@ -9,7 +9,7 @@ import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
 import ptbr_writter_site/content.{
-  type Level, type Link, type Recipe, type Rule, type Step,
+  type Level, type Link, type Origin, type Recipe, type Rule, type Step,
 }
 
 pub const repo = "https://github.com/h0ffmann/ptbr-writter"
@@ -169,7 +169,28 @@ fn rule(r: Rule) -> Element(msg) {
     html.span([attribute.class("id")], [html.text(r.id)]),
     html.h3([], [html.text(r.title)]),
     html.p([], inline(r.body)),
+    html.p(
+      [attribute.class("from")],
+      content.origins
+        |> list.filter(fn(o) { o.id == r.id })
+        |> list.map(origin)
+        |> list.intersperse([html.text(" · ")])
+        |> list.flatten
+        |> list.prepend(html.text("origem: ")),
+    ),
   ])
+}
+
+/// "PTC-1, de kayquer/portugues-tecnico-controlado, por Kayque Rotondo", each name a link.
+fn origin(o: Origin) -> List(Element(msg)) {
+  [
+    html.text(o.origin <> ", de "),
+    html.a([attribute.href("https://github.com/" <> o.repo)], [
+      html.text(o.repo),
+    ]),
+    html.text(", por "),
+    html.a([attribute.href(o.profile)], [html.text(o.creator)]),
+  ]
 }
 
 fn output() -> Element(msg) {
