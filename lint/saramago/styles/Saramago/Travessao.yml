@@ -1,0 +1,8 @@
+# A turn of dialogue is not opened by a dash: it follows in the sentence, after a comma, with a
+# capital letter. The en dash of a range (1839–1908) is left alone.
+extends: existence
+message: "'%s': sem travessão. A fala segue no período, depois de uma vírgula, com maiúscula."
+level: warning
+nonword: true
+tokens:
+  - "—"

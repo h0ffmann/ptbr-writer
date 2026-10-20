@@ -1,6 +1,8 @@
 import gleam/list
 import gleeunit
-import ptbr_writter_content.{type Origin, Level, Link, Recipe, Rule, Step} as c
+import ptbr_writter_content.{
+  type Origin, Level, Link, Planned, Recipe, Rule, Step,
+} as c
 
 pub fn main() -> Nil {
   gleeunit.main()
@@ -188,4 +190,14 @@ pub fn origin_errors_test() {
     ]
   assert c.login("h0ffmann")
   assert !c.login("@kayquer")
+}
+
+// A planned level is not in SKILL.md; once it is, its row must go.
+pub fn planned_test() {
+  let rows = "name\twhat\ncrônico\tcrônica\n"
+  assert c.planned(rows) == [Planned("crônico", "crônica")]
+  assert c.planned_errors(skill, rows) == []
+  assert c.planned_errors(skill, "name\twhat\nleve\tx\n")
+    == ["planned.tsv: leve is in SKILL.md now; delete its row"]
+  assert c.planned_errors(skill, "name\twhat\n") == ["planned.tsv: no row"]
 }

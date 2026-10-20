@@ -9,12 +9,17 @@ import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
 import ptbr_writter_site/content.{
-  type Level, type Link, type Origin, type Recipe, type Rule, type Step,
+  type Level, type Link, type Origin, type Planned, type Recipe, type Rule,
+  type Step,
 }
 
 pub const repo = "https://github.com/h0ffmann/ptbr-writter"
 
 const blob = "https://github.com/h0ffmann/ptbr-writter/blob/main/"
+
+/// The skill that applies Orwell's six rules, pinned: the model of an author level.
+const orwell =
+  "https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing"
 
 /// The star count, drawn by shields.io: an image, so the page still loads no JavaScript.
 const stars =
@@ -132,15 +137,54 @@ fn levels() -> Element(msg) {
   section(
     "niveis",
     "níveis de rigor",
-    "sem nível pedido, a skill escolhe um e diz qual assumiu.",
-    [html.dl([attribute.class("levels")], list.flat_map(content.levels, level))],
+    "sem nível pedido, a skill escolhe um e diz qual assumiu. um nível planejado ainda não está na skill, e não custa contexto a quem a instala.",
+    [
+      html.dl(
+        [attribute.class("levels")],
+        list.flatten([
+          list.flat_map(content.levels, level),
+          list.flat_map(content.planned, planned),
+        ]),
+      ),
+      html.p([attribute.class("intro")], [
+        html.text("talvez venha um orwell-writer, como a skill "),
+        html.a([attribute.href(orwell)], [html.text("orwell-writing")]),
+        html.text(
+          ", mas feito para os grandes escritores da língua portuguesa: um nível por autor, para imitar estilos idiossincráticos de escrita. o estilo de saramago já tem um linter de prosa, em ",
+        ),
+        html.a([attribute.href(repo <> "/tree/main/lint/saramago")], [
+          html.code([], [html.text("lint/saramago")]),
+        ]),
+        html.text("."),
+      ]),
+      html.p([attribute.class("warn")], [
+        html.text(
+          "⚠ aviso: um nível de autor imita um estilo, nunca copia texto, e respeita os direitos do autor. obra em domínio público, de quem morreu há muito tempo, pode servir de base, e o autor é citado sempre que o texto for usado. obra protegida serve só de modelo de estilo. as regras estão no ",
+        ),
+        html.a([attribute.href(blob <> "REUSE.md")], [html.text("REUSE.md")]),
+        html.text("."),
+      ]),
+    ],
   )
 }
 
 fn level(l: Level) -> List(Element(msg)) {
   [
-    html.dt([], [html.span([attribute.class("chip")], [html.text(l.name)])]),
+    html.dt([], [
+      html.span([attribute.class("chip")], [html.text(l.name)]),
+      html.span([attribute.class("state done")], [html.text("IMPLEMENTADO")]),
+    ]),
     html.dd([], inline(l.use_)),
+  ]
+}
+
+fn planned(p: Planned) -> List(Element(msg)) {
+  [
+    html.dt([], [
+      html.span([attribute.class("chip todo")], [html.text(p.name)]),
+      html.span([attribute.class("state todo")], [html.text("PLANEJADO")]),
+    ]),
+    html.dd([], inline(p.what)),
   ]
 }
 

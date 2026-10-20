@@ -1,0 +1,8 @@
+# A question or an exclamation is carried by the words, not by its mark.
+extends: existence
+message: "'%s': sem ponto de interrogação nem de exclamação. A entonação fica nas palavras."
+level: warning
+nonword: true
+tokens:
+  - '\?'
+  - '!'

@@ -72,6 +72,26 @@ pub fn awesome_starts_with_ptc_test() {
   assert first.name == "kayquer/portugues-tecnico-controlado"
 }
 
+// Implemented levels come from SKILL.md, planned ones from planned.tsv; each says which it is,
+// and the authors' rights warning points to REUSE.md.
+pub fn level_states_test() {
+  let page = prerender.render()
+  list.each(content.planned, fn(p) {
+    assert string.contains(page, p.name)
+  })
+  assert string.contains(page, "IMPLEMENTADO")
+  assert string.contains(page, "PLANEJADO")
+  assert string.contains(page, "Machado de Assis")
+  assert string.contains(page, "José Saramago")
+  assert string.contains(page, "orwell-writer")
+  assert string.contains(
+    page,
+    "builder-essential-skills/tree/1be9984/skills/orwell-writing",
+  )
+  assert string.contains(page, "lint/saramago")
+  assert string.contains(page, "blob/main/REUSE.md")
+}
+
 pub fn star_pill_test() {
   let page = prerender.render()
   assert string.contains(page, "star me")
