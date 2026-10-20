@@ -9,38 +9,33 @@
 [![site](https://github.com/h0ffmann/ptbr-writter/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writter/actions/workflows/site.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#instalar)
+[![release](https://img.shields.io/github/v/release/h0ffmann/ptbr-writter?style=flat-square&label=release)](https://github.com/h0ffmann/ptbr-writter/releases/tag/v0.1.0)
 [![star me](https://img.shields.io/github/stars/h0ffmann/ptbr-writter?style=social&label=star%20me)](https://github.com/h0ffmann/ptbr-writter)
 
 Reescreve texto técnico em português brasileiro para leitura única: sujeito explícito, uma
-proposição por frase, termos consistentes. Para Claude Code e OpenCode, e para texto que humanos e
-agentes leem. Objetivo: manter a documentação PT-BR e EN de um repositório gastando menos tokens.
+proposição por frase, termos consistentes. Um plugin do Claude Code, para texto que humanos e agentes
+leem. Objetivo: manter a documentação PT-BR e EN de um repositório gastando menos tokens.
 </div>
 
 ## instalar
 
-Duas formas, conforme quanto você quer controlar as atualizações.
+ptbr-writter é um plugin do Claude Code. A versão oficial é a
+**[v0.1.0](https://github.com/h0ffmann/ptbr-writter/releases/tag/v0.1.0)**: instale sempre por uma
+tag, e o plugin só muda quando você trocar a tag.
 
-| | `main` | versão pinada |
-| :- | :----- | :------------ |
-| para quem | uso pessoal, quem quer o mais novo | um repositório, um time, CI |
-| como | dois comandos no Claude Code | `ref` no `.claude/settings.json` do repositório |
-| recebe mudanças | quando o `main` sobe a versão do plugin | quando você troca o `ref` |
-
-### pelo `main`
+### no seu Claude Code
 
 ```console
-/plugin marketplace add h0ffmann/ptbr-writter
+/plugin marketplace add h0ffmann/ptbr-writter#v0.1.0
 /plugin install ptbr-writter@ptbr-writter
 ```
 
-Para atualizar: `/plugin marketplace update ptbr-writter` e `/plugin update ptbr-writter@ptbr-writter`.
-O Claude Code só troca o plugin quando o `version` do
-[`plugin.json`](plugins/ptbr-writter/.claude-plugin/plugin.json) muda. Um commit no `main` sem
-mudança de versão não chega a quem já instalou.
+Abra uma sessão nova e as skills aparecem em [usar](#usar).
 
-### numa versão pinada
+### num repositório
 
-No `.claude/settings.json` do repositório, com o `ref` numa tag de [release](#versões-e-release):
+Para que todo mundo que abre o repositório use a mesma versão, ponha no `.claude/settings.json`
+dele e faça o commit:
 
 ```json
 {
@@ -53,12 +48,29 @@ No `.claude/settings.json` do repositório, com o `ref` numa tag de [release](#v
 }
 ```
 
-Quem abre o repositório recebe o plugin nessa versão. Atualizar é trocar o `ref` num PR. A tag
-`v0.1.0` sai com a primeira release ⚠; até lá, só o `main` funciona.
+O Claude Code oferece o plugin, nessa versão, a quem confia na pasta do repositório.
 
-Opcional: oferecer o plugin a quem ainda não o instalou. Copie
+### atualizar
+
+As versões estão em [releases](https://github.com/h0ffmann/ptbr-writter/releases), e o que muda em
+cada uma, no [`CHANGELOG.md`](CHANGELOG.md).
+
+- No seu Claude Code: `/plugin marketplace remove ptbr-writter` e o `add` de novo, com a tag nova.
+- Num repositório: troque o `ref` num PR.
+
+<details>
+<summary>seguir o <code>main</code>, sem tag, e o hook que oferece o plugin</summary>
+
+Sem a tag (`/plugin marketplace add h0ffmann/ptbr-writter`), o marketplace lê o `main`. Mesmo assim,
+o plugin só muda para quem já instalou quando o `version` do
+[`plugin.json`](plugins/ptbr-writter/.claude-plugin/plugin.json) sobe, ou seja, numa release; um
+commit sem release não chega. Atualize com `/plugin marketplace update ptbr-writter` e
+`/plugin update ptbr-writter@ptbr-writter`.
+
+Um repositório pode lembrar quem ainda não instalou o plugin: copie
 [`skills/ptbr-routing/`](skills/ptbr-routing/SKILL.md) para `.claude/skills/ptbr-routing/` e
-acrescente o hook. Ele fica calado depois da instalação ou com `PTBR_PLUGIN_OPTOUT=1`.
+acrescente o hook ao `.claude/settings.json`. Ele fica calado depois da instalação ou com
+`PTBR_PLUGIN_OPTOUT=1`.
 
 ```json
 "hooks": {
@@ -67,10 +79,7 @@ acrescente o hook. Ele fica calado depois da instalação ou com `PTBR_PLUGIN_OP
 }
 ```
 
-### sem plugin
-
-OpenCode, ou qualquer agente que lê skills: copie [`SKILL.md`](SKILL.md) (e
-[`skills/cientifico/`](skills/cientifico/SKILL.md), se quiser) para a pasta de skills do agente.
+</details>
 
 ## usar
 
@@ -209,7 +218,7 @@ Fonte: [`site/data/roadmap.tsv`](site/data/roadmap.tsv).
 | [skill científica](skills/cientifico/SKILL.md) | em andamento | regras CIE; casos em `evals/cientifico-cie.md`, ainda não rodados ⚠ |
 | [roteamento](skills/ptbr-routing/SKILL.md) | feito | `route` escolhe a skill e o nível antes de carregar uma skill |
 | [plugin](plugins/ptbr-writter/.claude-plugin/plugin.json) | em andamento | plugin do Claude Code pronto; falta o OpenCode |
-| [distribuição](CHANGELOG.md) | em andamento | release por tag com `just release`; nenhuma tag publicada ainda |
+| [distribuição](CHANGELOG.md) | feito | release por tag com `just release`; a v0.1.0 é a versão oficial, instalada por tag |
 | [retórica](skills/retorica/SKILL.md) | planejado | só o esqueleto, sem regras |
 
 ## awesome-ptbr-writter
@@ -226,6 +235,9 @@ Outros projetos para quem escreve texto técnico em português. Fonte:
 | [ajdavidl/Portuguese-NLP](https://github.com/ajdavidl/Portuguese-NLP) | índice de recursos de PLN para português | [awesome-nlp](https://github.com/keon/awesome-nlp) |
 
 ## desenvolvimento
+
+Sem o Claude Code (OpenCode, ou outro agente que lê skills): copie [`SKILL.md`](SKILL.md) e, se
+quiser, [`skills/cientifico/`](skills/cientifico/SKILL.md) para a pasta de skills do agente.
 
 Requisitos: [Nix](https://nixos.org/download/) com flakes. Para rodar a skill com um Qwen local:
 GPU NVIDIA com ~24 GB e OpenCode no `PATH`.
