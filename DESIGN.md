@@ -70,9 +70,26 @@ Técnico Controlado without leading the page.
 No logo is stored. The favicon, also the README's picture, is an original one-line drawing of a
 writing quill.
 
+## Made with
+
+"feito com Gleam e Claude Code" sits on the cover, under the buttons, and again in the footer:
+each name is a pill with its owner's icon, loaded from the owner's site and never stored here (the
+pattern and the two URLs are h0ffmann/closed-source's). The footer says the names and icons are
+their owners' marks, not licensed here.
+
+## Layout
+
+- The cover: a mono kicker, the quill beside the title, and the `--review` pen's stroke under it.
+- Faint ruled lines, like a notebook page, behind the cover only; they fade out below it.
+- Each section heading carries `§ 01`, `§ 02`…, counted by CSS: the numbers are never typed.
+- A rule is a card on `--sheet` with a `--review` edge; two columns when the page is wide enough.
+- A roadmap item is a card; a planned one is dashed.
+
 ## Motion
 
-None. The page is prerendered and loads no JavaScript.
+One entrance, and only when the reader allows motion (`prefers-reduced-motion`): the title
+settles, the review stroke draws, the lede and the buttons rise. The page is prerendered and loads
+no JavaScript.
 
 ## Before you change the look
 

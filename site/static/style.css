@@ -1,4 +1,4 @@
-/* ptbr-writter: uma folha, uma caneta e a caneta da revisão. The rules are DESIGN.md. */
+/* ptbr-writter: uma folha, a caneta de quem escreve e a caneta da revisão. The rules are DESIGN.md. */
 :root {
   /* the ground */
   --paper: #fbf8f1;
@@ -8,65 +8,139 @@
   --muted: #6b665c;
   /* the two pens, each with one meaning */
   --pen: #1d3fd0; /* the writer: the title, the links, the commands */
-  --review: #c8102e; /* the correction: a rule's id, the levels of rigor */
+  --review: #c8102e; /* the correction: a rule's id, the levels of rigor, a warning */
   --display: "Fraunces", Georgia, serif;
   --prose: "Source Serif 4", Georgia, serif;
   --mono: "JetBrains Mono", ui-monospace, monospace;
   color-scheme: light;
 }
 * { box-sizing: border-box; }
-html { background: var(--paper); }
-body { margin: 0; color: var(--ink); font: 400 1.15rem/1.6 var(--prose); background: var(--paper); }
-.wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+html { background: var(--paper); scroll-behavior: smooth; }
+body {
+  margin: 0;
+  color: var(--ink);
+  font: 400 1.15rem/1.6 var(--prose);
+  /* faint ruled lines, like a notebook page, fading out below the cover */
+  background:
+    linear-gradient(to bottom, transparent 0, var(--paper) 520px),
+    repeating-linear-gradient(to bottom, transparent 0 31px, rgba(29, 63, 208, 0.06) 31px 32px),
+    var(--paper);
+}
+main { counter-reset: sec; }
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
 a { color: var(--pen); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 a:hover { color: var(--ink); }
 a:focus-visible { outline: 2px solid var(--pen); outline-offset: 3px; border-radius: 4px; }
 h1, h2, h3 { font-family: var(--display); line-height: 1.1; margin: 0; }
-h1 { font-size: clamp(3rem, 12vw, 6.5rem); font-weight: 800; color: var(--pen); letter-spacing: -0.02em; }
-h2 { font-size: clamp(1.7rem, 5vw, 2.4rem); font-weight: 800; margin-bottom: 0.3em; }
-h3 { font-size: 1.25rem; font-weight: 600; margin: 0.1em 0 0.3em; }
-code, .chip, .id, .jump, .foot { font-family: var(--mono); font-size: 0.85em; }
-code { background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 0 0.3em; }
-.cover { padding: 56px 24px 32px; }
-.mark { width: 72px; height: 72px; }
-.lede { max-width: 38em; font-size: 1.3rem; }
-.jump { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 1em 0; }
-.actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 1.4em 0; }
-.button, .ghost { font: 600 1rem var(--display); padding: 0.55em 1.2em; border-radius: 999px; text-decoration: none; }
-.button { background: var(--pen); color: var(--sheet); }
-.button:hover { background: var(--ink); color: var(--sheet); }
-.ghost { border: 1px solid var(--pen); }
-section { padding: 32px 24px; border-top: 1px solid var(--rule); }
-.intro { color: var(--muted); margin-top: 0; }
-.asks { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
-.levels, .recipes { display: grid; grid-template-columns: max-content 1fr; gap: 10px 20px; align-items: baseline; }
-.levels dd, .recipes dd { margin: 0; }
-.chip { color: var(--review); border: 1px solid var(--review); border-radius: 999px; padding: 0.1em 0.7em; }
-.rules { list-style: none; padding: 0; display: grid; gap: 22px; }
-.rules p { margin: 0; }
-.id { color: var(--review); font-weight: 600; }
-.steps { padding-left: 1.4em; }
-.foot { color: var(--muted); padding: 32px 24px 48px; border-top: 1px solid var(--rule); }
-.foot p { margin: 0.3em 0; }
-.fork { font-size: 0.8em; }
-@media (max-width: 520px) {
-  .levels, .recipes { grid-template-columns: 1fr; gap: 2px; }
-  .levels dd, .recipes dd { margin-bottom: 10px; }
+h1 {
+  font-size: clamp(3rem, 12vw, 6.5rem);
+  font-weight: 800;
+  color: var(--pen);
+  letter-spacing: -0.02em;
+  position: relative;
 }
+/* the review pen's stroke under the title */
+h1::after {
+  content: "";
+  position: absolute;
+  left: 0.04em;
+  bottom: -0.08em;
+  width: 2.6em;
+  height: 0.09em;
+  background: var(--review);
+  border-radius: 999px;
+  transform: rotate(-1.2deg);
+  transform-origin: left;
+}
+h2 { font-size: clamp(1.7rem, 5vw, 2.4rem); font-weight: 800; margin-bottom: 0.3em; }
+/* each section numbered by the page itself, never typed */
+section h2::before {
+  counter-increment: sec;
+  content: "§ " counter(sec, decimal-leading-zero);
+  display: block;
+  font: 600 0.8rem var(--mono);
+  color: var(--review);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.4em;
+}
+h3 { font-size: 1.2rem; font-weight: 600; margin: 0.1em 0 0.3em; }
+code, .chip, .id, .jump, .foot, .kicker, .state, .status { font-family: var(--mono); }
+code { font-size: 0.85em; background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 0 0.3em; }
+
+/* the cover */
+.cover { padding: 72px 24px 40px; }
+.kicker { color: var(--muted); font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 18px; }
+.brand { display: flex; align-items: center; gap: clamp(12px, 3vw, 28px); }
+.mark { width: clamp(56px, 11vw, 104px); height: auto; flex: none; }
+.lede { max-width: 36em; font-size: clamp(1.15rem, 2.6vw, 1.4rem); margin: 1.2em 0 0; }
+.jump { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 1.4em 0; font-size: 0.85rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 1.4em 0; }
+.button, .ghost { font: 600 1rem var(--display); padding: 0.6em 1.3em; border-radius: 999px; text-decoration: none; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.button { background: var(--pen); color: var(--sheet); box-shadow: 0 6px 18px rgba(29, 63, 208, 0.25); }
+.button:hover { background: var(--ink); color: var(--sheet); transform: translateY(-1px); }
+.ghost { border: 1px solid var(--pen); background: var(--sheet); }
+.ghost:hover { transform: translateY(-1px); }
 .star { display: inline-flex; align-items: center; gap: 8px; }
 .count { height: 20px; }
+/* made with Gleam and Claude Code: the owners' icons, on the cover and in the footer */
+.made-with { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 0.95rem; color: var(--muted); margin: 0.6em 0 0; }
+.made-with a { display: inline-flex; align-items: center; gap: 6px; padding: 0.25em 0.75em; border: 1px solid var(--rule); border-radius: 999px; background: var(--sheet); color: var(--ink); text-decoration: none; }
+.made-with a:hover { border-color: var(--pen); }
+.made-with img { width: 18px; height: 18px; }
+
+/* the sections */
+section { padding: 44px 24px; border-top: 1px solid var(--rule); }
+.intro { color: var(--muted); margin-top: 0; max-width: 46em; }
+.asks { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.levels, .recipes { display: grid; grid-template-columns: max-content 1fr; gap: 12px 22px; align-items: baseline; }
+.levels dd, .recipes dd { margin: 0; }
+.chip { color: var(--review); border: 1px solid var(--review); border-radius: 999px; padding: 0.1em 0.7em; font-size: 0.85em; background: var(--sheet); }
+.chip.todo { border-style: dashed; color: var(--muted); border-color: var(--muted); }
+.state { font-size: 0.65em; margin-left: 8px; padding: 0.1em 0.6em; border-radius: 999px; letter-spacing: 0.04em; }
+.state.done { background: var(--pen); color: var(--sheet); }
+.state.todo { border: 1px dashed var(--muted); color: var(--muted); }
+.warn { border-left: 3px solid var(--review); background: var(--sheet); padding: 12px 16px; border-radius: 0 8px 8px 0; font-size: 0.95em; }
+
+/* the rules: one card each, two columns when the page is wide enough */
+.rules { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); gap: 16px; }
+.rules li { background: var(--sheet); border: 1px solid var(--rule); border-left: 3px solid var(--review); border-radius: 0 10px 10px 0; padding: 16px 18px; transition: box-shadow 0.15s ease; }
+.rules li:hover, .rules li:target { box-shadow: 0 8px 24px rgba(27, 26, 23, 0.08); }
+.rules p { margin: 0; }
+.id { color: var(--review); font-weight: 600; font-size: 0.8em; letter-spacing: 0.04em; }
+.from { font-size: 0.8em; color: var(--muted); margin-top: 0.6em !important; padding-top: 0.6em; border-top: 1px dashed var(--rule); }
 .origin, .limits { color: var(--muted); font-size: 0.95em; }
-.awesome { list-style: none; padding: 0; display: grid; gap: 10px; }
+.steps { padding-left: 1.4em; }
+.steps li { margin: 0.2em 0; }
+.awesome { list-style: none; padding: 0; display: grid; gap: 12px; }
+.awesome li { padding: 10px 0; border-bottom: 1px dashed var(--rule); }
 .source { font-family: var(--mono); font-size: 0.8em; color: var(--muted); }
-.roadmap { list-style: none; padding: 0; display: grid; gap: 18px; }
+.roadmap { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 14px; }
+.roadmap li { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px; }
+.roadmap li.todo { border-style: dashed; background: transparent; }
 .roadmap p { margin: 0; }
-.status { font-family: var(--mono); font-size: 0.8em; border-radius: 999px; padding: 0.1em 0.7em; }
+.status { font-size: 0.75em; border-radius: 999px; padding: 0.1em 0.7em; }
 .done .status { background: var(--pen); color: var(--sheet); }
 .doing .status { border: 1px solid var(--pen); color: var(--pen); }
 .todo .status { border: 1px dashed var(--muted); color: var(--muted); }
-.from { font-size: 0.85em; color: var(--muted); margin-top: 0.2em !important; }
-.state { font-family: var(--mono); font-size: 0.7em; margin-left: 8px; padding: 0.1em 0.6em; border-radius: 999px; }
-.state.done { background: var(--pen); color: var(--sheet); }
-.state.todo { border: 1px dashed var(--muted); color: var(--muted); }
-.chip.todo { border-style: dashed; }
-.warn { border-left: 3px solid var(--review); padding-left: 12px; font-size: 0.95em; }
+
+/* the footer */
+.foot { color: var(--muted); padding: 36px 24px 56px; border-top: 3px double var(--rule); font-size: 0.85rem; }
+.foot p { margin: 0.5em 0; }
+.foot .made-with { font-size: 0.9rem; }
+.fork { font-size: 0.85em; }
+
+/* one entrance: the title settles, the review stroke draws, the rest rises */
+@media (prefers-reduced-motion: no-preference) {
+  .brand { animation: settle 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  h1::after { animation: draw 0.6s cubic-bezier(0.65, 0, 0.35, 1) 0.4s both; }
+  .lede, .jump, .actions, .cover .made-with { animation: rise 0.6s ease-out 0.6s both; }
+}
+@keyframes settle { from { opacity: 0; transform: translateY(12px); } }
+@keyframes draw { from { transform: rotate(-1.2deg) scaleX(0); } }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+
+@media (max-width: 560px) {
+  .cover { padding-top: 40px; }
+  .levels, .recipes { grid-template-columns: 1fr; gap: 2px; }
+  .levels dd, .recipes dd { margin-bottom: 12px; }
+}
