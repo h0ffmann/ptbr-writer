@@ -53,3 +53,14 @@ section { padding: 32px 24px; border-top: 1px solid var(--rule); }
   .levels, .recipes { grid-template-columns: 1fr; gap: 2px; }
   .levels dd, .recipes dd { margin-bottom: 10px; }
 }
+.star { display: inline-flex; align-items: center; gap: 8px; }
+.count { height: 20px; }
+.origin, .limits { color: var(--muted); font-size: 0.95em; }
+.awesome { list-style: none; padding: 0; display: grid; gap: 10px; }
+.source { font-family: var(--mono); font-size: 0.8em; color: var(--muted); }
+.roadmap { list-style: none; padding: 0; display: grid; gap: 18px; }
+.roadmap p { margin: 0; }
+.status { font-family: var(--mono); font-size: 0.8em; border-radius: 999px; padding: 0.1em 0.7em; }
+.done .status { background: var(--pen); color: var(--sheet); }
+.doing .status { border: 1px solid var(--pen); color: var(--pen); }
+.todo .status { border: 1px dashed var(--muted); color: var(--muted); }

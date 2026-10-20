@@ -9,11 +9,13 @@
 [![site](https://github.com/h0ffmann/ptbr-writter/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writter/actions/workflows/site.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
 [![skill: OpenCode](https://img.shields.io/badge/skill-OpenCode-1682D4?style=flat-square)](SKILL.md)
+[![star me](https://img.shields.io/github/stars/h0ffmann/ptbr-writter?style=social&label=star%20me)](https://github.com/h0ffmann/ptbr-writter)
 [![site: Gleam + Lustre](https://img.shields.io/badge/site-Gleam%20%2B%20Lustre-FFAFF3?style=flat-square)](#o-site)
 
 Uma skill que reescreve texto técnico em português brasileiro para leitura única: sujeito explícito,
 uma proposição por frase, termos consistentes. Feita para OpenCode e Claude Code, e pensada para
-texto que humanos e agentes de IA vão ler.
+texto que humanos e agentes de IA vão ler. O objetivo: outro repositório instala a skill e mantém
+sua documentação técnica em PT-BR e EN gastando menos tokens.
 </div>
 
 ## a skill
@@ -57,9 +59,14 @@ há uma quinta: a lista de `⚠`. Os casos de regressão estão em [`evals/cient
 
 Gleam no alvo JavaScript e [Lustre](https://lustre.build), pré-renderizado para HTML estático. O
 leitor não recebe JavaScript. Todo fato da página (regras, níveis, formato de saída, exemplos de
-uso, receitas do `just`) é lido de `SKILL.md` e do `justfile` por `site/content`, um gerador em
+uso, limites, receitas do `just`) é lido de `SKILL.md` e do `justfile` por `site/content`, um gerador em
 Gleam que escreve `site/src/ptbr_writter_site/content.gleam`. Nada em `site/src` é digitado à mão.
 As regras visuais estão em [`DESIGN.md`](DESIGN.md).
+
+Duas tabelas guardam o que nenhum outro arquivo guarda: [`site/data/awesome.tsv`](site/data/awesome.tsv)
+(a seção awesome-ptbr-writter: repositórios relacionados, cada um com a lista curada onde foi
+achado) e [`site/data/roadmap.tsv`](site/data/roadmap.tsv) (a prontidão para produção: SKILL.md,
+evals, plugin, distribuição). O build falha se uma linha estiver malformada.
 
 [`.github/workflows/site.yml`](.github/workflows/site.yml) publica no GitHub Pages: um pull request
 só compila; um push na `main` compila e publica.
