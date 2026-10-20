@@ -3,3 +3,4 @@ SKILL.md	em andamento	regras PTW e níveis de rigor; as regras ainda estão marc
 evals	em andamento	um caso de regressão por regra científica, escrito e ainda não rodado por um harness ⚠	evals/cientifico.md
 plugin	planejado	empacotar a skill como plugin do Claude Code e do OpenCode, instalável com um comando	
 distribuição	planejado	release com tag e instalação por URL em outros repositórios, sem copiar o SKILL.md à mão	
+retórica	planejado	skill de retórica a partir do Fédon e do Fedro, de Platão; só o esqueleto existe, sem regras	skills/retorica/SKILL.md

@@ -70,6 +70,7 @@ Prontidão para produção. A fonte é [`site/data/roadmap.tsv`](site/data/roadm
 | [`evals/`](evals/cientifico.md) | em andamento | um caso de regressão por regra científica, escrito e ainda não rodado por um harness ⚠ |
 | plugin | planejado | empacotar a skill como plugin do Claude Code e do OpenCode, instalável com um comando |
 | distribuição | planejado | release com tag e instalação por URL em outros repositórios, sem copiar o `SKILL.md` à mão |
+| [retórica](skills/retorica/SKILL.md) | planejado | skill de retórica a partir do *Fédon* e do *Fedro*, de Platão; só o esqueleto existe, sem regras |
 
 ## awesome-ptbr-writter
 
@@ -156,6 +157,7 @@ justfile                receitas
 flake.nix, flake.lock   shell reprodutível e pins
 DESIGN.md               regras visuais do site
 evals/                  casos de regressão das regras (ainda sem harness)
+skills/retorica/        skill de retórica, em desenvolvimento (Fédon, Fedro)
 forks/picasso/          submódulo: toolchain do site
 site/
   content/              gerador: SKILL.md + justfile + data/ -> content.gleam
