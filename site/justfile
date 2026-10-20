@@ -1,0 +1,25 @@
+# The ptbr-writter site. Run inside the gleam-website shell: `nix develop ..#site`, or use the
+# root justfile's `just site`, which does that for you.
+
+default:
+    @just --list
+
+# Write src/ptbr_writter_site/content.gleam from SKILL.md and the justfile
+content:
+    cd content && gleam format --check src test && gleam test && gleam run
+    gleam format src/ptbr_writter_site/content.gleam
+
+# Prerender into dist/
+build: content
+    rm -rf dist
+    mkdir -p dist
+    gleam run -m ptbr_writter_site/prerender --no-print-progress > dist/index.html
+    cp -R static/. dist/
+    touch dist/.nojekyll
+
+# Formatting, tests and a build: what CI runs
+ci: content
+    gleam format --check src/ptbr_writter_site/app.gleam src/ptbr_writter_site/page.gleam src/ptbr_writter_site/prerender.gleam test
+    gleam test
+    just build
+    for id in uso niveis regras saida receitas; do grep -q "id=\"$id\"" dist/index.html || { echo "site: no #$id in index.html" >&2; exit 1; }; done

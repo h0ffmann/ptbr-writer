@@ -19,6 +19,7 @@ Instructions for AI agents working on `ptbr-writter`.
 nix develop        # enters the dev shell
 just               # list recipes
 just quality       # run checks
+just site          # build the website into site/dist
 just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 ```
 
@@ -29,6 +30,8 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 - `justfile` — recipes for running OpenCode, serving Qwen, and quality checks.
 - `flake.nix` / `flake.lock` — reproducible dev shell.
 - `README.md` — human-facing documentation.
+- `site/` — the website (Gleam + Lustre, prerendered). `site/content` writes its facts from `SKILL.md` and `justfile`; never type a rule, level or recipe into `site/src`. Look rules: `DESIGN.md`.
+- `forks/picasso` — submodule; its `labs/gleam-website` is the site toolchain, pinned in `flake.lock` to the same revision (`just pins`).
 
 ## Before changing `SKILL.md`
 

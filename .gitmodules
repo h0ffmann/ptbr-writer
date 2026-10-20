@@ -1,0 +1,4 @@
+[submodule "forks/picasso"]
+	path = forks/picasso
+	url = https://github.com/h0ffmann/picasso.git
+	shallow = true
