@@ -46,11 +46,12 @@ fmts = ["`.txt` (texto puro)", "`.md` (Markdown)", f"`.pdf` (do .md, com `bash {
 if notes:
     fmts.append(f"`notes` (o nível {COMPOSES}: notas indexáveis, uma ideia por nota, com tags e links)")
 lines = [
-    "ptbr-writter: o pedido não diz o nível de escrita. Antes de escrever, chame AskUserQuestion com duas perguntas, as duas multiSelect:",
-    "1. header \"Nível\", \"Em quais níveis?\", opções: " + "; ".join(f"{n} ({u})" for n, u in opts) + ".",
-    "2. header \"Formato\", \"Em quais formatos?\", opções: " + "; ".join(fmts) + ".",
+    "ptbr-writter: o pedido não diz o nível de escrita. Antes de escrever, chame AskUserQuestion com três perguntas numa chamada só:",
+    "1. header \"Nível\", multiSelect, \"Em quais níveis?\", opções: " + "; ".join(f"{n} ({u})" for n, u in opts) + ".",
+    "2. header \"Formato\", multiSelect, \"Em quais formatos?\", opções: " + "; ".join(fmts) + ".",
+    "3. header \"Pasta\", uma escolha, \"Onde gravar os arquivos?\", opções nesta ordem: raiz (Recommended), a pasta da sessão, o padrão; docs/. Outra pasta vem pelo Other.",
     "Depois, carregue a skill ptbr-writter e escreva uma versão por nível marcado. Grave cada versão em cada formato marcado, "
-    "no diretório atual, com o nome `ptbr-writter-<AAAAMMDDThhmmZ>-<objetivo>-<nível>.<ext>`: o carimbo em UTC, o mesmo para "
+    "na pasta escolhida (raiz se nenhuma; crie a pasta se faltar), com o nome `ptbr-writter-<AAAAMMDDThhmmZ>-<objetivo>-<nível>.<ext>`: o carimbo em UTC, o mesmo para "
     "todos os arquivos do pedido; o objetivo em 2 a 4 palavras, minúsculas sem acento, unidas por hífen; o nível sem acento "
     "(ex.: `ptbr-writter-20261020T2215Z-reinicio-servico-estrito.md`)"
     + (f"; com `notes`, as notas pelas regras de {COMPOSES} (`{COMPOSES} + <nível>`)" if notes else "")
@@ -75,7 +76,8 @@ self_test() {
   check "formats: txt, md, pdf with its script" '[[ $out == *"\`.txt\`"* && $out == *"\`.md\`"* && $out == *"to-pdf.sh <arquivo>.md"* ]]'
   check "file names: ptbr-writter-<UTC>-<goal>-<level>.<ext>" '[[ $out == *"ptbr-writter-<AAAAMMDDThhmmZ>-<objetivo>-<nível>.<ext>"* ]]'
   check ".txt and .md are always printed" '[[ $out == *"o conteúdo de cada .txt e cada .md gravado aparece inteiro na resposta"* ]]'
-  check "both questions are multiSelect" '[[ $out == *"as duas multiSelect"* ]]'
+  check "levels and formats are multiSelect" '[[ $out == *"Nível\\\", multiSelect"* && $out == *"Formato\\\", multiSelect"* ]]'
+  check "folder: raiz first and default, docs/ offered" '[[ $out == *"header \\\"Pasta\\\", uma escolha"* && $out == *"raiz (Recommended)"* && $out == *"docs/"* ]]'
   out=$(ask "/ptbr-writter:ptbr revise isto"); check "/ptbr-writter command asks" '[ -n "$out" ]'
   out=$(ask "use PTBR aqui"); check "case does not matter" '[ -n "$out" ]'
   out=$(ask "ptbr estrito: reescreva"); check "a named level does not ask" '[ -z "$out" ]'

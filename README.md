@@ -101,8 +101,8 @@ A partir da v0.2.0, `ptbr` no pedido ("ptbr: reescreva este texto"), sem nível,
 perguntar os níveis e os formatos, os dois em múltipla escolha: `.txt`, `.md`, `.pdf` e `notes`
 (smart-note). Sai uma versão por nível em cada formato, e o texto do `.txt` e do `.md` aparece sempre no console, não só o arquivo.
 
-Os arquivos vão para a pasta onde a sessão está aberta, em geral a raiz do repositório, com um
-nome só:
+Uma terceira pergunta escolhe a pasta: a raiz da sessão (o padrão, em geral a raiz do
+repositório), `docs/` ou outra, digitada. A pasta é criada se faltar. O nome dos arquivos é um só:
 
 ```text
 ptbr-writter-<AAAAMMDDThhmmZ>-<objetivo>-<nível>.<ext>
