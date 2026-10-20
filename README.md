@@ -183,6 +183,76 @@ de regressão por regra em `evals/`.
 
 </details>
 
+## plugin do Claude Code
+
+<details>
+<summary>instalar, fixar uma versão, e como sai uma release</summary>
+
+```console
+/plugin marketplace add h0ffmann/ptbr-writter
+/plugin install ptbr-writter@ptbr-writter
+```
+
+As skills carregam como `/ptbr-writter:ptbr-writter`, `/ptbr-writter:ptbr` e
+`/ptbr-writter:cientifico`. A de retórica fica fora até ter regras. Um repositório fixa a versão em
+`.claude/settings.json`, e, se quiser, oferece o plugin a quem abre o repositório com o hook de
+`ptbr-routing` (silencioso depois de instalado ou com `PTBR_PLUGIN_OPTOUT=1`):
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "ptbr-writter": { "source": { "source": "github", "repo": "h0ffmann/ptbr-writter", "ref": "v0.1.0" } }
+  },
+  "enabledPlugins": { "ptbr-writter@ptbr-writter": true },
+  "hooks": {
+    "SessionStart": [{ "hooks": [{ "type": "command", "timeout": 5,
+      "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/skills/ptbr-routing/scripts/session-check.sh\"" }] }]
+  }
+}
+```
+
+Código e plugin têm uma versão só: o `version` de
+[`plugin.json`](plugins/ptbr-writter/.claude-plugin/plugin.json), o cabeçalho do
+[`CHANGELOG.md`](CHANGELOG.md) e a tag `vX.Y.Z`. Um PR muda os dois primeiros; depois do merge, a
+tag no `main` dispara o [`release.yml`](.github/workflows/release.yml), que roda
+`just release-check` e publica a release. Uma tag que não bate com o `plugin.json` não vira
+release. Entre tags, o `main` muda sem atingir quem fixou o `ref`; o site publica do `main` a cada
+merge. As skills do plugin são links para os arquivos do repositório, e o Claude Code copia o
+conteúdo ao instalar; `just plugin-check` (parte de `just quality`) falha num link quebrado.
+
+</details>
+
+## roteamento
+
+<details>
+<summary>uma skill e um nível, antes de carregar qualquer outra</summary>
+
+[`skills/ptbr-routing/`](skills/ptbr-routing/SKILL.md) escolhe a skill e o nível de um pedido de escrita, para
+que só essa skill entre no contexto. `route` é Python sem dependências e lê
+[`routes.tsv`](skills/ptbr-routing/routes.tsv), uma linha por nível com as palavras que o indicam.
+`smart-note` combina com o nível que empatar no topo.
+
+```console
+$ just route "reescreva este runbook de incidente"
+ptbr-writter · estrito
+$ just route "transforme em notas do Obsidian este comunicado"
+ptbr-writter · smart-note + leve
+```
+
+Fica fora do plugin, como o `routing` do [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit)
+(v0.20.4): um repositório copia `skills/ptbr-routing/` para `.claude/skills/ptbr-routing/` e a fixa
+num commit no `skills.lock`, com o `skills-vendor` do devkit:
+
+```console
+$ skills_vendor.py init ptbr-routing --upstream h0ffmann/ptbr-writter --path skills/ptbr-routing --paths LICENSE=LICENSE
+```
+
+O nome é `ptbr-routing`, não `routing`, para conviver com o `routing` do devkit no mesmo
+`.claude/skills/`. Aqui, `.claude/skills/ptbr-routing` é um link para `skills/ptbr-routing`.
+`just quality` roda o self-test e confere que cada nível de `SKILL.md` tem uma linha em `routes.tsv`.
+
+</details>
+
 ## roadmap
 
 Prontidão para produção. A fonte é [`site/data/roadmap.tsv`](site/data/roadmap.tsv); o
@@ -193,8 +263,9 @@ Prontidão para produção. A fonte é [`site/data/roadmap.tsv`](site/data/roadm
 | [`SKILL.md`](SKILL.md) | em andamento | regras PTW e níveis de rigor; as regras ainda estão marcadas como em desenvolvimento |
 | [`evals/`](evals/cientifico.md) | em andamento | um caso de regressão por regra científica, escrito e ainda não rodado por um harness ⚠ |
 | [skill científica](skills/cientifico/SKILL.md) | em andamento | skill própria para texto científico, com regras CIE; casos de regressão em `evals/cientifico-cie.md`, escritos e ainda não rodados ⚠ |
-| plugin | planejado | empacotar a skill como plugin do Claude Code e do OpenCode, instalável com um comando |
-| distribuição | planejado | release com tag e instalação por URL em outros repositórios, sem copiar o `SKILL.md` à mão |
+| [roteamento](skills/ptbr-routing/SKILL.md) | feito | `route` escolhe a skill e o nível antes de carregar uma skill, para que só ela entre no contexto |
+| [plugin](plugins/ptbr-writter/.claude-plugin/plugin.json) | em andamento | plugin do Claude Code: marketplace e plugin `ptbr-writter`, com `ptbr-writter`, `ptbr` e `cientifico`; falta o OpenCode |
+| [distribuição](CHANGELOG.md) | em andamento | uma versão para código e plugin: a tag `vX.Y.Z` vira release (`release.yml`) e outros repositórios fixam o marketplace nela; nenhuma tag publicada ainda |
 | [retórica](skills/retorica/SKILL.md) | planejado | skill de retórica a partir do *Fédon* e do *Fedro*, de Platão, e do Phaedrus de Robert M. Pirsig; só o esqueleto existe, sem regras |
 
 ## awesome-ptbr-writter
@@ -249,6 +320,9 @@ skills/retorica/        skill de retórica, em desenvolvimento (Fédon, Fedro, P
 forks/picasso/          submódulo: toolchain do site
 skills/cientifico/      skill científica (regras CIE)
 skills/ptbr/            alias /ptbr: link para SKILL.md
+plugins/ptbr-writter/   plugin do Claude Code: plugin.json e links para as skills
+.claude-plugin/         marketplace.json
+skills/ptbr-routing/    roteamento: skill e nível de um pedido (route, routes.tsv)
 site/
   content/              gerador: SKILL.md + justfile + data/ -> content.gleam
   data/                 awesome.tsv e roadmap.tsv

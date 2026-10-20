@@ -1,0 +1,24 @@
+# release — a pushed v* tag becomes a GitHub release, once its version agrees with plugin.json and
+# CHANGELOG.md (`just release-check`). Claude Code installs the plugin from the tag a repo pins as
+# the marketplace `ref`; the site deploys from main on its own (site.yml).
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions: {}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - run: nix develop --no-update-lock-file --command just release-check "$GITHUB_REF_NAME"
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes --title "ptbr-writter $GITHUB_REF_NAME"
