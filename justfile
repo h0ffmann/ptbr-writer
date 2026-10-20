@@ -127,6 +127,62 @@ plugin-check:
     bash skills/ptbr-routing/scripts/session-check.sh --self-test
     echo "plugin-check: ok (v$v)"
 
+# What ships in the plugin changed since the last v* tag: lists the files and exits 1; installs keep the old text until a release.
+release-due:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    files=$(find -L plugins/ptbr-writter .claude-plugin -type f -exec realpath --relative-to=. {} + | sort -u)
+    last=$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)
+    if [ -z "$last" ]; then changed=$files; since="(no release yet)"
+    else changed=$(git diff --name-only "$last" HEAD -- $files); since="since $last"; fi
+    [ -n "$changed" ] || { echo "release-due: nothing in the plugin changed $since"; exit 0; }
+    echo "release-due: the plugin changed $since; installs keep the old text until just release X.Y.Z:"
+    sed 's/^/  /' <<<"$changed"
+    exit 1
+
+# Release X.Y.Z in two runs: a chore/release-vX.Y.Z PR (plugin.json, CHANGELOG), then, after its merge, the tag on main.
+release version:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    v="{{ version }}"; json=plugins/ptbr-writter/.claude-plugin/plugin.json
+    [[ $v =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "release: $v is not X.Y.Z" >&2; exit 1; }
+    [ -z "$(git status --porcelain)" ] || { echo "release: the tree is not clean" >&2; exit 1; }
+    git fetch -q origin main --tags
+    ! git rev-parse -q --verify "refs/tags/v$v" >/dev/null || { echo "release: v$v exists" >&2; exit 1; }
+    now=$(git show "origin/main:$json" | python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')
+    if [ "$now" != "$v" ]; then
+        git switch -q -c "chore/release-v$v" origin/main
+        # A release with nothing new for the plugin would reach no one: refuse it.
+        due=$(just release-due | tail -n +2 || true)
+        [ -n "$due" ] || { git switch -q -; git branch -q -D "chore/release-v$v"; echo "release: nothing in the plugin changed since the last tag" >&2; exit 1; }
+        python3 - "$json" "$v" <<'PY'
+    import json, sys
+    path, v = sys.argv[1], sys.argv[2]
+    d = json.load(open(path)); d["version"] = v
+    open(path, "w").write(json.dumps(d, indent=2, ensure_ascii=False) + "\n")
+    PY
+        python3 - "$v" "$(date -u +%F)" "$due" <<'PY'
+    import sys
+    v, day, due = sys.argv[1], sys.argv[2], sys.argv[3]
+    s = open("CHANGELOG.md").read()
+    head, rest = s.split("\n## ", 1)
+    files = ", ".join(f"`{f.strip()}`" for f in due.splitlines())
+    open("CHANGELOG.md", "w").write(f"{head}\n## v{v} — {day}\n\n- (descreva a release) mudou: {files}\n\n## {rest}")
+    PY
+        ${EDITOR:-vi} CHANGELOG.md
+        ! grep -q '(descreva a release)' CHANGELOG.md || { echo "release: CHANGELOG.md still has the placeholder" >&2; exit 1; }
+        just plugin-check
+        git commit -qam "release: v$v" -m "Tested: just plugin-check" -m "Co-Authored-By: Claude <noreply@anthropic.com>"
+        git push -q -u origin "chore/release-v$v"
+        gh pr create --base main --title "release: v$v" --body "plugin.json e CHANGELOG.md em v$v. Depois do merge: \`just release $v\` no main cria a tag."
+    else
+        [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] || { echo "release: check out origin/main first (git switch main && git pull)" >&2; exit 1; }
+        just release-check "v$v"
+        git tag -a "v$v" -m "ptbr-writter v$v"
+        git push -q origin "v$v"
+        echo "release: v$v pushed; release.yml publishes it"
+    fi
+
 # The tag a release pushes must be the plugin's version: just release-check v0.1.0 (release.yml runs it).
 release-check tag: plugin-check
     test "{{ tag }}" = "v$(python3 -c 'import json; print(json.load(open("plugins/ptbr-writter/.claude-plugin/plugin.json"))["version"])')"
