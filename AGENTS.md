@@ -11,6 +11,7 @@ Instructions for AI agents working on `ptbr-writter`.
 - **No secrets in code.** Placeholders only; use `.env.example` if needed.
 - **One feature, one PR.** Keep commits small and focused.
 - **Commit trailers.** Use `Tested:` and `Co-Authored-By: Claude <noreply@anthropic.com>`.
+- **An author level respects the author's rights.** A level that imitates a writer (`machado-writter`, `saramago-writter`) never copies a passage; it cites the author as `REUSE.md` says, and `machado-writter` always cites Machado de Assis. Check that a new author's work is in the public domain before adding one, and write its rule in `REUSE.md`.
 - **No credits in a skill's body.** A skill file (`SKILL.md`, `skills/*/SKILL.md`) holds instructions only: no credits, sources, links, commit pins, author names or history. They are loaded into other people's context. Credits go to `README.md` and `site/data/origins.tsv`.
 - **No paid resources** without explicit human confirmation.
 
@@ -33,6 +34,8 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 - `flake.nix` / `flake.lock` — reproducible dev shell.
 - `evals/` — regression cases for rules (not yet run by a harness).
 - `README.md` — human-facing documentation.
+- `lint/saramago/` — Vale prose linter for Saramago's punctuation; `just saramago FILE`, self-test `just saramago-check` (part of `just quality`).
+- `REUSE.md` — reuse rules for the author levels (citation, public domain, style only).
 - `skills/retorica/SKILL.md` — a second skill, rhetoric from Plato's *Phaedo* and *Phaedrus* and Pirsig's Phaedrus (ZAMM); a skeleton with no rules yet.
 - `site/` — the website (Gleam + Lustre, prerendered). `site/content` writes its facts from `SKILL.md`, `justfile` and `site/data/*.tsv` (`awesome.tsv`: related repos, each with its curated source; `roadmap.tsv`: production readiness; `origins.tsv`: each rule's source repo and creator's GitHub login (never a full name) — a new rule needs its row or the build fails); never type a rule, level, recipe, repo or status into `site/src`. Look rules: `DESIGN.md`.
 - `forks/picasso` — submodule; its `labs/gleam-website` is the site toolchain, pinned in `flake.lock` to the same revision (`just pins`).
