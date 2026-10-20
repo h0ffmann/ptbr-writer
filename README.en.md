@@ -103,8 +103,8 @@ From v0.2.0, `ptbr` in a request ("ptbr: reescreva este texto") with no level ma
 for the levels and the formats, both multiple choice: `.txt`, `.md`, `.pdf` and `notes`
 (smart-note). You get one version per level in each format, and the text of the `.txt` and `.md` always shows in the console, not only the file.
 
-The files go to the folder the session is open in, usually the repository root, under one name
-pattern:
+A third question picks the folder: the session root (the default, usually the repository root),
+`docs/`, or another one, typed in. The folder is created if missing. Files share one name pattern:
 
 ```text
 ptbr-writter-<YYYYMMDDThhmmZ>-<goal>-<level>.<ext>
