@@ -11,6 +11,7 @@ opencode *args:
 
 # Serve Qwen3.6-27B (Q4_K_M) with llama.cpp CUDA and run OpenCode against it.
 # Requires: nix, NVIDIA driver, ~24 GB GPU, 16 GB RAM, 17 GB disk for the one-time download.
+
 # Override llamacpp parameters with LLAMA_ARG_* env vars.
 opencode-qwen *args:
     #!/usr/bin/env bash
