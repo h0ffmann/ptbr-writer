@@ -27,6 +27,7 @@ o texto e declara o que assumiu.
 | `estrito`   | runbooks, procedimentos, saídas para agentes |
 | `descritivo` | documentação de sistema                    |
 | `leve`      | comunicados internos                        |
+| `científico` | artigos, propostas, relatórios técnicos com fontes |
 
 ## regras
 
@@ -42,9 +43,15 @@ O texto completo de cada regra está [no site](https://h0ffmann.github.io/ptbr-w
 | PTW-6 | Termos congelados           |
 | PTW-7 | Números, datas e unidades   |
 | PTW-8 | Ortografia PT-BR vigente    |
+| PTW-9 | Toda afirmação tem marca    |
+| PTW-10 | Nenhuma referência inventada |
+| PTW-11 | Número com unidade e origem |
+| PTW-12 | Sem alegação de pioneirismo |
+| PTW-13 | Fato separado de análise   |
 
 A saída tem quatro partes: nível e destinatário assumidos; tabela de violações (regra, trecho
-original, reescrita); texto final; nota sobre o que foi mantido de propósito.
+original, reescrita); texto final; nota sobre o que foi mantido de propósito. No nível `científico`
+há uma quinta: a lista de `⚠`. Os casos de regressão estão em [`evals/cientifico.md`](evals/cientifico.md).
 
 ## o site
 
@@ -110,6 +117,7 @@ SKILL.md                a skill
 justfile                receitas
 flake.nix, flake.lock   shell reprodutível e pins
 DESIGN.md               regras visuais do site
+evals/                  casos de regressão das regras (ainda sem harness)
 forks/picasso/          submódulo: toolchain do site
 site/
   content/              gerador: SKILL.md + justfile -> content.gleam
@@ -133,6 +141,9 @@ O layout deste README vem do [h0ffmann/picasso](https://github.com/h0ffmann/pica
 disciplina do site vêm de [h0ffmann/closed-source](https://github.com/h0ffmann/closed-source) e
 [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu). Lustre (MIT) e a stdlib do Gleam
 (Apache-2.0) rodam só no build; a página publicada não leva o código deles. As fontes vêm do Google Fonts (SIL OFL).
+As regras PTW-9 a PTW-13 adaptam a skill `ouro-paper` e o estilo `.vale/styles/research` de
+[marola-dev/marola-research](https://github.com/marola-dev/marola-research) (`041cedd`) e a seção
+"Audience and evidence" de [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) (`319e4e2`).
 
 ## licença
 
