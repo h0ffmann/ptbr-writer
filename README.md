@@ -4,7 +4,7 @@
 
 # ptbr-writter
 
-<sub><a href="https://h0ffmann.github.io/ptbr-writter/">o site</a> · <a href="SKILL.md">SKILL.md</a> · <a href="#regras">regras</a> · <a href="#desenvolvimento">desenvolvimento</a> · <a href="#licença">licença</a></sub>
+<sub><a href="https://h0ffmann.github.io/ptbr-writter/">o site</a> · <a href="SKILL.md">SKILL.md</a> · <a href="#regras">regras</a> · <a href="#roadmap">roadmap</a> · <a href="#awesome-ptbr-writter">awesome</a> · <a href="#desenvolvimento">desenvolvimento</a> · <a href="#licença">licença</a></sub>
 
 [![site](https://github.com/h0ffmann/ptbr-writter/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writter/actions/workflows/site.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
@@ -22,7 +22,8 @@ sua documentação técnica em PT-BR e EN gastando menos tokens.
 
 [`SKILL.md`](SKILL.md) é o prompt que o agente carrega. Invoque com `/ptbr-writter` ou descreva a
 tarefa ("reescreva este runbook em português controlado"). Sem nível explícito, a skill classifica
-o texto e declara o que assumiu.
+o texto e declara o que assumiu. A skill não muda tese, autoria nem conclusões, e não busca fontes:
+marca o que não foi checado.
 
 | Nível       | Uso                                         |
 | :---------- | :------------------------------------------ |
@@ -54,6 +55,34 @@ O texto completo de cada regra está [no site](https://h0ffmann.github.io/ptbr-w
 A saída tem quatro partes: nível e destinatário assumidos; tabela de violações (regra, trecho
 original, reescrita); texto final; nota sobre o que foi mantido de propósito. No nível `científico`
 há uma quinta: a lista de `⚠`. Os casos de regressão estão em [`evals/cientifico.md`](evals/cientifico.md).
+
+PTW-9 a PTW-13 adaptam regras de [marola-dev/marola-research](https://github.com/marola-dev/marola-research)
+(`ouro-paper`, `.vale/styles/research`) e de [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu)
+("Audience and evidence"); [`SKILL.md`](SKILL.md) diz em que commit.
+
+## roadmap
+
+Prontidão para produção. A fonte é [`site/data/roadmap.tsv`](site/data/roadmap.tsv); o
+[site](https://h0ffmann.github.io/ptbr-writter/#roadmap) a lê no build.
+
+| Peça | Status | O que falta ou o que há |
+| :--- | :----- | :---------------------- |
+| [`SKILL.md`](SKILL.md) | em andamento | regras PTW e níveis de rigor; as regras ainda estão marcadas como em desenvolvimento |
+| [`evals/`](evals/cientifico.md) | em andamento | um caso de regressão por regra científica, escrito e ainda não rodado por um harness ⚠ |
+| plugin | planejado | empacotar a skill como plugin do Claude Code e do OpenCode, instalável com um comando |
+| distribuição | planejado | release com tag e instalação por URL em outros repositórios, sem copiar o `SKILL.md` à mão |
+
+## awesome-ptbr-writter
+
+Outros projetos para quem escreve texto técnico em português, cada um achado numa lista curada. A
+fonte é [`site/data/awesome.tsv`](site/data/awesome.tsv).
+
+| Repositório | O que dá | Achado em |
+| :---------- | :------- | :-------- |
+| [fabricioctelles/skills](https://github.com/fabricioctelles/skills) | skill "humanizar" para agentes: remove padrões de texto de IA em pt-BR | [awesome-jev](https://github.com/heyjunpenn/awesome-jev) |
+| [vale-cli/vale](https://github.com/vale-cli/vale) | linter de prosa com estilos próprios, base para regras pt-BR | [awesome-scientific-writing](https://github.com/writing-resources/awesome-scientific-writing) |
+| [hunspell/hunspell](https://github.com/hunspell/hunspell) | verificação ortográfica com dicionários pt-BR | [awesome-scientific-writing](https://github.com/writing-resources/awesome-scientific-writing) |
+| [ajdavidl/Portuguese-NLP](https://github.com/ajdavidl/Portuguese-NLP) | índice de recursos de PLN para português | [awesome-nlp](https://github.com/keon/awesome-nlp) |
 
 ## o site
 
@@ -127,7 +156,8 @@ DESIGN.md               regras visuais do site
 evals/                  casos de regressão das regras (ainda sem harness)
 forks/picasso/          submódulo: toolchain do site
 site/
-  content/              gerador: SKILL.md + justfile -> content.gleam
+  content/              gerador: SKILL.md + justfile + data/ -> content.gleam
+  data/                 awesome.tsv e roadmap.tsv
   src/                  o site em Gleam + Lustre
   static/               favicon e CSS
   test/                 testes
