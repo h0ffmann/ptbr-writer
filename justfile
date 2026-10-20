@@ -151,6 +151,10 @@ plugin-smoke:
 plugin-eval *args:
     claude plugin eval plugins/ptbr-writter --trust-plugin --no-publish --runs 1 {{ args }}
 
+# What the .pdf output downloads and builds on a machine with Nix and no pandoc, timed into an empty store.
+pdf-bench:
+    scripts/pdf-bench.sh
+
 # Release X.Y.Z in two runs: a chore/release-vX.Y.Z PR (plugin.json, CHANGELOG), then, after its merge, the tag on main.
 release version:
     #!/usr/bin/env bash
