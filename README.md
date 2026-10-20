@@ -23,7 +23,7 @@ sua documentação técnica em PT-BR e EN gastando menos tokens.
 <details>
 <summary>níveis de rigor e limites</summary>
 
-[`SKILL.md`](SKILL.md) é o prompt que o agente carrega. Invoque com `/ptbr-writter` ou descreva a
+[`SKILL.md`](SKILL.md) é o prompt que o agente carrega. Invoque com `/ptbr-writter` (alias `/ptbr`) ou descreva a
 tarefa ("reescreva este runbook em português controlado"). Sem nível explícito, a skill classifica
 o texto e declara o que assumiu. A skill não muda tese, autoria nem conclusões, e não busca fontes:
 marca o que não foi checado.
@@ -248,6 +248,7 @@ lint/saramago/          linter de prosa saramaguiano (Vale)
 skills/retorica/        skill de retórica, em desenvolvimento (Fédon, Fedro, Pirsig)
 forks/picasso/          submódulo: toolchain do site
 skills/cientifico/      skill científica (regras CIE)
+skills/ptbr/            alias /ptbr: link para SKILL.md
 site/
   content/              gerador: SKILL.md + justfile + data/ -> content.gleam
   data/                 awesome.tsv e roadmap.tsv
