@@ -1,0 +1,3 @@
+— Bom dia! — disse o porteiro.
+
+"Será que o dia é bom?", pensou ele; não sabia: a manhã apenas começava...

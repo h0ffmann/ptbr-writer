@@ -1,0 +1,11 @@
+# Speech and thought are not quoted: the capital letter after the comma marks them.
+extends: existence
+message: "'%s': sem aspas. A fala e o pensamento se marcam pela maiúscula depois da vírgula."
+level: warning
+nonword: true
+tokens:
+  - '"'
+  - "“"
+  - "”"
+  - "«"
+  - "»"

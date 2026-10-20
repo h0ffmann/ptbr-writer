@@ -65,3 +65,8 @@ section { padding: 32px 24px; border-top: 1px solid var(--rule); }
 .doing .status { border: 1px solid var(--pen); color: var(--pen); }
 .todo .status { border: 1px dashed var(--muted); color: var(--muted); }
 .from { font-size: 0.85em; color: var(--muted); margin-top: 0.2em !important; }
+.state { font-family: var(--mono); font-size: 0.7em; margin-left: 8px; padding: 0.1em 0.6em; border-radius: 999px; }
+.state.done { background: var(--pen); color: var(--sheet); }
+.state.todo { border: 1px dashed var(--muted); color: var(--muted); }
+.chip.todo { border-style: dashed; }
+.warn { border-left: 3px solid var(--review); padding-left: 12px; font-size: 0.95em; }

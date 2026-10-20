@@ -28,6 +28,7 @@
             jq
             curl
             lsof
+            vale # the Saramago prose linter (lint/saramago)
             iproute2
           ];
 

@@ -41,6 +41,12 @@ pub type Origin {
   Origin(id: String, origin: String, repo: String, creator: String)
 }
 
+/// A row of site/data/planned.tsv: a level that is planned and not yet in SKILL.md, so it costs
+/// no context to anyone who installs the skill.
+pub type Planned {
+  Planned(name: String, what: String)
+}
+
 /// The statuses a roadmap row may have, in the order of the work.
 pub const statuses = ["feito", "em andamento", "planejado"]
 
@@ -313,6 +319,45 @@ pub fn login(s: String) -> Bool {
   })
 }
 
+pub fn planned(text: String) -> List(Planned) {
+  tsv(text)
+  |> list.filter_map(fn(cells) {
+    case cells {
+      [name, what] -> Ok(Planned(name, what))
+      _ -> Error(Nil)
+    }
+  })
+}
+
+/// What is wrong with planned.tsv: no row, a row that is not two cells, or a level that SKILL.md
+/// already has (then it is implemented, and its row goes).
+pub fn planned_errors(skill: String, text: String) -> List(String) {
+  let done = list.map(levels(skill), fn(l) { l.name })
+  list.flatten([
+    case tsv(text) {
+      [] -> ["planned.tsv: no row"]
+      rows ->
+        list.filter_map(rows, fn(cells) {
+          case list.length(cells) {
+            2 -> Error(Nil)
+            _ ->
+              Ok(
+                "planned.tsv: a row needs 2 cells: "
+                <> string.join(cells, " | "),
+              )
+          }
+        })
+    },
+    list.filter_map(planned(text), fn(p) {
+      case list.contains(done, p.name) {
+        False -> Error(Nil)
+        True ->
+          Ok("planned.tsv: " <> p.name <> " is in SKILL.md now; delete its row")
+      }
+    }),
+  ])
+}
+
 /// What is wrong with the two tables: a row that is not four cells, a link that is not a GitHub
 /// repository, a source that is not a URL, a status outside `statuses`, or a table with no row.
 pub fn data_errors(awesome: String, roadmap: String) -> List(String) {
@@ -402,6 +447,10 @@ pub type Step {
 pub type Origin {
   Origin(id: String, origin: String, repo: String, creator: String)
 }
+
+pub type Planned {
+  Planned(name: String, what: String)
+}
 "
 
 /// The content module, from the text of SKILL.md and of the justfile.
@@ -411,6 +460,7 @@ pub fn module(
   awesome: String,
   roadmap: String,
   origin_rows: String,
+  planned_rows: String,
   rev: String,
 ) -> String {
   string.join(
@@ -444,6 +494,13 @@ pub fn module(
         "Link",
         list.map(links(awesome), fn(l) {
           call("Link", [l.name, l.url, l.what, l.source])
+        }),
+      ),
+      items(
+        "planned",
+        "Planned",
+        list.map(planned(planned_rows), fn(p) {
+          call("Planned", [p.name, p.what])
         }),
       ),
       items(
@@ -493,17 +550,27 @@ pub fn main() -> Nil {
   let awesome = read("../data/awesome.tsv")
   let roadmap = read("../data/roadmap.tsv")
   let origin_rows = read("../data/origins.tsv")
+  let planned_rows = read("../data/planned.tsv")
   case
     list.flatten([
       errors(skill, justfile),
       data_errors(awesome, roadmap),
       origin_errors(skill, origin_rows),
+      planned_errors(skill, planned_rows),
     ])
   {
     [] ->
       write(
         "../src/ptbr_writter_site/content.gleam",
-        module(skill, justfile, awesome, roadmap, origin_rows, revision()),
+        module(
+          skill,
+          justfile,
+          awesome,
+          roadmap,
+          origin_rows,
+          planned_rows,
+          revision(),
+        ),
       )
     found -> {
       list.each(found, io.println_error)

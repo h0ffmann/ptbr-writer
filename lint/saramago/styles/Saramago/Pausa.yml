@@ -1,0 +1,10 @@
+# Only the comma and the full stop: no semicolon, no colon, no ellipsis.
+extends: existence
+message: "'%s': só vírgula e ponto. Troque por vírgula, ou feche o período."
+level: warning
+nonword: true
+tokens:
+  - ';'
+  - ':'
+  - '…'
+  - '\.\.\.'
