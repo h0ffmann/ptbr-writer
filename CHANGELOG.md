@@ -1,7 +1,7 @@
 # Changelog
 
 Uma versão só: a tag `vX.Y.Z`, o `version` de `plugins/ptbr-writter/.claude-plugin/plugin.json` e o
-cabeçalho abaixo andam juntos. `just release-check vX.Y.Z` confere; `release.yml` publica a release.
+cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, depois do merge, cria a tag; `release.yml` publica a release.
 
 ## v0.1.0 — 2026-10-20
 

@@ -213,9 +213,11 @@ As skills carregam como `/ptbr-writter:ptbr-writter`, `/ptbr-writter:ptbr` e
 
 Código e plugin têm uma versão só: o `version` de
 [`plugin.json`](plugins/ptbr-writter/.claude-plugin/plugin.json), o cabeçalho do
-[`CHANGELOG.md`](CHANGELOG.md) e a tag `vX.Y.Z`. Um PR muda os dois primeiros; depois do merge, a
-tag no `main` dispara o [`release.yml`](.github/workflows/release.yml), que roda
-`just release-check` e publica a release. Uma tag que não bate com o `plugin.json` não vira
+[`CHANGELOG.md`](CHANGELOG.md) e a tag `vX.Y.Z`. `just release X.Y.Z` roda duas vezes. Na
+primeira, abre o PR `chore/release-vX.Y.Z` com o `plugin.json` e a entrada do `CHANGELOG.md`, que
+você escreve no editor. Depois do merge, no `main`, a segunda cria e envia a tag; o
+[`release.yml`](.github/workflows/release.yml) roda `just release-check` e publica a release. Usar
+o plugin não exige release: sem `ref`, o marketplace lê o `main`. Uma tag que não bate com o `plugin.json` não vira
 release. Entre tags, o `main` muda sem atingir quem fixou o `ref`; o site publica do `main` a cada
 merge. As skills do plugin são links para os arquivos do repositório, e o Claude Code copia o
 conteúdo ao instalar; `just plugin-check` (parte de `just quality`) falha num link quebrado.
