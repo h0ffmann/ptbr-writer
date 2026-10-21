@@ -111,7 +111,8 @@ such file, Claude asks once, multiple choice:
 
 - **levels:** one text per level;
 - **formats:** `.txt`, `.md`, `.pdf` and `notes` (smart-note);
-- **folder:** the session root (the default), `docs/`, or another one, typed in.
+- **folder:** the session root (the default), `docs/`, or another one, typed in;
+- **languages:** pt-BR (the default) and/or ASD-STE100, Simplified Technical English; one text per language.
 
 and writes the answers to `./ptbr-writer.toml`. From then on it does not ask: edit the file, or
 write `ptbr reconfigurar`.
@@ -121,6 +122,7 @@ levels = ["estrito"]     # empty: the skill classifies and states the level
 formats = ["md", "pdf"]  # txt, md, pdf, notes; empty: only the answer
 folder = "docs"          # relative to the session root, no ".."
 print = ["txt", "md"]    # shown in full in the console, besides the file
+languages = ["pt-BR"]    # and/or "asd-ste100"; the ASD-STE100 file ends in -ste100
 ```
 
 Each layer overrides the one before: the plugin's defaults
