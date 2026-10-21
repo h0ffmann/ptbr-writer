@@ -5,6 +5,8 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- Os READMEs ganham dois selos de extensão de navegador em dev local (WIP), um com o logo do Chrome
+  (leva à seção Chrome) e outro com o logo do Firefox (leva a `docs/EXTENSION_FIREFOX.md`).
 - `docs/EXTENSION_FIREFOX.md` registra o experimento da extensão no Firefox em 2026-10-21: a
   workstation, o build, o MCP do Firefox, as origens do Ollama, o que não foi testado e os passos
   para reproduzir.
