@@ -201,6 +201,43 @@ describe('watcher', () => {
     expect(onResult).toHaveBeenCalledTimes(1);
   });
 
+  it('an expected edit (an accepted suggestion) neither clears nor checks again', async () => {
+    const send = vi.fn(async (_r: CheckRequest) => ({ ok: true, suggestions: [] }) as CheckResult);
+    const { w, onResult } = setup(send);
+    const el = field('Foi decidido que o deploy vai ser na sexta.');
+    w.attach(el);
+    w.expectEdit(el, 'A equipe decidiu que o deploy vai ser na sexta.');
+    type(el, 'A equipe decidiu que o deploy vai ser na sexta.');
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(onResult).not.toHaveBeenCalled();
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it('typing after an expected edit clears and checks again', async () => {
+    const send = vi.fn(async (_r: CheckRequest) => ({ ok: true, suggestions: [] }) as CheckResult);
+    const { w, onResult } = setup(send);
+    const el = field('um dois três');
+    w.attach(el);
+    w.expectEdit(el, 'um dois três quatro');
+    type(el, 'um dois três quatro');
+    type(el, 'um dois três quatro cinco');
+    expect(onResult).toHaveBeenCalledWith(el, [], 0);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  it('an edit different from the expected one is treated as typing', async () => {
+    const send = vi.fn(async (_r: CheckRequest) => ({ ok: true, suggestions: [] }) as CheckResult);
+    const { w, onResult } = setup(send);
+    const el = field('um dois três');
+    w.attach(el);
+    w.expectEdit(el, 'um dois três quatro');
+    type(el, 'um dois três outra coisa');
+    expect(onResult).toHaveBeenCalledWith(el, [], 0);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
   it('detach stops pending checks', async () => {
     const send = vi.fn(async (_r: CheckRequest) => ({ ok: true, suggestions: [] }) as CheckResult);
     const { w } = setup(send);
