@@ -31,4 +31,12 @@ describe('build', () => {
     expect(m.host_permissions).toContain('http://127.0.0.1/*');
     expect(m.host_permissions).toContain('http://localhost/*');
   });
+
+  it('--firefox troca o service worker por scripts e tem um id de add-on', () => {
+    run('--firefox');
+    const m = read('../dist-firefox/manifest.json');
+    expect(m.background).toEqual({ scripts: ['background.js'], type: 'module' });
+    expect(m.browser_specific_settings.gecko.id).toBe('ptbr-writer@h0ffmann');
+    expect(m.content_scripts[0].matches).not.toContain('http://localhost/*');
+  });
 });
