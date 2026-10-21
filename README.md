@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![versão](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=vers%C3%A3o&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
-[![leitura estimada: ~22 min](https://img.shields.io/badge/leitura%20estimada-~22%20min-1682D4?style=flat-square)](#tempo-de-leitura)
+[![leitura estimada: ~23 min](https://img.shields.io/badge/leitura%20estimada-~23%20min-1682D4?style=flat-square)](#tempo-de-leitura)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#instalar)
 
 </div>
@@ -102,6 +102,16 @@ carregam e a instrução chega ao modelo; ⚠ que o modelo responda com a ferram
 medido (`opencode run` não a oferece). Precisa de `bash`, `curl` e `tar`; os binários são
 `linux-x86_64` e `linux-aarch64`. A `ptbr-routing` não vai: ela depende de um hook do Claude Code.
 
+### Chrome
+
+Uma extensão (fora do plugin, ainda sem release) sublinha no campo onde você escreve o que o nível
+pede para mudar. Instale do código-fonte:
+
+1. `just ext-build`
+2. Abra `chrome://extensions` e ligue o **Modo do desenvolvedor**.
+3. Em **Carregar sem compactação**, escolha `extension/dist/`.
+4. Nas opções da extensão, escolha o provider (Claude ou DeepSeek) e cole a chave.
+
 ## usar
 
 | Comando | Faz |
@@ -180,6 +190,19 @@ onde o caminho começa ou termina.
 commit fixado em `forks/picasso` coincidem, `just pins` confere.
 
 </details>
+
+**Extensão do Chrome.** Depois de uma pausa de 1 s na digitação, o texto do campo vai ao provider
+escolhido (Claude, modelo padrão `claude-haiku-5-5`; ou DeepSeek, `deepseek-flash` ⚠ lido na
+documentação da DeepSeek em 2026-10-21, não medido). Só ele recebe o texto, e as chaves ficam só em
+`chrome.storage.local`. Os trechos a mudar aparecem sublinhados; clicar abre um cartão com
+**Aceitar** e **Ignorar**, e nada muda sem você aceitar. Ligados de início: `web.whatsapp.com`
+(`leve`), `mail.google.com` (`descritivo`) e `github.com` (`descritivo`). Os outros sites ficam
+desligados até você clicar em **Ativar neste site** no popup, ou liberar nas opções; os níveis são
+`estrito`, `descritivo`, `leve` e `científico`. Campos com menos de 3 palavras e campos de senha são
+ignorados; o histórico citado do Gmail não é enviado; acima de 4000 caracteres vai só o parágrafo do
+cursor. Testes: `just ext-test` (Vitest) e `just ext-e2e` (Playwright, Chromium de verdade, servidor
+falso, nenhuma API real); no CI, `.github/workflows/extension.yml`. ⚠ Ninguém testou com uma chave
+válida nas APIs reais da Claude e da DeepSeek.
 
 ## níveis
 
