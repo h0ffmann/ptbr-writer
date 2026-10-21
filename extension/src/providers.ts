@@ -52,6 +52,7 @@ export function buildRequest(
       },
       body: JSON.stringify({
         model: s.models.deepseek,
+        max_tokens: 1024,
         temperature: 0,
         messages: [
           { role: 'system', content: system },
@@ -77,6 +78,14 @@ export function readText(p: ProviderId, json: unknown): string {
   }
   const c = Array.isArray(j.choices) ? j.choices[0]?.message?.content : undefined;
   return typeof c === 'string' ? c : '';
+}
+
+// True when the reply was cut at max_tokens: its JSON is incomplete, so "no suggestions" would be a lie.
+export function isTruncated(p: ProviderId, json: unknown): boolean {
+  const j = json as { stop_reason?: unknown; choices?: Array<{ finish_reason?: unknown }> } | null;
+  if (!j || typeof j !== 'object') return false;
+  if (p === 'claude') return j.stop_reason === 'max_tokens';
+  return Array.isArray(j.choices) && j.choices[0]?.finish_reason === 'length';
 }
 
 export function classifyError(status: number | null): CheckError {
