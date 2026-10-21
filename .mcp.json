@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "firefox": {
+      "command": "scripts/firefox-mcp.sh",
+      "args": []
+    }
+  }
+}
