@@ -59,11 +59,54 @@ describe('keys', () => {
   });
   it('shows the mask after saving', async () => {
     await renderOptions(root());
-    (document.querySelector('#key-claude') as HTMLInputElement).value = 'sk-test-1234';
+    (document.querySelector('#key') as HTMLInputElement).value = 'sk-test-1234';
     (document.querySelector('#save') as HTMLButtonElement).click();
     await flush();
-    expect((document.querySelector('#key-claude') as HTMLInputElement).value).toBe('••••1234');
+    expect((document.querySelector('#key') as HTMLInputElement).value).toBe('••••1234');
     expect((await loadSettings()).keys.claude).toBe('sk-test-1234');
+  });
+});
+
+describe('provider, key and model', () => {
+  const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as T;
+  const choose = (provider: string) => {
+    $<HTMLSelectElement>('#provider').value = provider;
+    $<HTMLSelectElement>('#provider').dispatchEvent(new Event('change'));
+  };
+  const modelOptions = () => [...$<HTMLSelectElement>('#model').options].map((o) => o.value);
+
+  it('shows one key field and one model list, for the chosen provider', async () => {
+    await renderOptions(root());
+    expect(document.querySelector('#key-claude')).toBeNull();
+    expect(document.querySelector('#key-deepseek')).toBeNull();
+    expect($('#model').tagName).toBe('SELECT');
+    expect(modelOptions()).toEqual(['claude-haiku-5-5', 'claude-sonnet-5-5', 'claude-opus-5-5']);
+    expect($<HTMLSelectElement>('#model').value).toBe('claude-haiku-5-5');
+  });
+
+  it('switching the provider shows its own key and models', async () => {
+    store = { settings: { keys: { claude: 'sk-c-1111', deepseek: 'sk-d-2222' } } };
+    await renderOptions(root());
+    expect($<HTMLInputElement>('#key').value).toBe('••••1111');
+    choose('deepseek');
+    expect($<HTMLInputElement>('#key').value).toBe('••••2222');
+    expect(modelOptions()).toEqual(['deepseek-flash', 'deepseek-v4-pro']);
+    expect($<HTMLSelectElement>('#model').value).toBe('deepseek-flash');
+  });
+
+  it('saving writes only the chosen provider and keeps the other key', async () => {
+    store = { settings: { keys: { claude: 'sk-c-1111', deepseek: '' } } };
+    await renderOptions(root());
+    choose('deepseek');
+    $<HTMLInputElement>('#key').value = 'sk-new-9999';
+    $<HTMLSelectElement>('#model').value = 'deepseek-v4-pro';
+    $<HTMLButtonElement>('#save').click();
+    await flush();
+    const s = await loadSettings();
+    expect(s.provider).toBe('deepseek');
+    expect(s.keys).toEqual({ claude: 'sk-c-1111', deepseek: 'sk-new-9999' });
+    expect(s.models.deepseek).toBe('deepseek-v4-pro');
+    expect(s.models.claude).toBe('claude-haiku-5-5');
   });
 });
 
@@ -114,8 +157,7 @@ describe('add site', () => {
 describe('key fields', () => {
   it('are password inputs', async () => {
     await renderOptions(root());
-    expect((document.querySelector('#key-claude') as HTMLInputElement).type).toBe('password');
-    expect((document.querySelector('#key-deepseek') as HTMLInputElement).type).toBe('password');
+    expect((document.querySelector('#key') as HTMLInputElement).type).toBe('password');
   });
 });
 
@@ -137,14 +179,14 @@ describe('popup', () => {
       expect(root().textContent, url).toContain('Site não suportado.');
     }
   });
-  it('always offers Configurações, which opens the options page', async () => {
+  it('always offers Todas as configurações, which opens the options page', async () => {
     const openOptionsPage = vi.fn();
     (globalThis as any).chrome.runtime.openOptionsPage = openOptionsPage;
     for (const url of ['https://example.com/x', 'chrome://extensions', undefined]) {
       tabUrl = url;
       await renderPopup(root());
       const b = document.querySelector('#open-options') as HTMLButtonElement;
-      expect(b?.textContent, String(url)).toBe('Configurações');
+      expect(b?.textContent, String(url)).toBe('Todas as configurações');
     }
     (document.querySelector('#open-options') as HTMLButtonElement).click();
     expect(openOptionsPage).toHaveBeenCalledTimes(1);
@@ -163,5 +205,66 @@ describe('popup', () => {
     tabUrl = undefined;
     await renderPopup(root());
     expect(document.querySelector('#toggle-site')).toBeNull();
+  });
+});
+
+describe('popup settings', () => {
+  const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as T;
+  const change = (sel: string, value: string) => {
+    const e = $<HTMLSelectElement>(sel);
+    e.value = value;
+    e.dispatchEvent(new Event('change'));
+  };
+
+  it('shows provider, model and key, like the options page', async () => {
+    await renderPopup(root());
+    expect($('#provider').tagName).toBe('SELECT');
+    expect($('#model').tagName).toBe('SELECT');
+    expect($<HTMLInputElement>('#key').type).toBe('password');
+  });
+
+  it('changing the provider saves it at once and shows its own key', async () => {
+    store = { settings: { keys: { claude: '', deepseek: 'sk-d-2222' } } };
+    await renderPopup(root());
+    change('#provider', 'deepseek');
+    await flush();
+    expect((await loadSettings()).provider).toBe('deepseek');
+    expect($<HTMLInputElement>('#key').value).toBe('••••2222');
+  });
+
+  it('changing the model saves it at once', async () => {
+    await renderPopup(root());
+    change('#model', 'claude-opus-5-5');
+    await flush();
+    expect((await loadSettings()).models.claude).toBe('claude-opus-5-5');
+  });
+
+  it('the key is saved only by Salvar, then masked', async () => {
+    await renderPopup(root());
+    $<HTMLInputElement>('#key').value = 'sk-new-1234';
+    expect((await loadSettings()).keys.claude).toBe('');
+    $<HTMLButtonElement>('#save-key').click();
+    await flush();
+    expect((await loadSettings()).keys.claude).toBe('sk-new-1234');
+    expect($<HTMLInputElement>('#key').value).toBe('••••1234');
+    expect(root().textContent).not.toContain('Sem chave');
+  });
+
+  it('changes the level of the current site', async () => {
+    store = { settings: { sites: { 'example.com': { enabled: true, level: 'descritivo' } } } };
+    await renderPopup(root());
+    change('#site-level', 'leve');
+    await flush();
+    expect((await loadSettings()).sites['example.com'].level).toBe('leve');
+  });
+
+  it('the main switch turns the extension off', async () => {
+    await renderPopup(root());
+    const box = $<HTMLInputElement>('#enabled');
+    expect(box.checked).toBe(true);
+    box.checked = false;
+    box.dispatchEvent(new Event('change'));
+    await flush();
+    expect((await loadSettings()).enabled).toBe(false);
   });
 });

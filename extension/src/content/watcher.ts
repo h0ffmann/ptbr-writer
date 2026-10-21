@@ -16,6 +16,9 @@ export function createWatcher(opts: WatcherOptions) {
   const keys = new WeakMap<HTMLElement, string>();
   const timers = new Map<HTMLElement, ReturnType<typeof setTimeout>>();
   const listeners = new Map<HTMLElement, () => void>();
+  // The text an accepted suggestion will leave in the field: that edit is the extension's own, so it
+  // neither clears the other suggestions nor calls the API again.
+  const expected = new Map<HTMLElement, string>();
   let seq = 0;
 
   const keyOf = (el: HTMLElement) => {
@@ -66,6 +69,9 @@ export function createWatcher(opts: WatcherOptions) {
     attach(el: HTMLElement) {
       if (listeners.has(el)) return;
       const onInput = () => {
+        const own = expected.get(el);
+        expected.delete(el);
+        if (own !== undefined && textModel(el).text === own) return;
         opts.onResult(el, [], 0);
         clearTimeout(timers.get(el));
         timers.set(el, setTimeout(() => run(el), opts.delayMs ?? 1000));
@@ -73,10 +79,16 @@ export function createWatcher(opts: WatcherOptions) {
       listeners.set(el, onInput);
       el.addEventListener('input', onInput);
     },
+    /** The next input that leaves exactly `text` in the field is the extension's own edit; null forgets it. */
+    expectEdit(el: HTMLElement, text: string | null) {
+      if (text === null) expected.delete(el);
+      else expected.set(el, text);
+    },
     detach(el: HTMLElement) {
       const l = listeners.get(el);
       if (l) el.removeEventListener('input', l);
       listeners.delete(el);
+      expected.delete(el);
       clearTimeout(timers.get(el));
       timers.delete(el);
     },

@@ -203,3 +203,61 @@ describe('card placement and badge', () => {
     expect(card()).toBeNull();
   });
 });
+
+describe('hover', () => {
+  const rect = (left: number, top: number, width: number, height: number) =>
+    ({ left, top, width, height, right: left + width, bottom: top + height, x: left, y: top, toJSON() {} }) as DOMRect;
+  const move = (x: number, y: number, target: EventTarget = document.body) =>
+    target.dispatchEvent(new MouseEvent('mousemove', { clientX: x, clientY: y, bubbles: true, composed: true }));
+  const card = () => overlayRoot().querySelector('.ptbr-card') as HTMLElement | null;
+
+  // The word "Foi decidido" sits at x 10..90, y 10..30 of a field at 0..400 x 0..100.
+  function setup() {
+    vi.useFakeTimers();
+    vi.spyOn(Range.prototype, 'getClientRects').mockReturnValue([rect(10, 10, 80, 20)] as unknown as DOMRectList);
+    const el = editable();
+    el.getBoundingClientRect = () => rect(0, 0, 400, 100);
+    renderSuggestions(el, [erro], 0, vi.fn(), vi.fn());
+    return el;
+  }
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it('resting the mouse on an underlined word opens its card', () => {
+    setup();
+    move(40, 20);
+    vi.advanceTimersByTime(150);
+    expect(card()).toBeNull();
+    vi.advanceTimersByTime(100);
+    expect(card()?.querySelector('strong')?.textContent).toBe('A equipe decidiu');
+  });
+
+  it('the hover card closes when the mouse leaves, and stays while the mouse is on the card', () => {
+    setup();
+    move(40, 20);
+    vi.advanceTimersByTime(250);
+    move(40, 60, card()!);
+    vi.advanceTimersByTime(1000);
+    expect(card()).not.toBeNull();
+    move(300, 90);
+    vi.advanceTimersByTime(350);
+    expect(card()).toBeNull();
+  });
+
+  it('a card opened by a click does not close when the mouse leaves', () => {
+    setup();
+    (overlayRoot().querySelector('.ptbr-underline-erro') as HTMLElement).click();
+    move(300, 90);
+    vi.advanceTimersByTime(1000);
+    expect(card()).not.toBeNull();
+  });
+
+  it('the mouse over plain text opens nothing', () => {
+    setup();
+    move(300, 90);
+    vi.advanceTimersByTime(1000);
+    expect(card()).toBeNull();
+  });
+});
