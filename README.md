@@ -11,6 +11,8 @@
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
 [![leitura estimada: ~26 min](https://img.shields.io/badge/leitura%20estimada-~26%20min-1682D4?style=flat-square)](#tempo-de-leitura)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#instalar)
+[![extensão de navegador (Chrome): dev local (WIP)](https://img.shields.io/badge/extens%C3%A3o%20de%20navegador-dev%20local%20(WIP)-1682D4?style=flat-square&logo=googlechrome&logoColor=white)](#chrome)
+[![extensão de navegador (Firefox): dev local (WIP)](https://img.shields.io/badge/extens%C3%A3o%20de%20navegador-dev%20local%20(WIP)-1682D4?style=flat-square&logo=firefoxbrowser&logoColor=white)](docs/EXTENSION_FIREFOX.md)
 
 </div>
 
