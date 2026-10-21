@@ -6,6 +6,15 @@ import lustre/element/html
 import ptbr_writer_site/content
 
 pub fn document(body: Element(msg)) -> Element(msg) {
+  titled(content.title, content.lede, body)
+}
+
+/// The document of a page with its own title and description.
+pub fn titled(
+  title: String,
+  description: String,
+  body: Element(msg),
+) -> Element(msg) {
   let meta = fn(name, value) {
     html.meta([attribute.name(name), attribute.content(value)])
   }
@@ -16,8 +25,8 @@ pub fn document(body: Element(msg)) -> Element(msg) {
     html.head([], [
       html.meta([attribute.charset("utf-8")]),
       meta("viewport", "width=device-width, initial-scale=1"),
-      html.title([], content.title),
-      meta("description", content.lede),
+      html.title([], title),
+      meta("description", description),
       html.link([
         attribute.rel("icon"),
         attribute.href("favicon.svg"),
