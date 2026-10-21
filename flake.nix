@@ -29,6 +29,7 @@
             curl
             lsof
             vale # the Saramago prose linter (lint/saramago)
+            nodejs # runs vendor/archify (`just figure`); Chrome comes from the host
             iproute2
           ];
 
