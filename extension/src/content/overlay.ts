@@ -57,6 +57,7 @@ const STYLE = `
   line-height: 20px;
   text-align: center;
   white-space: nowrap;
+  cursor: pointer;
 }
 .ptbr-badge[data-state="checking"] { background: #5f5f5f; }
 .ptbr-badge[data-state="error"] { background: #a0332b; }
@@ -149,6 +150,12 @@ export function renderBadge(el: HTMLElement, state: 'idle' | 'checking' | CheckE
     d.badge = el.ownerDocument.createElement('div');
     d.badge.className = 'ptbr-badge';
     d.badge.addEventListener('mousedown', (e) => e.preventDefault());
+    // The badge opens the first suggestion, the same card a click on its underline opens.
+    d.badge.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const now = drawn.get(el);
+      if (now?.located.length) openCard(el, now.located[0], now);
+    });
     overlayRoot(el.ownerDocument).appendChild(d.badge);
   }
   const b = d.badge;
@@ -266,10 +273,17 @@ function openCard(el: HTMLElement, l: Located, d: Drawn) {
 function placeCard(node: HTMLElement, el: HTMLElement) {
   const rects = rectSource(el)(Number(node.dataset.start), Number(node.dataset.end));
   const r = rects[rects.length - 1] ?? el.getBoundingClientRect();
-  const doc = el.ownerDocument;
-  const win = doc.defaultView;
-  node.style.left = `${r.left + (win?.scrollX ?? 0)}px`;
-  node.style.top = `${r.bottom + 4 + (win?.scrollY ?? 0)}px`;
+  const win = el.ownerDocument.defaultView;
+  const h = node.offsetHeight;
+  const w = node.offsetWidth;
+  const vh = win?.innerHeight ?? Infinity;
+  const vw = win?.innerWidth ?? Infinity;
+  // Below the text when it fits, else above it: a composer at the bottom of the window (WhatsApp)
+  // would push the card off screen.
+  const top = r.bottom + 4 + h > vh && r.top - 4 - h >= 0 ? r.top - 4 - h : r.bottom + 4;
+  const left = Math.max(4, Math.min(r.left, vw - w - 4));
+  node.style.left = `${left + (win?.scrollX ?? 0)}px`;
+  node.style.top = `${top + (win?.scrollY ?? 0)}px`;
 }
 
 function placeBadge(el: HTMLElement, b: HTMLElement) {

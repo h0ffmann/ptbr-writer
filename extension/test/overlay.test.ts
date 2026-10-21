@@ -149,3 +149,57 @@ describe('hit strip', () => {
     vi.restoreAllMocks();
   });
 });
+
+describe('card placement and badge', () => {
+  const box = (top: number, bottom: number) =>
+    ({ top, bottom, left: 10, right: 400, width: 390, height: bottom - top, x: 10, y: top, toJSON() {} }) as DOMRect;
+  const cardHeight = (h: number) => {
+    const d = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight');
+    Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+      configurable: true,
+      get() {
+        return (this as HTMLElement).classList.contains('ptbr-card') ? h : 0;
+      },
+    });
+    return () => d && Object.defineProperty(HTMLElement.prototype, 'offsetHeight', d);
+  };
+  const card = () => overlayRoot().querySelector('.ptbr-card') as HTMLElement | null;
+
+  it('opens the card above the text when there is no room below (composer at the bottom)', () => {
+    const restore = cardHeight(100);
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 768 });
+    const el = editable();
+    el.getBoundingClientRect = () => box(700, 740);
+    renderSuggestions(el, [erro], 0, vi.fn(), vi.fn());
+    (overlayRoot().querySelector('.ptbr-underline-erro') as HTMLElement).click();
+    expect(card()?.style.top).toBe('596px');
+    restore();
+  });
+
+  it('keeps the card below the text when it fits', () => {
+    const restore = cardHeight(100);
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 768 });
+    const el = editable();
+    el.getBoundingClientRect = () => box(100, 120);
+    renderSuggestions(el, [erro], 0, vi.fn(), vi.fn());
+    (overlayRoot().querySelector('.ptbr-underline-erro') as HTMLElement).click();
+    expect(card()?.style.top).toBe('124px');
+    restore();
+  });
+
+  it('clicking the badge opens the card of the first suggestion', () => {
+    const el = editable();
+    renderSuggestions(el, [erro, aviso], 0, vi.fn(), vi.fn());
+    renderBadge(el, 'idle', 2);
+    (overlayRoot().querySelector('.ptbr-badge') as HTMLElement).click();
+    expect(card()?.textContent).toContain('A equipe decidiu');
+  });
+
+  it('clicking the badge with no suggestions opens nothing', () => {
+    const el = editable();
+    renderSuggestions(el, [], 0, vi.fn(), vi.fn());
+    renderBadge(el, 'idle', 0);
+    (overlayRoot().querySelector('.ptbr-badge') as HTMLElement).click();
+    expect(card()).toBeNull();
+  });
+});
