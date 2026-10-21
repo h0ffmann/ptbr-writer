@@ -109,7 +109,7 @@ medido (`opencode run` não a oferece). Precisa de `bash`, `curl` e `tar`; os bi
 | `/ptbr-writer:ptbr` | reescreve no nível pedido, ou classifica o texto e declara o nível |
 | `/ptbr-writer:ptbr-writer` | o mesmo, com o nome completo |
 | `/ptbr-writer:cientifico` | texto científico com fontes: artigo, proposta, relatório (regras CIE) |
-| `/ptbr-writer:bipr` | abre ou atualiza o PR do branch atual, com o corpo em pt-BR e o espelho em inglês, a partir dos commits (`--dry-run` só mostra) |
+| `/ptbr-writer:bipr` | abre ou atualiza o PR do branch atual, com o corpo em pt-BR e o espelho em inglês, a partir dos commits (`--dry-run` só mostra; [exemplo e custo](docs/bipr/exemplo-pr-49.md)) |
 
 Ou descreva a tarefa: "reescreva este runbook em português controlado".
 
