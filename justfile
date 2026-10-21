@@ -335,9 +335,9 @@ labels:
 ext-build:
     cd extension && npm ci && node build.mjs
 
-# Chrome extension: unit tests.
+# Chrome extension: type check (tsconfig has noEmit) and unit tests.
 ext-test: ext-build
-    cd extension && npx vitest run
+    cd extension && npx tsc -p . && npx vitest run
 
 # Chrome extension: end-to-end tests (Playwright) against extension/dist-test.
 ext-e2e:
