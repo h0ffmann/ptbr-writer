@@ -7,13 +7,15 @@
 <sub><a href="#install">install</a> · <a href="#use">use</a> · <a href="#levels">levels</a> · <a href="#rules">rules</a> · <a href="#figures">figures</a> · <a href="#roadmap">roadmap</a> · <a href="#development">development</a> · <a href="#credits">credits</a> · <a href="CHANGELOG.md">versions</a> · <a href="https://h0ffmann.github.io/ptbr-writer/">the site</a></sub>
 
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
-[![release](https://img.shields.io/github/v/release/h0ffmann/ptbr-writer?style=flat-square&label=release)](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.2.0)
+[![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=version&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#license)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 
 </div>
 
 🇧🇷 [Leia em português](https://github.com/h0ffmann/ptbr-writer/blob/main/README.md) · this is the English version
+
+Estimated reading time: ~19 min (2040 words, 74 links, 7 code blocks)
 
 ## in one minute
 
@@ -230,13 +232,10 @@ python3 -I plugins/ptbr-writer/scripts/reading_time.py README.md   # --lang en, 
 
 ## figures
 
-Each figure is an Archify page, published on the site; the image is in the README and the source in
-`docs/archify/`.
+Each figure is an Archify page, published on the site:
 
-| figure | page | image | source |
-| :----- | :--- | :---- | :----- |
-| what happens to a ptbr request (in [in one minute](#in-one-minute)) | [em-um-minuto.html](https://h0ffmann.github.io/ptbr-writer/figuras/em-um-minuto.html) | [em-um-minuto.png](docs/img/em-um-minuto.png) | [`em-um-minuto.json`](docs/archify/em-um-minuto.json) |
-| where the .pdf comes from (in [use](#use)) | [pdf-dependencias.html](https://h0ffmann.github.io/ptbr-writer/figuras/pdf-dependencias.html) | [pdf-dependencias.png](docs/img/pdf-dependencias.png) | [`pdf-dependencias.json`](docs/archify/pdf-dependencias.json) |
+- [What happens to a ptbr request](https://h0ffmann.github.io/ptbr-writer/figuras/em-um-minuto.html)
+- [Where the .pdf comes from](https://h0ffmann.github.io/ptbr-writer/figuras/pdf-dependencias.html)
 
 ## roadmap
 
