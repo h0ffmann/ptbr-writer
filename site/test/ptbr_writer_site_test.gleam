@@ -22,6 +22,7 @@ pub fn every_section_test() {
       "saida",
       "limites",
       "receitas",
+      "figuras",
       "awesome",
       "roadmap",
     ],
@@ -53,6 +54,11 @@ pub fn every_fact_test() {
   })
   list.each(content.roadmap, fn(s) {
     assert string.contains(page, s.item)
+  })
+  assert content.figures != []
+  list.each(content.figures, fn(f) {
+    assert string.contains(page, "figuras/" <> f.slug <> ".html")
+    assert string.contains(page, f.title)
   })
 }
 

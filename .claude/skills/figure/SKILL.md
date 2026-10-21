@@ -1,6 +1,6 @@
 ---
 name: figure
-description: "Add, change or explain a Mermaid diagram in this repo's Markdown (README.md, README.en.md, docs). Use when asked for a diagram, flowchart, mind map or 'a picture of' something, or to update one after its prose changed."
+description: "Add, change or explain a diagram in this repo's Markdown (README.md, README.en.md, docs): a Mermaid fence or an Archify picture. Use when asked for a diagram, flowchart, mind map or 'a picture of' something, or to update one after its prose changed."
 ---
 
 # figure
@@ -55,9 +55,16 @@ fence has a header and a reading card.
 - Leave `classDef`, `style` and `%%{init}%%` out. A colour never carries meaning on its own; the
   label or shape says it.
 
-## An interactive twin or a picture
+## A picture drawn with Archify
 
-Draw it with the `archify` skill, from the person's own install. It is not part of this repo's
-plugin: never vendor or copy it here. Commit only its JSON source, `docs/archify/<slug>.json`,
-never the HTML it renders. The Mermaid fence with its card stays the figure; the twin is an extra
-and carries no claim the card lacks.
+For a flow that a Mermaid fence draws badly, draw a picture. Write the source as
+`docs/archify/<slug>.json` and run `just figure`: the vendored `archify` skill (`.claude/skills/archify`,
+a pinned submodule that is not part of the plugin) validates and checks it, picasso's look is set
+over it and `docs/img/<slug>.png` is taken. `just figure-init` checks the submodule out once;
+`just figure-check` fails when a source has no PNG or changed since it.
+
+- Commit the JSON, `docs/archify/figures.lock` and the PNG; never the HTML (`build/`).
+- Embed the PNG by its relative path with an alt text that says what it shows, and put the same
+  reading card under it, in every language of the page. At most about 10 boxes, short labels, no jargon.
+- Look at the PNG at full size and shrunk to 800 px wide before you commit it: every label must read.
+- Every box and label traces to a file you read; the card's evidence names it.

@@ -78,7 +78,7 @@ fmt:
     just --fmt --unstable
 
 # Build the site into site/dist/ in picasso's gleam-website toolchain: content, tests, prerender.
-site:
+site: figure-init
     nix develop --no-update-lock-file .#site --command just --justfile site/justfile --working-directory site ci
 
 # Build the site and serve it on http://localhost:8000.
@@ -111,6 +111,59 @@ saramago-check:
         grep -q "Saramago.$rule:" <<<"$out" || { echo "saramago-check: Saramago.$rule did not fire" >&2; exit 1; }
     done
     echo "saramago-check: ok"
+
+# The pinned Archify (vendor/archify, sparse to archify/): once per clone. Not part of the plugin.
+figure-init:
+    git submodule update --init --depth 1 vendor/archify
+    git -C vendor/archify sparse-checkout set --no-cone /archify/
+    @echo "figure-init: $(git -C vendor/archify rev-parse --short HEAD)"
+
+# Draw every docs/archify/<slug>.json to docs/img/<slug>.png: Archify validates and checks it (finalize),
+# picasso's look (docs/archify/picasso.css) goes over it, headless Chrome takes the picture. Needs node,
+# Chrome (CHROME names another) and the Google Fonts; writes docs/archify/figures.lock.
+figure: figure-init
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p build/figure docs/img
+    for src in docs/archify/*.json; do
+        slug="$(basename "$src" .json)"; out="build/figure/$slug"
+        rm -rf "$out"; mkdir -p "$out"
+        ARCHIFY_UPDATE_CHECK_DISABLED=1 node vendor/archify/archify/bin/archify.mjs finalize "$(jq -r .diagram_type "$src")" "$src" "$out/page.html" --out-dir "$out/receipts" --quality showcase
+        read -r w h < <(grep -o '<svg viewBox="[^"]*"' "$out/page.html" | head -1 | sed -E 's/.*0 0 ([0-9.]+) ([0-9.]+)"/\1 \2/')
+        crop="$(awk -F'\t' -v s="$slug" '$1==s {print $2}' docs/archify/crop.tsv)"; h="${crop:-$h}"
+        python3 - "$out/page.html" "$out/frame.html" "$w" "$h" <<'PY'
+    import sys, re
+    src, dst, w, h = sys.argv[1:]
+    page = open(src, encoding="utf-8").read()
+    css = open("docs/archify/picasso.css", encoding="utf-8").read()
+    fonts = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Inter:wght@400;600&display=block">'
+    page = page.replace("</head>", fonts + "<style>" + css + "</style></head>", 1)
+    page = re.sub(r'<svg viewBox="0 0 [0-9.]+ [0-9.]+"', f'<svg viewBox="0 0 {w} {h}"', page, count=1)
+    open(dst, "w", encoding="utf-8").write(page)
+    PY
+        "${CHROME:-google-chrome}" --headless --disable-gpu --hide-scrollbars --force-dark-mode --force-device-scale-factor=2 --user-data-dir="$PWD/$out/profile" --window-size="$w,$h" --virtual-time-budget=3000 --screenshot="$PWD/docs/img/$slug.png" "file://$PWD/$out/frame.html" 2>/dev/null
+        echo "figure: docs/img/$slug.png"
+    done
+    just _figure-lock > docs/archify/figures.lock
+
+# The inputs of each figure (its source, the look, the crop, the Archify pin), one line per slug.
+_figure-lock:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    pin="$(git ls-files -s vendor/archify | cut -d' ' -f2)"
+    for src in docs/archify/*.json; do
+        printf '%s\t%s\n' "$(basename "$src" .json)" "$(cat "$src" docs/archify/picasso.css docs/archify/crop.tsv | sha256sum | cut -c1-16)-${pin:0:7}"
+    done
+
+# Cheap and offline: each docs/archify/<slug>.json has its PNG, and both match the last `just figure`.
+figure-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for src in docs/archify/*.json; do
+        test -s "docs/img/$(basename "$src" .json).png" || { echo "figure-check: no PNG for $src; run just figure" >&2; exit 1; }
+    done
+    just _figure-lock | cmp -s - docs/archify/figures.lock || { echo "figure-check: a source, the look or the Archify pin changed since the PNG; run just figure" >&2; exit 1; }
+    echo "figure-check: ok"
 
 # Basic quality gate: justfile parses, required files exist, toolchain pins agree, linters self-test.
 # Pick the skill and the level for a writing request: just route "reescreva este runbook".
@@ -202,7 +255,7 @@ release version:
 release-check tag: plugin-check
     test "{{ tag }}" = "v$(python3 -c 'import json; print(json.load(open("plugins/ptbr-writer/.claude-plugin/plugin.json"))["version"])')"
 
-quality: pins saramago-check plugin-check
+quality: pins saramago-check plugin-check figure-check
     python3 skills/ptbr-routing/scripts/route.py --self-test
     python3 skills/ptbr-routing/scripts/route.py --check
     just --list >/dev/null

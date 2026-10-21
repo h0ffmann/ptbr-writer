@@ -1,0 +1,138 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "O que acontece com um pedido ptbr",
+    "locale": "pt-BR",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "hidden"
+    },
+    "output": "em-um-minuto.html"
+  },
+  "lanes": [
+    {
+      "id": "sempre",
+      "label": "Todo pedido"
+    },
+    {
+      "id": "primeira",
+      "label": "Configuração e arquivos"
+    }
+  ],
+  "mainPath": [
+    "pedido",
+    "skill",
+    "versoes",
+    "resposta"
+  ],
+  "nodes": [
+    {
+      "id": "pedido",
+      "lane": "sempre",
+      "col": 0,
+      "type": "external",
+      "label": "ptbr: …",
+      "sublabel": "seu pedido no Claude Code",
+      "width": 150
+    },
+    {
+      "id": "perguntas",
+      "lane": "primeira",
+      "col": 1,
+      "type": "frontend",
+      "label": "4 perguntas",
+      "sublabel": "nível, formato, pasta, idioma",
+      "width": 150
+    },
+    {
+      "id": "toml",
+      "lane": "primeira",
+      "col": 2,
+      "type": "database",
+      "label": "ptbr-writer.toml",
+      "sublabel": "guarda as respostas",
+      "width": 150
+    },
+    {
+      "id": "skill",
+      "lane": "sempre",
+      "col": 3,
+      "type": "backend",
+      "label": "skill ptbr-writer",
+      "sublabel": "ou cientifico, com fontes",
+      "width": 150
+    },
+    {
+      "id": "versoes",
+      "lane": "sempre",
+      "col": 4,
+      "type": "backend",
+      "label": "um texto por nível",
+      "sublabel": "pt-BR e ASD-STE100",
+      "width": 150
+    },
+    {
+      "id": "resposta",
+      "lane": "sempre",
+      "col": 5,
+      "type": "external",
+      "label": "resposta",
+      "sublabel": "no console",
+      "width": 150
+    },
+    {
+      "id": "arquivos",
+      "lane": "primeira",
+      "col": 5,
+      "type": "external",
+      "label": "arquivos",
+      "sublabel": ".txt .md .pdf notes, na pasta",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "pedido",
+      "to": "perguntas",
+      "label": "sem config",
+      "role": "branch"
+    },
+    {
+      "id": "e2",
+      "from": "perguntas",
+      "to": "toml",
+      "label": "grava"
+    },
+    {
+      "id": "e3",
+      "from": "toml",
+      "to": "skill",
+      "label": "lê"
+    },
+    {
+      "id": "e4",
+      "from": "pedido",
+      "to": "skill",
+      "label": "com config"
+    },
+    {
+      "id": "e5",
+      "from": "skill",
+      "to": "versoes"
+    },
+    {
+      "id": "e6",
+      "from": "versoes",
+      "to": "resposta"
+    },
+    {
+      "id": "e7",
+      "from": "versoes",
+      "to": "arquivos",
+      "label": "se pediu",
+      "role": "branch"
+    }
+  ]
+}

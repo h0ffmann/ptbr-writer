@@ -24,39 +24,29 @@
 - **Não muda tese, autoria nem conclusão, e não busca fontes.** Marca com `⚠` o que não checou.
   Objetivo: manter a documentação PT-BR e EN de um repositório gastando menos tokens.
 
-```mermaid
-%% figure: pedido-ate-texto-final
-%% title: O que acontece com um pedido de escrita em português?
-flowchart LR
-    A["pedido em português"] --> B{"o pedido pede<br/>fontes e rigor<br/>de artigo?"}
-    B -- "não" --> C["skill ptbr-writer<br/>regras PTW-1 a PTW-13"]
-    B -- "sim" --> D["skill cientifico<br/>PTW-1 a PTW-13 e CIE"]
-    C --> E{"o pedido diz<br/>o nível?"}
-    D --> E
-    E -- "sim" --> F["nível pedido"]
-    E -- "não" --> G["a skill classifica<br/>e declara o nível"]
-    F --> H["nível e destinatário"]
-    G --> H
-    H --> I["tabela de violações"]
-    I --> J["texto final<br/>e o que ficou de propósito"]
-```
+![Fluxo de um pedido: você escreve ptbr; na primeira vez, 4 perguntas gravadas em ptbr-writer.toml; depois a skill ptbr-writer (ou cientifico, se pede fontes) escreve um texto por nível e idioma; a saída é a resposta no console e, se pedido, arquivos .txt, .md, .pdf ou notes na pasta.](docs/img/em-um-minuto.png)
 
 <details open>
 <summary>Como ler esta figura</summary>
 
-**Em uma frase.** O pedido entra por uma de duas skills, ganha um nível de rigor e sai como texto
-final, com a lista do que foi trocado.
+**Em uma frase.** Você escreve `ptbr: …`; na primeira vez o plugin faz 4 perguntas e guarda as
+respostas, e depois a skill escreve um texto por nível e por idioma, na resposta e, se você pediu,
+em arquivos.
 
-**Como ler.** Da esquerda para a direita. Losango é uma pergunta, com as duas saídas rotuladas;
-retângulo é um passo. As duas skills aplicam as mesmas regras PTW; a `cientifico` acrescenta as CIE.
+**Como ler.** Da esquerda para a direita, na faixa de cima, que todo pedido percorre. A faixa de
+baixo é a configuração e os arquivos. Seta com rótulo diz quando o caminho vale. Caixa com borda
+laranja é onde você entra ou o que você recebe.
 
-**Fora da figura.** O nível `smart-note` (que combina com outro nível e entrega `RAW` e `nota`), a
-lista de `⚠` do nível `científico` e a skill de roteamento `ptbr-routing`, que fica fora do plugin.
+**Fora da figura.** Os níveis e as regras (PTW e CIE), o nível `smart-note`, o pedido
+`ptbr reconfigurar` e a skill de roteamento `ptbr-routing`, que fica fora do plugin. A figura está em
+português nas duas versões do README.
 
-**Evidência.** Formato de saída: seção "Formato de saída" da [`SKILL.md`](SKILL.md). Skill científica:
-[`skills/cientifico/SKILL.md`](skills/cientifico/SKILL.md). Skills do plugin:
-[`plugins/ptbr-writer/skills/`](plugins/ptbr-writer/skills) (`ptbr-writer`, `ptbr`,
-`cientifico`). Quando o Claude escolhe a `cientifico` sozinho, pela descrição dela, não foi medido ⚠.
+**Evidência.** As 4 perguntas, o `ptbr-writer.toml`, os formatos e os idiomas:
+[`plugins/ptbr-writer/hooks/ask_levels.py`](plugins/ptbr-writer/hooks/ask_levels.py). A skill
+`cientifico` para texto com fontes e o formato de saída: [`SKILL.md`](SKILL.md) e
+[`skills/cientifico/SKILL.md`](skills/cientifico/SKILL.md). Fonte da figura:
+[`docs/archify/em-um-minuto.json`](docs/archify/em-um-minuto.json); `just figure` a redesenha. Quando o
+Claude escolhe a `cientifico` sozinho, pela descrição dela, não foi medido ⚠.
 
 </details>
 
@@ -145,6 +135,32 @@ ele, o Claude pergunta antes de baixar, pelo Nix, o
 | 14 MiB, 6 caminhos do cache.nixos.org | 72 MiB, 7 caminhos | 25 MiB, 1 caminho (o `to-pdf`, compilado) | 892 s (15 min) |
 
 O tempo depende da rede. Da segunda vez em diante, o Nix reusa o store.
+
+![De onde vem o .pdf: o to-pdf.sh usa pandoc e xelatex se houver; senão baixa pelo Nix o picasso v0.2.0 (commit 099e036), cujo labs/ptbr-pdf compila o crate to-pdf 0.1.0, com pulldown-cmark 0.13.4, typst 0.15.1 e typst-as-lib 0.17.0 e 6 fontes embutidas.](docs/img/pdf-dependencias.png)
+
+<details open>
+<summary>Como ler esta figura</summary>
+
+**Em uma frase.** O `.pdf` sai do pandoc da máquina, se ele existir com o xelatex; senão, de um
+binário Rust que o Nix compila a partir de um commit fixo do picasso, com cada biblioteca na versão
+do `Cargo.lock`.
+
+**Como ler.** Da esquerda para a direita. A faixa do meio é o caminho sem pandoc; a de baixo, as
+bibliotecas Rust do binário; a de cima, o caminho local e o arquivo pronto. Caixa com borda laranja é
+onde o caminho começa ou termina.
+
+**Fora da figura.** As dependências das dependências (o `Cargo.lock` tem mais de 3 mil linhas), o
+`flake.lock` do `labs/ptbr-pdf` e o Nix em si.
+
+**Evidência.** [`plugins/ptbr-writer/scripts/to-pdf.sh`](plugins/ptbr-writer/scripts/to-pdf.sh)
+(`PICASSO_REV`, os dois caminhos). No picasso, no commit `099e036`: `labs/ptbr-pdf/Cargo.toml`
+(as cinco dependências), `labs/ptbr-pdf/Cargo.lock` (`pulldown-cmark` 0.13.4, `typst`,
+`typst-layout` e `typst-pdf` 0.15.1, `typst-as-lib` 0.17.0, `to-pdf` 0.1.0) e `labs/ptbr-pdf/fonts/`
+(seis arquivos: Libertinus Serif e DejaVu Sans Mono). Fonte da figura:
+[`docs/archify/pdf-dependencias.json`](docs/archify/pdf-dependencias.json). Que o `to-pdf.sh` e o
+commit fixado em `forks/picasso` coincidem, `just pins` confere.
+
+</details>
 
 ## níveis
 
@@ -247,6 +263,8 @@ pasta de skills do agente.
 - Retórica: a epígrafe é de Pirsig, *Zen and the Art of Motorcycle Maintenance* (1974), conferida em
   duas reproduções públicas, não na edição impressa ⚠. Base: o *Fédon* e o *Fedro*, de Platão.
 - Nível por autor: a skill [orwell-writing](https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing), de @tamdogood (MIT).
+- Figuras: [Archify](https://github.com/tt-a1i/archify) (@tt-a1i, MIT), submódulo `vendor/archify` fixado em v3.0.1
+  (`2ab3cae`), só para desenhar `docs/archify/`; não faz parte do plugin. Aparência: [h0ffmann/picasso](https://github.com/h0ffmann/picasso).
 - Plugin e roteamento no molde do plugin e do `routing` de [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit),
   de [@brunogbv](https://github.com/brunogbv).
   Layout do README: [h0ffmann/picasso](https://github.com/h0ffmann/picasso) e ww3-gpu. Stack do
