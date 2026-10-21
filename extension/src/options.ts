@@ -31,9 +31,9 @@ export async function render(root: HTMLElement): Promise<void> {
     <h1>ptbr-writer</h1>
     <p>${field('<input id="enabled" type="checkbox">', 'Ativado')}</p>
     <p>${field('Provedor', '<select id="provider"><option value="claude">Claude</option><option value="deepseek">DeepSeek</option></select>')}</p>
-    <p>${field('Chave Claude', '<input id="key-claude" type="text" autocomplete="off">')}</p>
+    <p>${field('Chave Claude', '<input id="key-claude" type="password" autocomplete="off">')}</p>
     <p>${field('Modelo Claude', '<input id="model-claude" type="text">')}</p>
-    <p>${field('Chave DeepSeek', '<input id="key-deepseek" type="text" autocomplete="off">')}</p>
+    <p>${field('Chave DeepSeek', '<input id="key-deepseek" type="password" autocomplete="off">')}</p>
     <p>${field('Modelo DeepSeek', '<input id="model-deepseek" type="text">')}</p>
     <p><button id="save" type="button">Salvar</button> <span id="status" role="status"></span></p>
     <h2>Sites</h2>
