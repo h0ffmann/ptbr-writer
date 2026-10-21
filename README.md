@@ -261,6 +261,7 @@ aplica PTW-1 a PTW-13 e acrescenta CIE-1 a CIE-12.
 | PTW-14 | Palavras inteiras e por extenso | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
 | PTW-15 | Pontuação | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
 | PTW-16 | Maiúsculas e concordância | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
+| PTW-17 | Frase reorganizada | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
 
 ## tempo de leitura
 
