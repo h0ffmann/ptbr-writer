@@ -11,3 +11,7 @@ __pycache__/
 plugins/ptbr-writer/evals/results/
 build/
 .superpowers/
+
+extension/node_modules/
+extension/dist/
+extension/dist-test/
