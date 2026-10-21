@@ -32,7 +32,7 @@ const manifest = {
   name: 'ptbr-writer',
   version: plugin.version,
   description: plugin.description,
-  permissions: ['storage', 'scripting'],
+  permissions: ['storage', 'scripting', 'activeTab'],
   host_permissions: ['https://api.anthropic.com/*', 'https://api.deepseek.com/*', ...local],
   optional_host_permissions: ['<all_urls>'],
   background: { service_worker: 'background.js', type: 'module' },
