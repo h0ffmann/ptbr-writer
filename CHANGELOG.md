@@ -10,7 +10,7 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
   `/ptbr-writer:ptbr-writer`, `ptbr-writer.toml` e os arquivos `ptbr-writer-<UTC>-...`. Quem instalou
   a v0.1.0 instala de novo: `claude plugin install ptbr-writer --marketplace h0ffmann/ptbr-writer#v0.2.0`.
 - Um pedido que começa com `ptbr` pergunta uma vez os níveis, os formatos (`txt`, `md`, `pdf`,
-  `notes`) e a pasta, grava `./ptbr-writer.toml` e não pergunta mais; `ptbr reconfigurar` refaz.
+  `notes`), a pasta e os idiomas (pt-BR por padrão, e/ou ASD-STE100), grava `./ptbr-writer.toml` e não pergunta mais; `ptbr reconfigurar` refaz.
 - `.pdf` pelo `to-pdf` em Rust com Typst do picasso (`labs/ptbr-pdf`), só com permissão para baixar.
 - O site abre com o comando de instalação e um botão de copiar.
 

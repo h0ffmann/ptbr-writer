@@ -109,7 +109,8 @@ vez, sem esse arquivo, o Claude pergunta uma vez só, em múltipla escolha:
 
 - **níveis:** um texto por nível;
 - **formatos:** `.txt`, `.md`, `.pdf` e `notes` (smart-note);
-- **pasta:** a raiz da sessão (o padrão), `docs/` ou outra, digitada.
+- **pasta:** a raiz da sessão (o padrão), `docs/` ou outra, digitada;
+- **idiomas:** pt-BR (o padrão) e/ou ASD-STE100, o inglês técnico simplificado; um texto por idioma.
 
 e grava as respostas em `./ptbr-writer.toml`. Daí em diante não pergunta mais: edite o arquivo,
 ou escreva `ptbr reconfigurar`.
@@ -119,6 +120,7 @@ levels = ["estrito"]     # vazio: a skill classifica e declara o nível
 formats = ["md", "pdf"]  # txt, md, pdf, notes; vazio: só a resposta
 folder = "docs"          # relativa à raiz da sessão, sem ".."
 print = ["txt", "md"]    # o que aparece inteiro no console, além do arquivo
+languages = ["pt-BR"]    # e/ou "asd-ste100"; o arquivo em ASD-STE100 termina em -ste100
 ```
 
 Cada camada sobrescreve a anterior: os padrões do plugin

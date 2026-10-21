@@ -15,3 +15,6 @@ folder = "."
 
 # Formatos cujo conteúdo aparece inteiro na resposta, além do arquivo.
 print = ["txt", "md"]
+
+# Idiomas, um texto por idioma: "pt-BR" e/ou "asd-ste100" (inglês técnico simplificado).
+languages = ["pt-BR"]

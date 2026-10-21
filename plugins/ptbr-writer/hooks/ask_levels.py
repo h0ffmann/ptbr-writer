@@ -27,6 +27,7 @@ except ImportError:  # python < 3.11: Claude reads the file itself
 COMPOSES = "smart-note"  # combines with another level: the `notes` format, not one of the levels
 MAX = 4  # AskUserQuestion takes at most 4 options; "Other" is added by itself
 FORMATS = ("txt", "md", "pdf", "notes")
+LANGUAGES = ("pt-BR", "asd-ste100")  # pt-BR is the default; ASD-STE100 is Simplified Technical English
 TRIGGER = re.compile(r"^\s*/?ptbr(-writer)?(:\S*)?(?=[\s:,.]|$)", re.I)
 RECONFIG = re.compile(r"^\s*/?ptbr(-writer)?\s*:?\s*(reconfigur\w*|config\w*)\b", re.I)
 NAME = "ptbr-writer-<AAAAMMDDThhmmZ>-<objetivo>-<nível>.<ext>"
@@ -58,7 +59,12 @@ def clean(cfg, levels, problems, where):
     """Keep only values the plugin knows; a folder must stay inside the session's root."""
     out = {}
     names = {n for n, _ in levels if n != COMPOSES}
-    for key, allowed in (("levels", names), ("formats", set(FORMATS)), ("print", set(FORMATS))):
+    for key, allowed in (
+        ("levels", names),
+        ("formats", set(FORMATS)),
+        ("print", set(FORMATS)),
+        ("languages", set(LANGUAGES)),
+    ):
         if key in cfg:
             vals = cfg[key] if isinstance(cfg[key], list) else []
             bad = [v for v in vals if v not in allowed]
@@ -97,6 +103,7 @@ def instruction(prompt, skill_md, to_pdf, defaults_path, home, cwd):
             found.append(where)
         cfg.update(clean(table, levels, problems, where))
     named = [n for n, _ in levels if re.search(rf"(?<!\w){re.escape(fold(n))}(?!\w)", fold(prompt))]
+    ste = re.search(r"(?<!\w)(asd-?)?ste-?100(?!\w)", prompt, re.I) is not None
 
     opts = [(n, u) for n, u in levels if n != COMPOSES][:MAX]
     notes = any(n == COMPOSES for n, _ in levels)
@@ -106,20 +113,25 @@ def instruction(prompt, skill_md, to_pdf, defaults_path, home, cwd):
     write = (
         f"Grave cada versão em cada formato, na pasta configurada (crie se faltar), com o nome `{NAME}`: "
         "o carimbo em UTC, o mesmo para todos os arquivos do pedido; o objetivo em 2 a 4 palavras, minúsculas sem acento, "
-        "unidas por hífen; o nível sem acento"
+        "unidas por hífen; o nível sem acento; a versão em ASD-STE100 leva `-ste100` antes da extensão"
         + (f"; com `notes`, as notas pelas regras de {COMPOSES} (`{COMPOSES} + <nível>`)" if notes else "")
-        + ". Na resposta, cada versão sob `## <nível>` e a lista dos arquivos gravados; o conteúdo dos formatos em `print` "
+        + ". Uma versão por nível em cada idioma de `languages`: `pt-BR` pelas regras da skill; `asd-ste100` em inglês técnico "
+        "simplificado (ASD-STE100: vocabulário controlado, voz ativa, frases curtas, uma instrução por frase), com o mesmo conteúdo, "
+        "sem inventar nada. Na resposta, cada versão sob `## <nível>` (ou `## <nível> · ASD-STE100`) e a lista dos arquivos gravados; o conteúdo dos formatos em `print` "
         "aparece inteiro na resposta, num bloco ```text ou ```markdown, nunca só o caminho. Se o script do pdf sair com 3, "
         "ele precisa baixar ferramentas: diga o tamanho que ele informa, pergunte se pode baixar e, com o sim, rode de novo "
         "com `--download`; sem o sim, ou se falhar, entregue o .md e diga por quê."
     )
     ask = [
-        "Chame AskUserQuestion com três perguntas numa chamada só:",
+        "Chame AskUserQuestion com quatro perguntas numa chamada só:",
         "1. header \"Nível\", multiSelect, \"Em quais níveis?\", opções: " + "; ".join(f"{n} ({u})" for n, u in opts) + ".",
         "2. header \"Formato\", multiSelect, \"Em quais formatos?\", opções: " + "; ".join(fmts) + ".",
         "3. header \"Pasta\", uma escolha, \"Onde gravar os arquivos?\", opções nesta ordem: raiz (Recommended), "
         "a pasta da sessão, o padrão; docs/. Outra pasta vem pelo Other.",
-        "Depois grave as respostas em ./ptbr-writer.toml, com `levels`, `formats`, `folder` (\".\" para a raiz) e "
+        "4. header \"Idioma\", multiSelect, \"Em quais idiomas?\", opções nesta ordem: pt-BR (Recommended), o padrão; "
+        "ASD-STE100 (inglês técnico simplificado). Sem marcação, pt-BR.",
+        "Depois grave as respostas em ./ptbr-writer.toml, com `levels`, `formats`, `folder` (\".\" para a raiz), "
+        "`languages` (\"pt-BR\" e/ou \"asd-ste100\") e "
         f"`print = {json.dumps(cfg.get('print', ['txt', 'md']))}`, uma linha de comentário dizendo que o arquivo "
         "pode ser editado ou refeito com `ptbr reconfigurar`, e diga isso à pessoa numa frase.",
     ]
@@ -128,20 +140,23 @@ def instruction(prompt, skill_md, to_pdf, defaults_path, home, cwd):
     lines = [head]
     if RECONFIG.search(prompt):
         lines += ["A pessoa pediu para reconfigurar."] + ask + ["Não escreva texto agora, só a configuração.", no_ask]
-    elif found or named:
+    elif found or named or ste:
         use = dict(cfg)
         if named:
             use["levels"] = [n for n in named if n != COMPOSES]
             if COMPOSES in named and "notes" not in use.get("formats", []):
                 use["formats"] = use.get("formats", []) + ["notes"]
+        if ste and "asd-ste100" not in use.get("languages", []):
+            use["languages"] = use.get("languages", ["pt-BR"]) + ["asd-ste100"]
         lines.append(
             "Configuração em uso (" + (", ".join(found) if found else "padrões") + "; o pedido vence): "
-            + json.dumps({k: use.get(k) for k in ("levels", "formats", "folder", "print")}, ensure_ascii=False)
+            + json.dumps({k: use.get(k) for k in ("levels", "formats", "folder", "print", "languages")}, ensure_ascii=False)
             + ". Não pergunte nada disso."
         )
         lines.append(
-            "Carregue a skill ptbr-writer e escreva uma versão por nível de `levels` (vazio: a skill classifica e declara o nível). "
-            + ("Sem formatos: só a resposta, sem arquivo. " if not use.get("formats") else write)
+            "Carregue a skill ptbr-writer e escreva uma versão por nível de `levels` (vazio: a skill classifica e declara o nível) "
+            "em cada idioma de `languages`. "
+            + ("Sem formatos: só a resposta, sem arquivo; com `asd-ste100`, a versão em inglês técnico simplificado sob `## <nível> · ASD-STE100`. " if not use.get("formats") else write)
         )
     else:
         lines += ["Não há ptbr-writer.toml ainda: esta é a única vez que se pergunta."] + ask
@@ -160,7 +175,7 @@ def self_test():
             f.write("# t\n\n## Níveis de rigor\n\n- `estrito`: runbooks.\n- `leve`: comunicados.\n- `científico`: artigos.\n- `smart-note`: notas.\n\n## Regras\n")
         defaults = os.path.join(tmp, "defaults.toml")
         with open(defaults, "w", encoding="utf-8") as f:
-            f.write('levels = []\nformats = []\nfolder = "."\nprint = ["txt", "md"]\n')
+            f.write('levels = []\nformats = []\nfolder = "."\nprint = ["txt", "md"]\nlanguages = ["pt-BR"]\n')
         home, cwd = os.path.join(tmp, "home"), os.path.join(tmp, "proj")
         os.makedirs(os.path.join(home, ".config", "ptbr-writer"))
         os.makedirs(cwd)
@@ -179,11 +194,13 @@ def self_test():
             checks.append((name, bool(ok)))
 
         out = ask("ptbr: reescreva este texto")
-        check("no config: asks once, three questions", out and "única vez" in out and "três perguntas" in out)
+        check("no config: asks once, four questions", out and "única vez" in out and "quatro perguntas" in out)
         check("no config: writes ./ptbr-writer.toml", out and "grave as respostas em ./ptbr-writer.toml" in out)
         check("notes is a format, smart-note is not a level option", out and "`notes` (o nível smart-note" in out and "smart-note (notas)" not in out)
         check("pdf points at to-pdf", out and "bash /p/to-pdf.sh <arquivo>.md" in out)
         check("folder question: raiz first, docs/ offered", out and "raiz (Recommended)" in out and "docs/" in out)
+        check("language question: pt-BR default, ASD-STE100 offered, multiSelect", out and "quatro perguntas" in out and "header \"Idioma\", multiSelect" in out and "pt-BR (Recommended)" in out and "ASD-STE100 (inglês técnico simplificado)" in out)
+        check("languages saved in the config", out and "`languages`" in out)
         check("non-interactive fallback", out and "Sem AskUserQuestion" in out)
         for p in ("/ptbr revise isto", "/ptbr-writer:ptbr revise", "PTBR reescreva", "ptbr"):
             check(f"trigger: {p!r}", ask(p))
@@ -193,13 +210,16 @@ def self_test():
 
         project('levels = ["estrito"]\nformats = ["md", "pdf"]\nfolder = "docs"\n')
         out = ask("ptbr: reescreva")
-        check("config: no question", out and "AskUserQuestion com três" not in out and "Não pergunte" in out)
+        check("config: no question", out and "AskUserQuestion com quatro" not in out and "Não pergunte" in out)
         check("config: values in use", out and '"levels": ["estrito"]' in out and '"folder": "docs"' in out)
+        check("config: pt-BR is the default language", out and '"languages": ["pt-BR"]' in out)
+        out = ask("ptbr ste100: reescreva")
+        check("ste100 in the request adds ASD-STE100", out and '"languages": ["pt-BR", "asd-ste100"]' in out and "-ste100" in out)
         check("config: file name pattern", out and NAME in out)
         out = ask("ptbr leve: reescreva")
         check("the request overrides the config", out and '"levels": ["leve"]' in out)
         out = ask("ptbr reconfigurar")
-        check("reconfigure asks again", out and "reconfigurar" in out and "três perguntas" in out)
+        check("reconfigure asks again", out and "reconfigurar" in out and "quatro perguntas" in out)
 
         with open(os.path.join(home, ".config", "ptbr-writer", "ptbr-writer.toml"), "w", encoding="utf-8") as f:
             f.write('formats = ["txt"]\nfolder = "notas"\n')
