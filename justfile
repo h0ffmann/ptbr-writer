@@ -266,4 +266,6 @@ quality: pins saramago-check plugin-check figure-check
     python3 -m json.tool .opencode.json >/dev/null
     # The README copies the tables of site/data/ by hand: each repo, roadmap item, rule and planned level must be in it.
     tail -n +2 site/data/awesome.tsv site/data/roadmap.tsv site/data/origins.tsv site/data/planned.tsv | grep -v '^==>' | cut -f1 | grep . | while read -r x; do grep -qF -- "$x" README.md || { echo "quality: README.md lacks $x" >&2; exit 1; }; done
+    # Every Archify figure is indexed in both READMEs, by its published page.
+    for j in docs/archify/*.json; do s=$(basename "$j" .json); for r in README.md README.en.md; do grep -qF "figuras/$s.html" "$r" || { echo "quality: $r does not index the figure $s" >&2; exit 1; }; done; done
     echo "quality: ok"
