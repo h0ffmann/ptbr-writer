@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=version&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#license)
-[![estimated reading time: ~24 min](https://img.shields.io/badge/reading%20time-~24%20min-1682D4?style=flat-square)](#reading-time)
+[![estimated reading time: ~24 min](https://img.shields.io/badge/reading%20time-~25%20min-1682D4?style=flat-square)](#reading-time)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 
 </div>
@@ -247,7 +247,7 @@ Planned, outside `SKILL.md` and with no context cost: `retórico`, `ensaístico`
 
 The text of each rule is in [`SKILL.md`](SKILL.md) and [on the site](https://h0ffmann.github.io/ptbr-writer/#regras).
 The origin of each one comes from [`site/data/origins.tsv`](site/data/origins.tsv). The
-`cientifico` skill applies PTW-1 to PTW-13 and adds CIE-1 to CIE-12.
+`cientifico` skill applies PTW-1 to PTW-17 and adds CIE-1 to CIE-12.
 
 | id | rule | origin | creator |
 | :- | :--- | :----- | :------ |
@@ -264,10 +264,10 @@ The origin of each one comes from [`site/data/origins.tsv`](site/data/origins.ts
 | PTW-11 | Número com unidade e origem (a number with unit and origin) | ouro-paper; Audience and evidence | [@h0ffmann](https://github.com/h0ffmann) |
 | PTW-12 | Sem alegação de pioneirismo (no priority claim) | Vale style `PriorityClaims` | [@h0ffmann](https://github.com/h0ffmann) |
 | PTW-13 | Fato separado de análise (fact apart from analysis) | ouro-paper | [@h0ffmann](https://github.com/h0ffmann) |
-| PTW-14 | Palavras inteiras e por extenso (whole words, spelled out) | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
-| PTW-15 | Pontuação (punctuation) | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
-| PTW-16 | Maiúsculas e concordância (capitals and agreement) | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
-| PTW-17 | Frase reorganizada (rewritten sentence) | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
+| PTW-14 | Palavras inteiras e por extenso (whole words, spelled out) | pedido do dono do repo | [@robkler](https://github.com/robkler) |
+| PTW-15 | Pontuação (punctuation) | pedido do dono do repo | [@robkler](https://github.com/robkler) |
+| PTW-16 | Maiúsculas e concordância (capitals and agreement) | pedido do dono do repo | [@robkler](https://github.com/robkler) |
+| PTW-17 | Frase reorganizada (rewritten sentence) | pedido do dono do repo | [@robkler](https://github.com/robkler) |
 
 ## reading time
 
@@ -366,6 +366,7 @@ the agent's skills folder.
 - PTW-9 to PTW-13: the `ouro-paper` skill and the `.vale/styles/research` style of
   [marola-dev/marola-research](https://github.com/marola-dev/marola-research) (`041cedd`), and
   "Audience and evidence" of [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) (`319e4e2`).
+- PTW-14 to PTW-17: requested by [@robkler](https://github.com/robkler).
 - Scientific skill: `scientific-writing` by
   [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing)
   (`a1043ef`, MIT, Copyright (c) 2025 K-Dense Inc.) and `artigo` by
