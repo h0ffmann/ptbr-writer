@@ -7,7 +7,7 @@
 #   to-pdf.sh [--download] texto.md [saida.pdf]
 set -euo pipefail
 
-PICASSO_REV=45fb3409446263f259d56e4decefb23e48e9090d
+PICASSO_REV=b919f9ecbbf1d2edbe083ab72ffc7e5b23e69423
 SIZE="~14 MiB (72 MiB on disk)"  # labs/ptbr-pdf at PICASSO_REV, x86_64-linux: scripts/pdf-bench.sh
 download=false
 [ "${1-}" = --download ] && { download=true; shift; }

@@ -6,11 +6,11 @@
       },
       "locked": {
         "dir": "labs/code-graph",
-        "lastModified": 1792563223,
-        "narHash": "sha256-i/sSOBqjf4VWeDEL61TcAZY+Il/GyBqp/KXMf3Fu2yU=",
+        "lastModified": 1792584121,
+        "narHash": "sha256-cZFx6STp4o3K+mATybz/F6/JWuXDqonthtwK3pg5YMg=",
         "owner": "h0ffmann",
         "repo": "picasso",
-        "rev": "45fb3409446263f259d56e4decefb23e48e9090d",
+        "rev": "b919f9ecbbf1d2edbe083ab72ffc7e5b23e69423",
         "type": "github"
       },
       "original": {
@@ -44,11 +44,11 @@
       },
       "locked": {
         "dir": "labs/gleam-website",
-        "lastModified": 1792563223,
-        "narHash": "sha256-i/sSOBqjf4VWeDEL61TcAZY+Il/GyBqp/KXMf3Fu2yU=",
+        "lastModified": 1792584121,
+        "narHash": "sha256-cZFx6STp4o3K+mATybz/F6/JWuXDqonthtwK3pg5YMg=",
         "owner": "h0ffmann",
         "repo": "picasso",
-        "rev": "45fb3409446263f259d56e4decefb23e48e9090d",
+        "rev": "b919f9ecbbf1d2edbe083ab72ffc7e5b23e69423",
         "type": "github"
       },
       "original": {
