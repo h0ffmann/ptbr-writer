@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=version&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#license)
-[![estimated reading time: ~21 min](https://img.shields.io/badge/reading%20time-~21%20min-1682D4?style=flat-square)](#reading-time)
+[![estimated reading time: ~22 min](https://img.shields.io/badge/reading%20time-~22%20min-1682D4?style=flat-square)](#reading-time)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 
 </div>
@@ -84,6 +84,25 @@ For everyone who opens a repository to use the same version, put this in its `.c
 
 **Update:** change the tag (`/plugin marketplace remove ptbr-writer` and `add` again; in a
 repository, the `ref`). What changes in each version is in [`CHANGELOG.md`](CHANGELOG.md).
+
+### OpenCode
+
+One line that downloads the tag, copies the skills `ptbr-writer`, `ptbr` and `cientifico` as files
+(no links) into `~/.config/opencode/skills/` and installs the `ask-levels` plugin:
+
+```console
+curl -fsSL https://raw.githubusercontent.com/h0ffmann/ptbr-writer/v0.3.0/scripts/install-opencode.sh | bash -s -- v0.3.0
+```
+
+`--project` at the end installs into `./.opencode/`. ⚠ `v0.3.0` does not exist yet: the script
+ships in the next release; until then, run `scripts/install-opencode.sh vX.Y.Z` from a clone of the
+tag you use. **Update:** run it again with the new tag. The plugin does what the hook does in Claude Code: a
+request that starts with `ptbr` gets the instruction to ask levels, formats, folder and languages
+through the `question` tool; any other request gets nothing. Tested on OpenCode 1.19.0: the three
+skills load and the instruction reaches the model; ⚠ that the model answers with the `question`
+tool was not measured (`opencode run` does not offer it). It needs `bash`, `curl` and `tar`; the
+binaries are `linux-x86_64` and `linux-aarch64`. `ptbr-routing` is not included: it depends on a
+Claude Code hook.
 
 ## use
 
@@ -265,6 +284,7 @@ that the site and the README guard read.
 | [roteamento](skills/ptbr-routing/SKILL.md) | done | `route` picks the skill and the level before a skill loads |
 | [plugin](plugins/ptbr-writer/.claude-plugin/plugin.json) | done | Claude Code plugin, installed with one command at the release version; OpenCode reads `SKILL.md` directly |
 | [distribuição](CHANGELOG.md) | done | release by tag with `just release`; v0.2.0 is the official version, installed by tag |
+| [opencode](scripts/install-opencode.sh) | in progress | skills and the `ask-levels` plugin for OpenCode, installed by tag; tested on OpenCode 1.19.0 (skills and instruction), the `question` tool was not measured ⚠; the script ships in the next release ⚠ |
 | [retórica](skills/retorica/SKILL.md) | planned | only the skeleton, no rules |
 
 ## awesome-ptbr-writer
