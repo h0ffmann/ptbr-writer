@@ -120,6 +120,22 @@ describe('watcher', () => {
     expect(onState.mock.calls.map((c) => c[1])).toEqual(['checking', 'idle']);
   });
 
+  it('drops a suggestion that spans two lines', async () => {
+    const send = vi.fn(async (_r: CheckRequest) => ({
+      ok: true,
+      suggestions: [
+        { original: 'um\ndois', replacement: 'um dois', rule: 'R', severity: 'aviso', occurrence: 1 },
+        { original: 'dois', replacement: '2', rule: 'R', severity: 'aviso', occurrence: 1 },
+      ],
+    }) as CheckResult);
+    const { w, onResult } = setup(send);
+    const el = field('');
+    w.attach(el);
+    type(el, 'um\ndois três');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(onResult.mock.calls.at(-1)![1]).toMatchObject([{ original: 'dois' }]);
+  });
+
   it('reports an error state', async () => {
     const send = vi.fn(async (_r: CheckRequest) => ({ ok: false, error: 'auth' }) as CheckResult);
     const { w, onState, onResult } = setup(send);

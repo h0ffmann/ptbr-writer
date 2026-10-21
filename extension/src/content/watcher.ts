@@ -44,7 +44,9 @@ export function createWatcher(opts: WatcherOptions) {
       opts.onState(el, result.error);
       return;
     }
-    opts.onResult(el, dropOverlaps(locate(sent.text, result.suggestions)), sent.offset);
+    // A span across a line break cannot be shown or applied in a contenteditable, whose breaks are synthetic.
+    const located = locate(sent.text, result.suggestions).filter((l) => !sent.text.slice(l.start, l.end).includes('\n'));
+    opts.onResult(el, dropOverlaps(located), sent.offset);
     opts.onState(el, 'idle');
   }
 
