@@ -84,6 +84,16 @@ dele:
 **Atualizar:** troque a tag (`/plugin marketplace remove ptbr-writer` e o `add` de novo; num
 repositório, o `ref`). O que muda em cada versão está no [`CHANGELOG.md`](CHANGELOG.md).
 
+**A `main`, sem release:** para testar o que ainda não saiu numa versão, dentro do Claude Code:
+
+```console
+! curl -fsSL https://raw.githubusercontent.com/h0ffmann/ptbr-writer/main/scripts/install_current.sh | bash
+```
+
+O script remove a instalação anterior e o marketplace, instala da `main` e mostra o commit; depois,
+`/reload-plugins` carrega o plugin na sessão. `PTBR_REF=<branch ou tag>` instala outra ref. A `main`
+não é uma versão fixa: rode de novo para pegar o que mudou, e volte à tag para ficar estável.
+
 ### OpenCode
 
 Uma linha, que baixa a tag, copia as skills `ptbr-writer`, `ptbr` e `cientifico` como arquivos

@@ -85,6 +85,16 @@ For everyone who opens a repository to use the same version, put this in its `.c
 **Update:** change the tag (`/plugin marketplace remove ptbr-writer` and `add` again; in a
 repository, the `ref`). What changes in each version is in [`CHANGELOG.md`](CHANGELOG.md).
 
+**main, no release:** to try what is not in a version yet, inside Claude Code:
+
+```console
+! curl -fsSL https://raw.githubusercontent.com/h0ffmann/ptbr-writer/main/scripts/install_current.sh | bash
+```
+
+The script removes the old install and the marketplace, installs from `main` and prints the commit;
+then `/reload-plugins` loads the plugin in the session. `PTBR_REF=<branch or tag>` installs another ref.
+`main` is not a fixed version: run it again to get what changed, and go back to the tag to stay stable.
+
 ### OpenCode
 
 One line that downloads the tag, copies the skills `ptbr-writer`, `ptbr` and `cientifico` as files

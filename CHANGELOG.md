@@ -5,6 +5,9 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- `scripts/install_current.sh` instala o plugin da ponta da `main` (ou de `PTBR_REF`), sem release:
+  remove a instalação e o marketplace anteriores e instala de novo, porque a `main` guarda o número da
+  última versão. Dentro do Claude Code: `! curl -fsSL .../install_current.sh | bash` e `/reload-plugins`.
 - `/ptbr-writer:bipr`: abre ou atualiza o PR do branch atual com o corpo bilíngue (pt-BR, depois o
   espelho em inglês), gerado dos commits e dos trailers `Tested:`; recusa no branch padrão, com
   mudança não commitada ou com o PR já mergeado. Só roda quando você chama.

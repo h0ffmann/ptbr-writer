@@ -38,6 +38,7 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 - `skills/ptbr/SKILL.md` — a symlink to `SKILL.md`: the alias `/ptbr`. Edit `SKILL.md`, never the link.
 - `skills/cientifico/SKILL.md` — the scientific-writing skill (rules CIE); applies PTW-1..13 and adds its own.
 - `skills/bipr/SKILL.md` — `/bipr`: the branch's commits to a pushed PR with a bilingual body (pt-BR, then the English mirror); user-invoked only (`disable-model-invocation`).
+- `scripts/install_current.sh` — installs the plugin from the tip of main (or `PTBR_REF`), no release: removes the old install and marketplace, installs again (main keeps the last version number, so `plugin update` sees nothing). For trying unreleased work; the tag stays the stable install.
 - `.opencode.json` — OpenCode configuration pointing to local `llamacpp/qwen3.6-27b`.
 - `justfile` — recipes for running OpenCode, serving Qwen, and quality checks.
 - `flake.nix` / `flake.lock` — reproducible dev shell.
