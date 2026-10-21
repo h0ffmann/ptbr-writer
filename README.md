@@ -43,7 +43,7 @@ laranja é onde você entra ou o que você recebe.
 português nas duas versões do README.
 
 **Evidência.** As 4 perguntas, o `ptbr-writer.toml`, os formatos e os idiomas:
-[`plugins/ptbr-writer/hooks/ask_levels.py`](plugins/ptbr-writer/hooks/ask_levels.py). A skill
+[`labs/ptbr-tools`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-tools) (`ptbr-ask-levels`). A skill
 `cientifico` para texto com fontes e o formato de saída: [`SKILL.md`](SKILL.md) e
 [`skills/cientifico/SKILL.md`](skills/cientifico/SKILL.md). Fonte da figura:
 [`docs/archify/em-um-minuto.json`](docs/archify/em-um-minuto.json); `just figure` a redesenha. Quando o
@@ -205,7 +205,7 @@ aplica PTW-1 a PTW-13 e acrescenta CIE-1 a CIE-12.
 ## tempo de leitura
 
 Todo texto que o plugin gera leva uma linha como `Leitura estimada: ~3 min (612 palavras, 4 links, 2 blocos de código)`,
-calculada por [`reading_time.py`](plugins/ptbr-writer/scripts/reading_time.py) (python3, sem dependências), nunca de cabeça.
+calculada por `ptbr-reading-time` (binário estático, sem dependências), nunca de cabeça.
 É uma estimativa: o mesmo texto dá sempre o mesmo número, mas pessoas leem de 175 a 300 palavras por minuto.
 
 | Parte | Como conta |
@@ -222,7 +222,7 @@ que precisam para dizer o mesmo que o inglês); o pt-BR usa as mesmas 238, sem e
 tempos de código e de link são escolhas deste projeto, não do artigo.
 
 ```console
-python3 -I plugins/ptbr-writer/scripts/reading_time.py README.md   # --lang en, --json, --self-test
+bash plugins/ptbr-writer/bin/run.sh reading-time README.md   # --lang en, --json, --self-test
 ```
 
 ## ELI5
@@ -271,7 +271,7 @@ Outros projetos para quem escreve texto técnico em português (fonte: [`site/da
 
 ## desenvolvimento
 
-Requisitos: [Nix](https://nixos.org/download/) com flakes. Regras para agentes e para quem
+Tempo de execução do plugin: binários Rust estáticos (linux x86_64 e aarch64), sem python3 nem node. Requisitos para desenvolver: [Nix](https://nixos.org/download/) com flakes. Regras para agentes e para quem
 contribui: [`AGENTS.md`](AGENTS.md).
 
 ```console

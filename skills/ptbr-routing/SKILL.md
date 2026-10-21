@@ -5,7 +5,7 @@ description: Escolhe a skill e o nível de rigor antes de carregar uma skill de 
 
 # Roteamento de um pedido de escrita
 
-`route` é `python3 .claude/skills/ptbr-routing/scripts/route.py "<pedido>"`, sem dependências. A
+`route` é `bash .claude/skills/ptbr-routing/bin/run.sh "<pedido>"` (binário estático, sem dependências). A
 resposta é uma linha: a skill a carregar e o nível.
 
 - Carregue só a skill que a linha nomeia. Não leia as outras.
@@ -14,4 +14,4 @@ resposta é uma linha: a skill a carregar e o nível.
 - Mais de um nível empatado: escolha um e declare-o na saída.
 - `smart-note + <nível>`: aplique as regras do nível e entregue em notas.
 - Com o plugin instalado, a skill `X` é `ptbr-writer:X`.
-- Sem Python: leia `routes.tsv`, ao lado deste arquivo, uma linha por nível com suas palavras.
+- Sem o binário para o seu sistema: leia `routes.tsv`, ao lado deste arquivo, uma linha por nível com suas palavras.
