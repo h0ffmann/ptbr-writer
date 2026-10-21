@@ -221,3 +221,12 @@ pub fn install_test() {
   assert c.json_string(plugin, "version") == "0.2.0"
   assert c.install("{\"name\": \"x\"}") == ""
 }
+
+// The /bipr page reads its description, its numbered steps and its footer from skills/bipr/.
+pub fn bipr_test() {
+  let skill =
+    "---\nname: bipr\ndescription: Abre o PR.\n---\n\n# bipr\n\n## 1. Recuse antes\n\ntexto\n\n## Nota\n\n## 2. Publique\n"
+  assert c.description(skill) == "Abre o PR."
+  assert c.bipr_steps(skill) == ["Recuse antes", "Publique"]
+  assert c.description("# sem frontmatter") == ""
+}
