@@ -1,6 +1,6 @@
 # A extensão no Firefox: o experimento de 2026-10-21
 
-Leitura estimada: ~5 min (936 palavras, 4 links, 3 blocos de código)
+Leitura estimada: ~6 min (1019 palavras, 5 links, 3 blocos de código)
 
 Este documento registra como a extensão do ptbr-writer foi construída, carregada e testada no
 Firefox em 2026-10-21, com o provider local Ollama + Qwen. O objetivo é que outra pessoa repita
@@ -61,8 +61,17 @@ carga da extensão.
 ### 2. A carga manual
 
 O dono do repo carregou `extension/dist-firefox/manifest.json` em
-`about:debugging#/runtime/this-firefox`, por **Carregar extensão temporária…**. ⚠ O resultado do
-teste manual (sublinhados, cartão, **Aceitar**) não foi registrado.
+`about:debugging#/runtime/this-firefox`, por **Carregar extensão temporária…**, e escolheu o
+provider **Ollama + Qwen (local)** no popup. O dono relatou duas observações:
+
+- **A lista de modelos detectou todos os modelos já baixados no Ollama.** A extensão lê
+  `GET /api/tags` e junta os modelos instalados aos sugeridos. Os modelos instalados de antes do
+  experimento apareceram sem `(baixar)`.
+- **O botão Baixar não pareceu funcionar direito.** ⚠ A mensagem e o modelo não foram registrados.
+  A issue [#63](https://github.com/h0ffmann/ptbr-writer/issues/63) lista as hipóteses: o popup fecha
+  e cancela o pedido, e o `stream: false` não mostra progresso.
+
+⚠ Os sublinhados, o cartão e o **Aceitar** não foram registrados.
 
 ### 3. O MCP do Firefox
 
