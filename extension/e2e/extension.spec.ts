@@ -4,10 +4,9 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { ProviderId, Settings } from '../src/types';
-import { REWRITE_FIXED, startFakeServer, type FakeServer } from './fake-server';
+import { REWRITE_FIXED, TYPED, startFakeServer, type FakeServer } from './fake-server';
 
 const EXTENSION = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist-test');
-const TYPED = 'Foi decidido que o deploy vai ser na sexta.';
 const FIXED = 'A equipe decidiu que o deploy vai ser na sexta.';
 // How long the pipeline (debounce, service worker, fetch, render) may take before a test fails. The
 // wait ends as soon as the underline shows, so a fast run stays fast; a loaded machine (CI, parallel
