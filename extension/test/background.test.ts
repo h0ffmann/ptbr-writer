@@ -6,7 +6,7 @@ import { DEFAULT_SETTINGS } from '../src/settings';
 import type { CheckRequest, Settings } from '../src/types';
 
 const settings: Settings = { ...DEFAULT_SETTINGS, keys: { claude: 'sk-test', deepseek: 'sk-test' } };
-const req: CheckRequest = { type: 'check', key: 'k1', text: 'texto de teste aqui', level: 'estrito' };
+const req: CheckRequest = { type: 'check', key: 'k1', text: 'texto a nível de teste aqui', level: 'estrito' };
 const suggestion = { original: 'a nível de', replacement: 'em', rule: 'PTW-1', severity: 'aviso', occurrence: 1 };
 const claudeBody = { content: [{ type: 'text', text: JSON.stringify({ suggestions: [suggestion] }) }] };
 
@@ -26,6 +26,13 @@ describe('handleCheck', () => {
   it('200 returns suggestions', async () => {
     const r = await handleCheck(req, { fetch: okFetch(claudeBody), settings });
     expect(r.ok && r.suggestions).toHaveLength(1);
+  });
+
+  it('aviso with an erro inside it returns 1 suggestion', async () => {
+    const erro = { original: 'nível', replacement: 'nivel', rule: 'PTW-2', severity: 'erro', occurrence: 1 };
+    const body = { content: [{ type: 'text', text: JSON.stringify({ suggestions: [suggestion, erro] }) }] };
+    const r = await handleCheck(req, { fetch: okFetch(body), settings });
+    expect(r.ok && r.suggestions).toEqual([{ ...suggestion }]);
   });
 
   it('401 -> auth, 429 -> rate-limit', async () => {

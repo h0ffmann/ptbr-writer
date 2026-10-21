@@ -2,7 +2,7 @@ import { buildRequest, classifyError, isTruncated, readText } from './providers'
 import { buildSystemPrompt } from './rules';
 import { DEFAULT_SETTINGS, levelFor, loadSettings } from './settings';
 import { CIENTIFICO, SKILL } from './skills';
-import { parseSuggestions } from './suggestions';
+import { filterSuggestions, parseSuggestions } from './suggestions';
 import type { CheckRequest, CheckResult, Settings } from './types';
 
 const inflight = new Map<string, AbortController>();
@@ -42,7 +42,10 @@ export async function handleCheck(
     }
     if (controller.signal.aborted) return { ok: true, suggestions: [] };
     if (isTruncated(provider, json)) return { ok: false, error: 'provider' };
-    return { ok: true, suggestions: parseSuggestions(readText(provider, json)) };
+    return {
+      ok: true,
+      suggestions: filterSuggestions(req.text, parseSuggestions(readText(provider, json)), settings),
+    };
   } finally {
     if (inflight.get(req.key) === controller) inflight.delete(req.key);
   }
