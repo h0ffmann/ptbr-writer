@@ -294,3 +294,7 @@ quality: pins saramago-check plugin-check figure-check
     # Each README carries its own reading time, from the plugin's calculator: just reading-time writes it.
     for r in "README.md pt-BR" "README.en.md en"; do set -- $r; want=$(python3 -I plugins/ptbr-writer/scripts/reading_time.py --lang "$2" "$1"); grep -qxF "$want" "$1" || { echo "quality: $1 reading time is not \"$want\": run just reading-time" >&2; exit 1; }; done
     echo "quality: ok"
+
+# Create or update the GitHub labels from the tables of ISSUE_LABELS.md (needs `gh` logged in).
+labels:
+    grep -E '^\| `[^`]+` \| `#[0-9A-Fa-f]{6}` \|' ISSUE_LABELS.md | while IFS='|' read -r _ n c d _; do n=${n//\`/}; c=${c//\`/}; n=${n// /}; c=${c// /}; d=${d# }; d=${d% }; gh label create "$n" --color "${c#\#}" --description "$d" --force; done
