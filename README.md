@@ -113,12 +113,11 @@ O carimbo é em UTC e o mesmo para todos os arquivos de um pedido. Com 2 níveis
 arquivos. Para um `git add -A` não levá-los, ponha `ptbr-writter-*` no `.gitignore`. As notas de
 `notes` seguem as regras de smart-note (`<id>-<slug>.md`). O `.pdf` usa o pandoc da máquina. Sem
 ele, o Claude pergunta antes de baixar, pelo Nix, o
-[`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) do picasso (pandoc
-e um XeLaTeX mínimo). Medido com `just pdf-bench` (x86_64-linux):
+[`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) do picasso (um binário Rust, `to-pdf`, com Typst e fontes embutidas). O binário ainda não está no cache.nixos.org: o Nix o compila do código-fonte. Medido com `just pdf-bench` (x86_64-linux), no picasso `e75838c`, antes do trabalho de reduzir o binário ([execução](https://github.com/h0ffmann/ptbr-writter/actions/runs/39525457779)):
 
 | download | em disco | montado na máquina | primeira vez, runner novo do GitHub (4 núcleos) |
 | :------- | :------- | :----------------- | :---------------------------------------------- |
-| 206 MiB, 271 caminhos do cache.nixos.org | 729 MiB, 284 caminhos | 27 MiB, 13 caminhos (a árvore do TeX) | 27 s |
+| 14 MiB, 6 caminhos do cache.nixos.org | 94 MiB, 7 caminhos | 47 MiB, 1 caminho (o `to-pdf`, compilado) | 1029 s (17 min) |
 
 O tempo depende da rede. Da segunda vez em diante, o Nix reusa o store.
 
