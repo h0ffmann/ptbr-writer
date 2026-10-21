@@ -5,6 +5,7 @@
 
 import gleam/io
 import gleam/list
+import gleam/result
 import gleam/string
 
 /// The repository's root, seen from site/content.
@@ -674,6 +675,45 @@ pub fn errors(skill: String, justfile: String) -> List(String) {
   })
 }
 
+// ---- the /bipr page ------------------------------------------------------------------------
+
+/// The `description:` of a SKILL.md frontmatter, or "".
+pub fn description(text: String) -> String {
+  text
+  |> string.split("\n")
+  |> list.find(fn(line) { string.starts_with(line, "description: ") })
+  |> result.map(fn(line) { string.trim(string.drop_start(line, 13)) })
+  |> result.unwrap("")
+}
+
+/// The `## N. step` headings of skills/bipr/SKILL.md, without the number.
+pub fn bipr_steps(text: String) -> List(String) {
+  text
+  |> string.split("\n")
+  |> list.filter_map(fn(line) {
+    case string.split_once(line, ". ") {
+      Ok(#("## " <> n, step)) ->
+        case n != "" && string.to_graphemes(n) |> list.all(is_digit) {
+          True -> Ok(string.trim(step))
+          False -> Error(Nil)
+        }
+      _ -> Error(Nil)
+    }
+  })
+}
+
+/// The constants of the /bipr page, from skills/bipr/SKILL.md and its footer.md.
+pub fn bipr_module(skill: String, footer: String) -> String {
+  string.join(
+    [
+      "pub const bipr_description = " <> lit(description(skill)) <> "\n",
+      "pub const bipr_footer = " <> lit(string.trim(footer)) <> "\n",
+      items("bipr_steps", "String", list.map(bipr_steps(skill), lit)),
+    ],
+    "\n",
+  )
+}
+
 pub fn main() -> Nil {
   let skill = read(root <> "SKILL.md")
   let justfile = read(root <> "justfile")
@@ -682,6 +722,8 @@ pub fn main() -> Nil {
   let origin_rows = read("../data/origins.tsv")
   let planned_rows = read("../data/planned.tsv")
   let plugin = read(root <> "plugins/ptbr-writer/.claude-plugin/plugin.json")
+  let bipr = read(root <> "skills/bipr/SKILL.md")
+  let bipr_footer = read(root <> "skills/bipr/footer.md")
   case
     list.flatten([
       case install(plugin) {
@@ -692,6 +734,12 @@ pub fn main() -> Nil {
       data_errors(awesome, roadmap),
       origin_errors(skill, origin_rows),
       planned_errors(skill, planned_rows),
+      case description(bipr), bipr_steps(bipr), string.trim(bipr_footer) {
+        "", _, _ -> ["skills/bipr/SKILL.md: no description"]
+        _, [], _ -> ["skills/bipr/SKILL.md: no `## N. step` heading"]
+        _, _, "" -> ["skills/bipr/footer.md is empty"]
+        _, _, _ -> []
+      },
     ])
   {
     [] ->
@@ -708,7 +756,9 @@ pub fn main() -> Nil {
           plugin,
           figure_rows(root <> "docs/archify"),
           read(root <> "docs/eli5/RESULTS.tsv"),
-        ),
+        )
+          <> "\n"
+          <> bipr_module(bipr, bipr_footer),
       )
     found -> {
       list.each(found, io.println_error)

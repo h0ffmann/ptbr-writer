@@ -5,6 +5,15 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- O site ganha a página `bipr.html` (Gleam, como a capa): a descrição, os passos e o rodapé da
+  `/bipr` lidos de `skills/bipr/`, as capturas do PR #49 com o rodapé renderizado pelo GitHub e a
+  instalação pela `main`. A capa tem a pílula `/bipr`.
+- `scripts/install_current.sh` instala o plugin da ponta da `main` (ou de `PTBR_REF`), sem release:
+  remove a instalação e o marketplace anteriores e instala de novo, porque a `main` guarda o número da
+  última versão. Dentro do Claude Code: `! curl -fsSL .../install_current.sh | bash` e `/reload-plugins`.
+- `/ptbr-writer:bipr`: abre ou atualiza o PR do branch atual com o corpo bilíngue (pt-BR, depois o
+  espelho em inglês), gerado dos commits e dos trailers `Tested:`; recusa no branch padrão, com
+  mudança não commitada ou com o PR já mergeado. Só roda quando você chama.
 - OpenCode: `scripts/install-opencode.sh vX.Y.Z` baixa a tag e instala as skills `ptbr-writer`, `ptbr`
   e `cientifico` como arquivos em `~/.config/opencode/skills/` (ou `./.opencode/` com `--project`),
   mais o plugin `ask-levels` (`opencode/ptbr-writer.js`), que roda o mesmo binário `ptbr` do hook do

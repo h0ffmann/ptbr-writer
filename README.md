@@ -84,6 +84,16 @@ dele:
 **Atualizar:** troque a tag (`/plugin marketplace remove ptbr-writer` e o `add` de novo; num
 repositório, o `ref`). O que muda em cada versão está no [`CHANGELOG.md`](CHANGELOG.md).
 
+**A `main`, sem release:** para testar o que ainda não saiu numa versão, dentro do Claude Code:
+
+```console
+! curl -fsSL https://raw.githubusercontent.com/h0ffmann/ptbr-writer/main/scripts/install_current.sh | bash
+```
+
+O script remove a instalação anterior e o marketplace, instala da `main` e mostra o commit; depois,
+`/reload-plugins` carrega o plugin na sessão. `PTBR_REF=<branch ou tag>` instala outra ref. A `main`
+não é uma versão fixa: rode de novo para pegar o que mudou, e volte à tag para ficar estável.
+
 ### OpenCode
 
 Uma linha, que baixa a tag, copia as skills `ptbr-writer`, `ptbr` e `cientifico` como arquivos
@@ -120,6 +130,7 @@ pede para mudar. Instale do código-fonte:
 | `/ptbr-writer:ptbr` | reescreve no nível pedido, ou classifica o texto e declara o nível |
 | `/ptbr-writer:ptbr-writer` | o mesmo, com o nome completo |
 | `/ptbr-writer:cientifico` | texto científico com fontes: artigo, proposta, relatório (regras CIE) |
+| `/ptbr-writer:bipr` | abre ou atualiza o PR do branch atual, com o corpo em pt-BR e o espelho em inglês, a partir dos commits (`--dry-run` só mostra; [exemplo e custo](docs/bipr/exemplo-pr-49.md)) |
 
 Ou descreva a tarefa: "reescreva este runbook em português controlado".
 
