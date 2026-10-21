@@ -39,6 +39,7 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 - `skills/cientifico/SKILL.md` — the scientific-writing skill (rules CIE); applies PTW-1..13 and adds its own.
 - `skills/bipr/SKILL.md` — `/bipr`: the branch's commits to a pushed PR with a bilingual body (pt-BR, then the English mirror); user-invoked only (`disable-model-invocation`). The PR body ends with `skills/bipr/footer.md` (the favicon and "Generated with h0ffmann/ptbr-writer bipr skill"), kept out of SKILL.md because a skill body has no links; the skill may later move to a devkit or skills repo.
 - `scripts/install_current.sh` — installs the plugin from the tip of main (or `PTBR_REF`), no release: removes the old install and marketplace, installs again (main keeps the last version number, so `plugin update` sees nothing). For trying unreleased work; the tag stays the stable install.
+- `.mcp.json` + `scripts/firefox-mcp.sh` — the Firefox MCP (Mozilla's `@mozilla/firefox-devtools-mcp`, pinned in the script, throwaway profile; on Ubuntu the snap's real binary, since geckodriver cannot start the `/usr/bin/firefox` wrapper): lets an agent install `extension/dist-firefox` (`install_extension`, type `path`) and drive the page. A dev tool, not part of the plugin.
 - `.opencode.json` — OpenCode configuration pointing to local `llamacpp/qwen3.6-27b`.
 - `justfile` — recipes for running OpenCode, serving Qwen, and quality checks.
 - `flake.nix` / `flake.lock` — reproducible dev shell.
