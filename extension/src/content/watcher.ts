@@ -27,10 +27,10 @@ export function createWatcher(opts: WatcherOptions) {
 
   async function check(el: HTMLElement) {
     timers.delete(el);
-    if (ignored(el)) return;
     const m = textModel(el);
-    if (wordCount(m.text) < MIN_WORDS) return;
+    if (ignored(el) || wordCount(m.text) < MIN_WORDS) return opts.onState(el, 'idle');
     const sent = selectForSending(m.text, caretOffset(el, m));
+    if (wordCount(sent.text) < MIN_WORDS) return opts.onState(el, 'idle');
     opts.onState(el, 'checking');
     let result: CheckResult;
     try {
@@ -39,16 +39,28 @@ export function createWatcher(opts: WatcherOptions) {
       result = { ok: false, error: 'network' };
     }
     if (!listeners.has(el)) return;
-    if (textModel(el).text !== m.text) return; // field changed: stale
+    if (textModel(el).text !== m.text) return opts.onState(el, 'idle'); // field changed: stale
     if (!result.ok) {
       opts.onState(el, result.error);
       return;
     }
     // A span across a line break cannot be shown or applied in a contenteditable, whose breaks are synthetic.
-    const located = locate(sent.text, result.suggestions).filter((l) => !sent.text.slice(l.start, l.end).includes('\n'));
+    const located = locate(sent.text, result.suggestions).filter(
+      (l) => !sent.text.slice(l.start, l.end).includes('\n'),
+    );
     opts.onResult(el, dropOverlaps(located), sent.offset);
     opts.onState(el, 'idle');
   }
+
+  // An exception inside check (a render that throws) shows as a provider error, never as an unhandled rejection.
+  const run = (el: HTMLElement) =>
+    check(el).catch(() => {
+      try {
+        opts.onState(el, 'provider');
+      } catch {
+        // nothing left to report to
+      }
+    });
 
   return {
     attach(el: HTMLElement) {
@@ -56,7 +68,7 @@ export function createWatcher(opts: WatcherOptions) {
       const onInput = () => {
         opts.onResult(el, [], 0);
         clearTimeout(timers.get(el));
-        timers.set(el, setTimeout(() => void check(el), opts.delayMs ?? 1000));
+        timers.set(el, setTimeout(() => run(el), opts.delayMs ?? 1000));
       };
       listeners.set(el, onInput);
       el.addEventListener('input', onInput);

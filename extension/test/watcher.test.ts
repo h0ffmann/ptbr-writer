@@ -103,6 +103,60 @@ describe('watcher', () => {
     expect(onResult).toHaveBeenLastCalledWith(el, [], 0);
   });
 
+  it('a discarded response leaves the badge idle, not checking', async () => {
+    let resolve!: (r: CheckResult) => void;
+    const send = vi.fn((_r: CheckRequest) => new Promise<CheckResult>((r) => (resolve = r)));
+    const { w, onState } = setup(send);
+    const el = field('');
+    w.attach(el);
+    type(el, 'a casa é bonito');
+    await vi.advanceTimersByTimeAsync(1000);
+    el.value = 'outro texto bem diferente';
+    resolve({ ok: true, suggestions: [] });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(onState.mock.calls.map((c) => c[1])).toEqual(['checking', 'idle']);
+  });
+
+  it('a skipped check (short text, password) sets idle', async () => {
+    const send = vi.fn(async (_r: CheckRequest) => ({ ok: true, suggestions: [] }) as CheckResult);
+    const { w, onState } = setup(send);
+    const pw = field('', 'password');
+    const short = field('');
+    w.attach(pw);
+    w.attach(short);
+    type(pw, 'uma senha bem longa');
+    type(short, 'dois termos');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(onState.mock.calls).toEqual([[pw, 'idle'], [short, 'idle']]);
+  });
+
+  it('does not send an empty paragraph of a long text', async () => {
+    const send = vi.fn(async (_r: CheckRequest) => ({ ok: true, suggestions: [] }) as CheckResult);
+    const { w, onState } = setup(send);
+    const el = field('');
+    w.attach(el);
+    const p1 = 'a '.repeat(2100);
+    type(el, p1 + '\n\n' + 'b '.repeat(2100));
+    el.setSelectionRange(p1.length + 1, p1.length + 1);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(send).not.toHaveBeenCalled();
+    expect(onState).toHaveBeenLastCalledWith(el, 'idle');
+  });
+
+  it('an exception after the reply becomes a provider error, not an unhandled rejection', async () => {
+    const send = vi.fn(async (_r: CheckRequest) => ({ ok: true, suggestions: [] }) as CheckResult);
+    const onState = vi.fn();
+    const onResult = vi.fn((_el: HTMLElement, located: unknown[]) => {
+      if (located.length === 0 && send.mock.calls.length > 0) throw new Error('render failed');
+    });
+    const w = createWatcher({ level: 'descritivo', send, onResult, onState });
+    const el = field('');
+    w.attach(el);
+    type(el, 'a casa é bonita');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(onState).toHaveBeenLastCalledWith(el, 'provider');
+  });
+
   it('applies a fresh response as located suggestions with the offset', async () => {
     const send = vi.fn(async (_r: CheckRequest) => ({
       ok: true,
