@@ -3,7 +3,7 @@
 import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
-import ptbr_writter_site/content
+import ptbr_writer_site/content
 
 pub fn document(body: Element(msg)) -> Element(msg) {
   let meta = fn(name, value) {
@@ -37,6 +37,18 @@ pub fn document(body: Element(msg)) -> Element(msg) {
       ),
       stylesheet("style.css"),
     ]),
-    html.body([], [body]),
+    html.body([], [body, html.script([], copy_script)]),
   ])
 }
+
+/// The page's only script: show each copy button and put its command on the clipboard.
+const copy_script =
+  "document.querySelectorAll('[data-copy]').forEach(function (b) {
+  b.hidden = false;
+  b.addEventListener('click', function () {
+    navigator.clipboard.writeText(b.dataset.copy).then(function () {
+      b.textContent = 'copiado ✓';
+      setTimeout(function () { b.textContent = 'copiar'; }, 1500);
+    });
+  });
+});"

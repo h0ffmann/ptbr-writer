@@ -1,6 +1,6 @@
 //// The page. Every fact it shows comes from `content`, which site/content writes from SKILL.md,
 //// the justfile and site/data/*.tsv; the sentences that tell the story are written here, in lower case (DESIGN.md).
-//// The page is prerendered and needs no JavaScript.
+//// The page is prerendered; its one script, in page.gleam, only adds the copy button.
 
 import gleam/list
 import gleam/result
@@ -8,14 +8,14 @@ import gleam/string
 import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
-import ptbr_writter_site/content.{
+import ptbr_writer_site/content.{
   type Level, type Link, type Origin, type Planned, type Recipe, type Rule,
   type Step,
 }
 
-pub const repo = "https://github.com/h0ffmann/ptbr-writter"
+pub const repo = "https://github.com/h0ffmann/ptbr-writer"
 
-const blob = "https://github.com/h0ffmann/ptbr-writter/blob/main/"
+const blob = "https://github.com/h0ffmann/ptbr-writer/blob/main/"
 
 /// The two public-domain images of the cover, credited to their Wikimedia Commons pages.
 const commons = "https://commons.wikimedia.org/wiki/File:"
@@ -26,7 +26,7 @@ const orwell =
 
 /// The star count, drawn by shields.io: an image, so the page still loads no JavaScript.
 const stars =
-  "https://img.shields.io/github/stars/h0ffmann/ptbr-writter?style=social&label=star"
+  "https://img.shields.io/github/stars/h0ffmann/ptbr-writer?style=social&label=star"
 
 pub fn view() -> Element(msg) {
   html.main([], [
@@ -114,7 +114,9 @@ fn cover() -> Element(msg) {
       html.h1([], [html.text(content.title)]),
     ]),
     html.p([attribute.class("lede")], inline(content.lede)),
+    install(),
     html.nav([attribute.class("jump")], [
+      html.a([attribute.href("#instalar")], [html.text("instalar")]),
       html.a([attribute.href("#uso")], [html.text("uso")]),
       html.a([attribute.href("#niveis")], [html.text("níveis")]),
       html.a([attribute.href("#regras")], [html.text("regras")]),
@@ -169,6 +171,40 @@ fn made_with_line(class: String) -> Element(msg) {
     made_with("Gleam", gleam_icon, "https://gleam.run"),
     html.text(" e "),
     made_with("Claude Code", claude_code_icon, "https://claude.com/claude-code"),
+  ])
+}
+
+/// The install command first, with a copy button: one copy, one paste in a terminal. The button
+/// is hidden until page.gleam's script shows it, so without JavaScript the command is still there
+/// to select.
+fn install() -> Element(msg) {
+  html.section([attribute.id("instalar"), attribute.class("install")], [
+    html.p([attribute.class("install-title")], [
+      html.text("instalar o plugin do Claude Code, v" <> content.version),
+    ]),
+    html.div([attribute.class("install-box")], [
+      html.pre([], [html.code([], [html.text(content.install)])]),
+      html.button(
+        [
+          attribute.class("copy"),
+          attribute.attribute("data-copy", content.install),
+          attribute.attribute("hidden", ""),
+          attribute.type_("button"),
+        ],
+        [html.text("copiar")],
+      ),
+    ]),
+    html.p([attribute.class("install-note")], [
+      html.text(
+        "cole num terminal; depois, numa sessão nova do Claude Code, escreva ",
+      ),
+      html.code([], [html.text("ptbr: reescreva este texto")]),
+      html.text(". para fixar a versão num repositório, veja o "),
+      html.a([attribute.href(blob <> "README.md#instalar")], [
+        html.text("README"),
+      ]),
+      html.text("."),
+    ]),
   ])
 }
 
@@ -340,7 +376,7 @@ fn limits() -> Element(msg) {
 fn awesome() -> Element(msg) {
   section(
     "awesome",
-    "awesome-ptbr-writter",
+    "awesome-ptbr-writer",
     "outros projetos para quem escreve texto técnico em português. o primeiro é o PTC original, de onde este fork vem; os outros foram achados numa lista curada, que vai ao lado.",
     [html.ul([attribute.class("awesome")], list.map(content.awesome, link))],
   )
@@ -419,7 +455,7 @@ fn footer() -> Element(msg) {
         html.text(content.revision),
       ]),
       html.text(" · MIT · "),
-      html.a([attribute.href(repo)], [html.text("h0ffmann/ptbr-writter")]),
+      html.a([attribute.href(repo)], [html.text("h0ffmann/ptbr-writer")]),
     ]),
     made_with_line("made-with"),
     html.p([], [

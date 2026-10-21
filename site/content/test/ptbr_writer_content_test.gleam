@@ -1,6 +1,6 @@
 import gleam/list
 import gleeunit
-import ptbr_writter_content.{
+import ptbr_writer_content.{
   type Origin, Level, Link, Planned, Recipe, Rule, Step,
 } as c
 
@@ -9,7 +9,7 @@ pub fn main() -> Nil {
 }
 
 const skill =
-  "# ptbr-writter
+  "# ptbr-writer
 
 Reescreva texto técnico
 em duas linhas.
@@ -17,7 +17,7 @@ em duas linhas.
 ## Uso
 
 ```
-/ptbr-writter
+/ptbr-writer
 ```
 
 - \"tire a ambiguidade deste texto\"
@@ -47,7 +47,7 @@ Corte gerúndios.
 "
 
 pub fn title_and_lede_test() {
-  assert c.title(skill) == "ptbr-writter"
+  assert c.title(skill) == "ptbr-writer"
   assert c.lede(skill) == "Reescreva texto técnico em duas linhas."
 }
 
@@ -70,7 +70,7 @@ pub fn output_test() {
 }
 
 pub fn usage_test() {
-  assert c.usage(skill) == ["/ptbr-writter", "tire a ambiguidade deste texto"]
+  assert c.usage(skill) == ["/ptbr-writer", "tire a ambiguidade deste texto"]
 }
 
 pub fn recipes_test() {
@@ -210,4 +210,14 @@ pub fn numbered_and_preamble_test() {
     == ["Uma ideia, uma nota.", "Palavras próprias."]
   assert c.preamble(text, "Smart note") == "Combina com outro nível."
   assert c.numbered(text, "Ausente") == []
+}
+
+// The install command comes from plugin.json; a missing field leaves it empty, and main fails.
+pub fn install_test() {
+  let plugin =
+    "{\n  \"name\": \"ptbr-writer\",\n  \"version\": \"0.2.0\",\n  \"repository\": \"https://github.com/h0ffmann/ptbr-writer\"\n}"
+  assert c.install(plugin)
+    == "claude plugin install ptbr-writer --marketplace h0ffmann/ptbr-writer#v0.2.0"
+  assert c.json_string(plugin, "version") == "0.2.0"
+  assert c.install("{\"name\": \"x\"}") == ""
 }

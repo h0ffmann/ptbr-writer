@@ -95,8 +95,14 @@ their owners' marks, not licensed here.
 ## Motion
 
 One entrance, and only when the reader allows motion (`prefers-reduced-motion`): the title
-settles, the review stroke draws, the lede and the buttons rise. The page is prerendered and loads
-no JavaScript.
+settles, the review stroke draws, the lede and the buttons rise. The page is prerendered. Its one
+script (`page.gleam`) shows the copy button of the install command and puts the command on the
+clipboard; without JavaScript the button stays hidden and the command is still there to select.
+
+## Install
+
+The install command comes first, under the lede: a dark box with the one command (read from
+`plugin.json` by `site/content`, never typed) and a copy button in `--pen`.
 
 ## Before you change the look
 

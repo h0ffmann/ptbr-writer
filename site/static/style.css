@@ -1,4 +1,4 @@
-/* ptbr-writter: uma folha, a caneta de quem escreve e a caneta da revisão. The rules are DESIGN.md. */
+/* ptbr-writer: uma folha, a caneta de quem escreve e a caneta da revisão. The rules are DESIGN.md. */
 :root {
   /* the ground */
   --paper: #fbf8f1;
@@ -98,6 +98,17 @@ code { font-size: 0.85em; background: var(--sheet); border: 1px solid var(--rule
 .made-with a { display: inline-flex; align-items: center; gap: 6px; padding: 0.25em 0.75em; border: 1px solid var(--rule); border-radius: 999px; background: var(--sheet); color: var(--ink); text-decoration: none; }
 .made-with a:hover { border-color: var(--pen); }
 .made-with img { width: 18px; height: 18px; }
+
+/* install: the command first, one copy, one paste */
+.install { margin: 1.6em 0 0.4em; max-width: 46em; padding: 0; border-top: 0; }
+.install-title { font: 600 0.8rem var(--mono); color: var(--review); letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 8px; }
+.install-box { display: flex; align-items: stretch; gap: 0; background: var(--ink); border-radius: 10px; overflow: hidden; box-shadow: 0 6px 18px rgba(27, 26, 23, 0.18); }
+.install-box pre { margin: 0; padding: 14px 16px; flex: 1; overflow-x: auto; }
+.install-box code { background: none; border: 0; padding: 0; color: var(--sheet); font-size: 0.85rem; white-space: pre; font-variant-ligatures: none; /* `--marketplace`, not a dash */ }
+.copy { font: 600 0.85rem var(--mono); border: 0; background: var(--pen); color: var(--sheet); padding: 0 18px; cursor: pointer; }
+.copy:hover { background: var(--review); }
+.copy:focus-visible { outline: 2px solid var(--sheet); outline-offset: -4px; }
+.install-note { color: var(--muted); font-size: 0.9rem; margin: 8px 0 0; }
 
 /* the sections */
 section { padding: 44px 24px; border-top: 1px solid var(--rule); }

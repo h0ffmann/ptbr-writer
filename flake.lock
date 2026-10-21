@@ -24,11 +24,11 @@
       },
       "locked": {
         "dir": "labs/gleam-website",
-        "lastModified": 1792420784,
-        "narHash": "sha256-DCVkPDKiQzdwndLP7ZNhJoYokYjK8Vyp7hqYfa+XkUk=",
+        "lastModified": 1792552851,
+        "narHash": "sha256-FArtYRrPMOy5iHQelBLM5j4H6LvL71Gv/5HTMBF5sKc=",
         "owner": "h0ffmann",
         "repo": "picasso",
-        "rev": "4bd3b2221aedf6bb814670bfde3ad705a0e60101",
+        "rev": "099e036f8b8378dc9bb226be4e223cf73e99e164",
         "type": "github"
       },
       "original": {
