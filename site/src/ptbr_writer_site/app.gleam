@@ -142,7 +142,16 @@ fn cover() -> Element(msg) {
           attribute.class("count"),
         ]),
       ]),
-      grafo_pill(),
+      grafo_pill(
+        "grafo/graph.html",
+        "grafo interativo do código, gerado pelo code-graph do picasso",
+        "Grafo do código",
+      ),
+      grafo_pill(
+        "grafo/picasso.html",
+        "grafo do código do picasso, no commit que este repositório fixa",
+        "Grafo do picasso",
+      ),
       // Each Archify page of docs/archify/, named by its title and marked with Archify's icon,
       // beside the GitHub pill.
       ..list.map(content.figures, fn(f) {
@@ -193,16 +202,15 @@ fn made_with(name: String, icon: String, href: String) -> Element(msg) {
   ])
 }
 
-/// The code graph of this repository (grafo/graph.html, built by `just site` with picasso's
-/// code-graph), beside the Archify pills, with its own icon: it is not an Archify page.
-fn grafo_pill() -> Element(msg) {
+/// The code graphs (built by `just site` with picasso's code-graph), beside the Archify pills, with
+/// their own icon: they are not Archify pages. This repository's, then picasso's at the pinned
+/// forks/picasso, which this one's external nodes link into.
+fn grafo_pill(href: String, title: String, name: String) -> Element(msg) {
   html.a(
     [
       attribute.class("ghost figure-pill"),
-      attribute.href("grafo/graph.html"),
-      attribute.title(
-        "grafo interativo do código, gerado pelo code-graph do picasso",
-      ),
+      attribute.href(href),
+      attribute.title(title),
     ],
     [
       html.img([
@@ -211,7 +219,7 @@ fn grafo_pill() -> Element(msg) {
         attribute.width(20),
         attribute.height(20),
       ]),
-      html.text("Grafo do código"),
+      html.text(name),
     ],
   )
 }
