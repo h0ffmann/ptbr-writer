@@ -1,3 +1,4 @@
+import { containsEntry } from './never-fix';
 import type { Located, Suggestion } from './types';
 
 export function parseSuggestions(raw: string): Suggestion[] {
@@ -82,4 +83,24 @@ export function dropOverlaps(l: Located[]): Located[] {
 
 export function applyToString(text: string, l: Located): string {
   return text.slice(0, l.start) + l.replacement + text.slice(l.end);
+}
+
+// The service worker's filters, on positions `locate` finds in the sent text: without `rewrite`
+// every aviso goes; an erro inside a located aviso goes (one sentence, one color); a suggestion
+// that would change a never-fix entry goes; `dropOverlaps` settles the rest.
+export function filterSuggestions(
+  text: string,
+  s: Suggestion[],
+  opts: { rewrite: boolean; neverFix: readonly string[] },
+): Suggestion[] {
+  let l = locate(text, s);
+  if (!opts.rewrite) l = l.filter((x) => x.severity !== 'aviso');
+  const avisos = l.filter((x) => x.severity === 'aviso');
+  l = l.filter(
+    (x) => x.severity === 'aviso' || !avisos.some((a) => x.start >= a.start && x.end <= a.end),
+  );
+  l = l.filter(
+    (x) => !opts.neverFix.some((e) => containsEntry(x.original, e) && !containsEntry(x.replacement, e)),
+  );
+  return dropOverlaps(l).map(({ start: _start, end: _end, ...rest }) => rest);
 }
