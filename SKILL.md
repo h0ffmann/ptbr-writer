@@ -97,6 +97,10 @@ Vírgula depois de vocativo e de saudação. Ponto final no fim da frase. `?` em
 
 Maiúscula no início da frase e em nome próprio. Concordância verbal e nominal (`os relatórios estão prontos`).
 
+### PTW-17: Frase reorganizada
+
+Reescreva inteira a frase confusa, longa ou ambígua, no tom pedido. Não mude o sentido nem acrescente informação. A frase reescrita já leva as correções das PTW-8 e PTW-14 a 16. Não reescreva a frase que já está correta e clara.
+
 ## Limites
 
 A skill não muda tese, autoria nem conclusões: quem decide é o humano. Ela não busca fontes; marca o que não foi checado.
