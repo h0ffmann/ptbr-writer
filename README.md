@@ -201,6 +201,29 @@ aplica PTW-1 a PTW-13 e acrescenta CIE-1 a CIE-12.
 | PTW-12 | Sem alegação de pioneirismo | estilo Vale `PriorityClaims` | [@h0ffmann](https://github.com/h0ffmann) |
 | PTW-13 | Fato separado de análise | ouro-paper | [@h0ffmann](https://github.com/h0ffmann) |
 
+## tempo de leitura
+
+Todo texto que o plugin gera leva uma linha como `Leitura estimada: ~3 min (612 palavras, 4 links, 2 blocos de código)`,
+calculada por [`reading_time.py`](plugins/ptbr-writer/scripts/reading_time.py) (python3, sem dependências), nunca de cabeça.
+É uma estimativa: o mesmo texto dá sempre o mesmo número, mas pessoas leem de 175 a 300 palavras por minuto.
+
+| Parte | Como conta |
+|-------|------------|
+| Prosa | palavras (sem blocos de código, URLs e sintaxe Markdown; o código inline conta como palavra) ÷ 238 por minuto |
+| Complexidade | texto técnico é mais lento: ×1,15 se a frase média passa de 20 palavras e ×1,15 se mais de 25% das palavras têm 10 letras ou mais (de 1,0 a 1,3) |
+| Código | 10 s por linha não vazia de bloco de código |
+| Links | 5 s por link, para decidir se o segue; o tempo de ler o destino não entra |
+| Resultado | arredondado para cima, em minutos; até 60 s sai `< 1 min` |
+
+A taxa de 238 palavras por minuto é a leitura silenciosa de não ficção em inglês na meta-análise de Brysbaert (2019).
+⚠ O artigo não traz uma taxa para o português que pudemos ler (diz só que outras línguas se estimam pelo número de palavras
+que precisam para dizer o mesmo que o inglês); o pt-BR usa as mesmas 238, sem escala. Os limiares de complexidade e os
+tempos de código e de link são escolhas deste projeto, não do artigo.
+
+```console
+python3 -I plugins/ptbr-writer/scripts/reading_time.py README.md   # --lang en, --json, --self-test
+```
+
 ## roadmap
 
 Fonte: [`site/data/roadmap.tsv`](site/data/roadmap.tsv).
@@ -264,6 +287,7 @@ pasta de skills do agente.
 - Retórica: a epígrafe é de Pirsig, *Zen and the Art of Motorcycle Maintenance* (1974), conferida em
   duas reproduções públicas, não na edição impressa ⚠. Base: o *Fédon* e o *Fedro*, de Platão.
 - Nível por autor: a skill [orwell-writing](https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing), de @tamdogood (MIT).
+- Tempo de leitura: Brysbaert, M. (2019). How many words do we read per minute? A review and meta-analysis of reading rate. *Journal of Memory and Language*, 109, 104047. <https://doi.org/10.1016/j.jml.2019.104047> (238 palavras por minuto, não ficção em inglês).
 - Figuras: [Archify](https://github.com/tt-a1i/archify) (@tt-a1i, MIT), submódulo `vendor/archify` fixado em v3.0.1
   (`2ab3cae`), só para desenhar `docs/archify/`; não faz parte do plugin. Aparência: [h0ffmann/picasso](https://github.com/h0ffmann/picasso).
 - Plugin e roteamento no molde do plugin e do `routing` de [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit),

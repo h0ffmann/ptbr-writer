@@ -181,6 +181,7 @@ plugin-check:
     for f in plugins/ptbr-writer/skills/*/SKILL.md; do test -e "$f" || { echo "plugin-check: $f is a broken link" >&2; exit 1; }; done
     bash skills/ptbr-routing/scripts/session-check.sh --self-test
     bash plugins/ptbr-writer/hooks/ask-levels.sh --self-test
+    python3 -I plugins/ptbr-writer/scripts/reading_time.py --self-test
     echo "plugin-check: ok (v$v)"
 
 # What ships in the plugin changed since the last v* tag: lists the files and exits 1; installs keep the old text until a release.

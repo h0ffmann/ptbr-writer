@@ -9,7 +9,7 @@ the plugin's ptbr-writer.default.toml, ~/.config/ptbr-writer/ptbr-writer.toml, t
 levels, the formats and the folder once and writes ./ptbr-writer.toml. `ptbr reconfigurar`
 asks again.
 
-    python3 -I ask_levels.py SKILL.md TO_PDF DEFAULTS < hook-input.json
+    python3 -I ask_levels.py SKILL.md TO_PDF DEFAULTS READING_TIME < hook-input.json
     python3 -I ask_levels.py --self-test
 """
 
@@ -80,7 +80,7 @@ def clean(cfg, levels, problems, where):
     return out
 
 
-def instruction(prompt, skill_md, to_pdf, defaults_path, home, cwd):
+def instruction(prompt, skill_md, to_pdf, defaults_path, home, cwd, reading_time="reading_time.py"):
     if not TRIGGER.search(prompt):
         return None
     try:
@@ -120,7 +120,11 @@ def instruction(prompt, skill_md, to_pdf, defaults_path, home, cwd):
         "sem inventar nada. Na resposta, cada versão sob `## <nível>` (ou `## <nível> · ASD-STE100`) e a lista dos arquivos gravados; o conteúdo dos formatos em `print` "
         "aparece inteiro na resposta, num bloco ```text ou ```markdown, nunca só o caminho. Se o script do pdf sair com 3, "
         "ele precisa baixar ferramentas: diga o tamanho que ele informa, pergunte se pode baixar e, com o sim, rode de novo "
-        "com `--download`; sem o sim, ou se falhar, entregue o .md e diga por quê."
+        "com `--download`; sem o sim, ou se falhar, entregue o .md e diga por quê. "
+        f"Tempo de leitura: cada versão da resposta termina com a linha `Leitura estimada: ~N min (...)`, e cada `.txt` e `.md` começa com ela "
+        "(a versão ASD-STE100 usa `Estimated reading time: ...`); o `.pdf` herda a linha do `.md`; em `notes`, ponha `reading_time` "
+        f"no front matter de cada nota. Calcule-a com `python3 -I {reading_time} [--lang en] <arquivo>` (grave o arquivo sem a linha, "
+        "calcule e então insira a linha), nunca de cabeça."
     )
     ask = [
         "Chame AskUserQuestion com quatro perguntas numa chamada só:",
@@ -156,7 +160,7 @@ def instruction(prompt, skill_md, to_pdf, defaults_path, home, cwd):
         lines.append(
             "Carregue a skill ptbr-writer e escreva uma versão por nível de `levels` (vazio: a skill classifica e declara o nível) "
             "em cada idioma de `languages`. "
-            + ("Sem formatos: só a resposta, sem arquivo; com `asd-ste100`, a versão em inglês técnico simplificado sob `## <nível> · ASD-STE100`. " if not use.get("formats") else write)
+            + (f"Sem formatos: só a resposta, sem arquivo, mas cada versão termina com a linha `Leitura estimada: ~N min (...)` (`Estimated reading time: ...` em inglês), calculada com `python3 -I {reading_time} [--lang en] -` lendo o texto da entrada padrão; com `asd-ste100`, a versão em inglês técnico simplificado sob `## <nível> · ASD-STE100`. " if not use.get("formats") else write)
         )
     else:
         lines += ["Não há ptbr-writer.toml ainda: esta é a única vez que se pergunta."] + ask
@@ -181,7 +185,7 @@ def self_test():
         os.makedirs(cwd)
 
         def ask(p):
-            out = instruction(p, skill, "/p/to-pdf.sh", defaults, home, cwd)
+            out = instruction(p, skill, "/p/to-pdf.sh", defaults, home, cwd, "/p/reading_time.py")
             return out and out["hookSpecificOutput"]["additionalContext"]
 
         def project(text):
@@ -201,6 +205,8 @@ def self_test():
         check("folder question: raiz first, docs/ offered", out and "raiz (Recommended)" in out and "docs/" in out)
         check("language question: pt-BR default, ASD-STE100 offered, multiSelect", out and "quatro perguntas" in out and "header \"Idioma\", multiSelect" in out and "pt-BR (Recommended)" in out and "ASD-STE100 (inglês técnico simplificado)" in out)
         check("languages saved in the config", out and "`languages`" in out)
+        check("reading time: line in the answer, .txt/.md start with it, pdf inherits, notes front matter", out and "termina com a linha `Leitura estimada" in out and "começa com ela" in out and "`.pdf` herda" in out and "`reading_time` no front matter" in out)
+        check("reading time: the script's absolute path, English line for ASD-STE100", out and "python3 -I /p/reading_time.py" in out and "Estimated reading time" in out)
         check("non-interactive fallback", out and "Sem AskUserQuestion" in out)
         for p in ("/ptbr revise isto", "/ptbr-writer:ptbr revise", "PTBR reescreva", "ptbr"):
             check(f"trigger: {p!r}", ask(p))
@@ -213,6 +219,12 @@ def self_test():
         check("config: no question", out and "AskUserQuestion com quatro" not in out and "Não pergunte" in out)
         check("config: values in use", out and '"levels": ["estrito"]' in out and '"folder": "docs"' in out)
         check("config: pt-BR is the default language", out and '"languages": ["pt-BR"]' in out)
+        out = ask("ptbr: reescreva")
+        check("config: the reading-time instruction is there too", out and "python3 -I /p/reading_time.py" in out and "começa com ela" in out)
+        project('levels = ["estrito"]\nformats = []\n')
+        out = ask("ptbr: reescreva")
+        check("no files: the answer still ends with the reading-time line", out and "sem arquivo, mas cada versão termina com a linha `Leitura estimada" in out)
+        project('levels = ["estrito"]\nformats = ["md", "pdf"]\nfolder = "docs"\n')
         out = ask("ptbr ste100: reescreva")
         check("ste100 in the request adds ASD-STE100", out and '"languages": ["pt-BR", "asd-ste100"]' in out and "-ste100" in out)
         check("config: file name pattern", out and NAME in out)
@@ -251,7 +263,7 @@ def main(argv):
         prompt = json.load(sys.stdin).get("prompt", "")
     except ValueError:
         return 0
-    out = instruction(prompt, argv[1], argv[2], argv[3], os.path.expanduser("~"), os.getcwd())
+    out = instruction(prompt, argv[1], argv[2], argv[3], os.path.expanduser("~"), os.getcwd(), *argv[4:5])
     if out:
         print(json.dumps(out, ensure_ascii=False))
     return 0
