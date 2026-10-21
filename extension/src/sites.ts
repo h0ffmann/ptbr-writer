@@ -1,4 +1,4 @@
-import { loadSettings, saveSettings } from './settings';
+import { MODELS, loadSettings, saveSettings } from './settings';
 import type { Level, Settings } from './types';
 
 export const DEFAULT_SITE_HOSTS: ReadonlySet<string> = new Set(['web.whatsapp.com', 'mail.google.com', 'github.com']);
@@ -57,21 +57,20 @@ export async function setLevel(host: string, level: Level): Promise<void> {
   await saveSettings({ ...s, sites: { ...s.sites, [host]: { ...site, level } } });
 }
 
+/** Saves the chosen provider with its key and model; the other provider's key and model stay. */
 export async function saveProviderFields(f: {
   provider: Settings['provider'];
-  keys: Record<'claude' | 'deepseek', string>;
-  models: Record<'claude' | 'deepseek', string>;
+  key: string;
+  model: string;
   enabled: boolean;
 }): Promise<void> {
   const s = await loadSettings();
+  const p = f.provider;
   await saveSettings({
     ...s,
     enabled: f.enabled,
-    provider: f.provider,
-    keys: { claude: resolveKey(s.keys.claude, f.keys.claude), deepseek: resolveKey(s.keys.deepseek, f.keys.deepseek) },
-    models: {
-      claude: f.models.claude.trim() || s.models.claude,
-      deepseek: f.models.deepseek.trim() || s.models.deepseek,
-    },
+    provider: p,
+    keys: { ...s.keys, [p]: resolveKey(s.keys[p], f.key) },
+    models: { ...s.models, [p]: MODELS[p].includes(f.model) ? f.model : s.models[p] },
   });
 }

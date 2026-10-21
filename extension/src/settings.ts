@@ -1,4 +1,4 @@
-import type { Level, Settings } from './types';
+import type { Level, ProviderId, Settings } from './types';
 
 const STORAGE_KEY = 'settings';
 
@@ -20,6 +20,15 @@ export const DEFAULT_SETTINGS: Settings = {
   },
 };
 
+// The models the options page offers; the first of each list is the default.
+export const MODELS: Readonly<Record<ProviderId, readonly string[]>> = {
+  claude: ['claude-haiku-5-5', 'claude-sonnet-5-5', 'claude-opus-5-5'],
+  deepseek: ['deepseek-flash', 'deepseek-v4-pro'],
+};
+
+const knownModel = (p: ProviderId, m: string | undefined) =>
+  m && MODELS[p].includes(m) ? m : DEFAULT_SETTINGS.models[p];
+
 export function levelFor(host: string, s: Settings): Level | null {
   if (!s.enabled) return null;
   const site = s.sites[host];
@@ -35,7 +44,7 @@ export async function loadSettings(): Promise<Settings> {
     ...d,
     ...stored,
     keys: { ...d.keys, ...stored.keys },
-    models: { ...d.models, ...stored.models },
+    models: { claude: knownModel('claude', stored.models?.claude), deepseek: knownModel('deepseek', stored.models?.deepseek) },
     sites: { ...d.sites, ...stored.sites },
   };
 }

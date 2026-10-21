@@ -59,11 +59,54 @@ describe('keys', () => {
   });
   it('shows the mask after saving', async () => {
     await renderOptions(root());
-    (document.querySelector('#key-claude') as HTMLInputElement).value = 'sk-test-1234';
+    (document.querySelector('#key') as HTMLInputElement).value = 'sk-test-1234';
     (document.querySelector('#save') as HTMLButtonElement).click();
     await flush();
-    expect((document.querySelector('#key-claude') as HTMLInputElement).value).toBe('••••1234');
+    expect((document.querySelector('#key') as HTMLInputElement).value).toBe('••••1234');
     expect((await loadSettings()).keys.claude).toBe('sk-test-1234');
+  });
+});
+
+describe('provider, key and model', () => {
+  const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as T;
+  const choose = (provider: string) => {
+    $<HTMLSelectElement>('#provider').value = provider;
+    $<HTMLSelectElement>('#provider').dispatchEvent(new Event('change'));
+  };
+  const modelOptions = () => [...$<HTMLSelectElement>('#model').options].map((o) => o.value);
+
+  it('shows one key field and one model list, for the chosen provider', async () => {
+    await renderOptions(root());
+    expect(document.querySelector('#key-claude')).toBeNull();
+    expect(document.querySelector('#key-deepseek')).toBeNull();
+    expect($('#model').tagName).toBe('SELECT');
+    expect(modelOptions()).toEqual(['claude-haiku-5-5', 'claude-sonnet-5-5', 'claude-opus-5-5']);
+    expect($<HTMLSelectElement>('#model').value).toBe('claude-haiku-5-5');
+  });
+
+  it('switching the provider shows its own key and models', async () => {
+    store = { settings: { keys: { claude: 'sk-c-1111', deepseek: 'sk-d-2222' } } };
+    await renderOptions(root());
+    expect($<HTMLInputElement>('#key').value).toBe('••••1111');
+    choose('deepseek');
+    expect($<HTMLInputElement>('#key').value).toBe('••••2222');
+    expect(modelOptions()).toEqual(['deepseek-flash', 'deepseek-v4-pro']);
+    expect($<HTMLSelectElement>('#model').value).toBe('deepseek-flash');
+  });
+
+  it('saving writes only the chosen provider and keeps the other key', async () => {
+    store = { settings: { keys: { claude: 'sk-c-1111', deepseek: '' } } };
+    await renderOptions(root());
+    choose('deepseek');
+    $<HTMLInputElement>('#key').value = 'sk-new-9999';
+    $<HTMLSelectElement>('#model').value = 'deepseek-v4-pro';
+    $<HTMLButtonElement>('#save').click();
+    await flush();
+    const s = await loadSettings();
+    expect(s.provider).toBe('deepseek');
+    expect(s.keys).toEqual({ claude: 'sk-c-1111', deepseek: 'sk-new-9999' });
+    expect(s.models.deepseek).toBe('deepseek-v4-pro');
+    expect(s.models.claude).toBe('claude-haiku-5-5');
   });
 });
 
@@ -114,8 +157,7 @@ describe('add site', () => {
 describe('key fields', () => {
   it('are password inputs', async () => {
     await renderOptions(root());
-    expect((document.querySelector('#key-claude') as HTMLInputElement).type).toBe('password');
-    expect((document.querySelector('#key-deepseek') as HTMLInputElement).type).toBe('password');
+    expect((document.querySelector('#key') as HTMLInputElement).type).toBe('password');
   });
 });
 
