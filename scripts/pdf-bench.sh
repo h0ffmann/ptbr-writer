@@ -44,6 +44,6 @@ built = [p for p in local if p not in served]
 print(f"picasso {rev[:7]}, labs/ptbr-pdf")
 print(f"  on disk            {sum(v['narSize'] for v in local.values())/M:6.0f} MiB  {len(local)} store paths")
 print(f"  download (zstd)    {sum(x.get('downloadSize', 0) for x in served.values())/M:6.0f} MiB  {len(served)} paths from cache.nixos.org")
-print(f"  built locally      {sum(local[p]['narSize'] for p in built)/M:6.0f} MiB  {len(built)} paths (the TeX tree and formats)")
+print(f"  built locally      {sum(local[p]['narSize'] for p in built)/M:6.0f} MiB  {len(built)} paths (the to-pdf binary)")
 print(f"  first run          {secs}  ({cores} cores; depends on the network)")
 PY
