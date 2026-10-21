@@ -141,7 +141,7 @@ binary ([run](https://github.com/h0ffmann/ptbr-writer/actions/runs/39537436728))
 
 The time depends on the network. From the second run on, Nix reuses the store.
 
-![Where the .pdf comes from: to-pdf.sh uses pandoc and xelatex if present; otherwise it downloads, through Nix, picasso v0.2.0 (commit 099e036), whose labs/ptbr-pdf compiles the to-pdf 0.1.0 crate, with pulldown-cmark 0.13.4, typst 0.15.1 and typst-as-lib 0.17.0 and 6 embedded fonts.](docs/img/pdf-dependencias.png)
+![Where the .pdf comes from: to-pdf.sh uses pandoc and xelatex if present; otherwise it downloads, through Nix, picasso (commit 4bc03e5, after v0.2.0), whose labs/ptbr-pdf compiles the to-pdf 0.1.0 crate, with pulldown-cmark 0.13.4, typst 0.15.1 and typst-as-lib 0.17.0 and 6 embedded fonts.](docs/img/pdf-dependencias.png)
 
 <details open>
 <summary>How to read this figure</summary>
@@ -158,7 +158,7 @@ border is where a path starts or ends. The labels are in Portuguese, as in the f
 `flake.lock` of `labs/ptbr-pdf` and Nix itself.
 
 **Evidence.** [`plugins/ptbr-writer/scripts/to-pdf.sh`](plugins/ptbr-writer/scripts/to-pdf.sh)
-(`PICASSO_REV`, both paths). In picasso, at commit `099e036`: `labs/ptbr-pdf/Cargo.toml` (the five
+(`PICASSO_REV`, both paths). In picasso, at commit `4bc03e5`: `labs/ptbr-pdf/Cargo.toml` (the five
 dependencies), `labs/ptbr-pdf/Cargo.lock` (`pulldown-cmark` 0.13.4, `typst`, `typst-layout` and
 `typst-pdf` 0.15.1, `typst-as-lib` 0.17.0, `to-pdf` 0.1.0) and `labs/ptbr-pdf/fonts/` (six files:
 Libertinus Serif and DejaVu Sans Mono). Source of the figure:
@@ -245,6 +245,10 @@ Each figure is an Archify page, published on the site:
 
 - [What happens to a ptbr request](https://h0ffmann.github.io/ptbr-writer/figuras/em-um-minuto.html)
 - [Where the .pdf comes from](https://h0ffmann.github.io/ptbr-writer/figuras/pdf-dependencias.html)
+
+And the code graph of this repository, built on each site build by the `code-graph` of
+[h0ffmann/picasso](https://github.com/h0ffmann/picasso) (tree-sitter, no model):
+[Code graph](https://h0ffmann.github.io/ptbr-writer/grafo/graph.html).
 
 ## roadmap
 

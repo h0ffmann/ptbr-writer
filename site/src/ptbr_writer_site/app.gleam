@@ -142,6 +142,7 @@ fn cover() -> Element(msg) {
           attribute.class("count"),
         ]),
       ]),
+      grafo_pill(),
       // Each Archify page of docs/archify/, named by its title and marked with Archify's icon,
       // beside the GitHub pill.
       ..list.map(content.figures, fn(f) {
@@ -190,6 +191,29 @@ fn made_with(name: String, icon: String, href: String) -> Element(msg) {
     ]),
     html.text(" " <> name),
   ])
+}
+
+/// The code graph of this repository (grafo/graph.html, built by `just site` with picasso's
+/// code-graph), beside the Archify pills, with its own icon: it is not an Archify page.
+fn grafo_pill() -> Element(msg) {
+  html.a(
+    [
+      attribute.class("ghost figure-pill"),
+      attribute.href("grafo/graph.html"),
+      attribute.title(
+        "grafo interativo do código, gerado pelo code-graph do picasso",
+      ),
+    ],
+    [
+      html.img([
+        attribute.src("grafo.svg"),
+        attribute.alt(""),
+        attribute.width(20),
+        attribute.height(20),
+      ]),
+      html.text("Grafo do código"),
+    ],
+  )
 }
 
 /// "feito com [lucy] Gleam e [claude] Claude Code", on the cover and again in the footer.
@@ -467,6 +491,17 @@ fn figuras() -> Element(msg) {
           ])
         }),
       ),
+      html.p([], [
+        html.text(
+          "e o grafo do código deste repositório, gerado a cada build: ",
+        ),
+        html.a([attribute.href("grafo/graph.html")], [
+          html.text("grafo do código"),
+        ]),
+        html.text(
+          " (busca, zoom e comunidades; sai do code-graph do h0ffmann/picasso).",
+        ),
+      ]),
     ],
   )
 }

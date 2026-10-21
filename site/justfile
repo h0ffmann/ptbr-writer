@@ -18,6 +18,10 @@ build: content
     # Each docs/archify/<slug>.json as figuras/<slug>.html (Archify's `render`: node only, the page inlines its template) and its PNG.
     mkdir -p dist/figuras
     for src in ../docs/archify/*.json; do slug="$(basename "$src" .json)"; ARCHIFY_UPDATE_CHECK_DISABLED=1 node ../vendor/archify/archify/bin/archify.mjs render "$(node -p "require('$PWD/$src').diagram_type")" "$src" "dist/figuras/$slug.html" --quality showcase; cp "../docs/img/$slug.png" dist/figuras/; done
+    # The code graph of this repository (picasso's code-graph: tree-sitter, no model), one self-contained page.
+    code-graph extract .. --out ../build/grafo --title ptbr-writer --exclude site/dist --exclude build
+    mkdir -p dist/grafo
+    cp ../build/grafo/graph.html dist/grafo/
     # The PDFs the plugin generated (docs/eli5/RESULTS.tsv), next to the page that links them.
     mkdir -p dist/eli5
     tail -n +2 ../docs/eli5/RESULTS.tsv | cut -f3 | while read -r pdf; do cp "../docs/eli5/$pdf" dist/eli5/; done
@@ -29,5 +33,6 @@ ci: content
     gleam test
     just build
     for id in instalar uso niveis regras saida smart-note limites receitas figuras eli5 awesome roadmap; do grep -q "id=\"$id\"" dist/index.html || { echo "site: no #$id in index.html" >&2; exit 1; }; done
+    test -s dist/grafo/graph.html || { echo "site: no grafo/graph.html" >&2; exit 1; }
     for f in ../docs/archify/*.json; do test -s "dist/figuras/$(basename "$f" .json).html" || { echo "site: no page for $f" >&2; exit 1; }; done
     tail -n +2 ../docs/eli5/RESULTS.tsv | cut -f3 | while read -r pdf; do test -s "dist/eli5/$pdf" && grep -qF "eli5/$pdf" dist/index.html || { echo "site: no ELI5 PDF or link for $pdf" >&2; exit 1; }; done

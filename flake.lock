@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "code-graph": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "dir": "labs/code-graph",
+        "lastModified": 1792561928,
+        "narHash": "sha256-T9q3tmIIM5NUX1B2pzdt+LzVddwU7eCHO2fM123lmKs=",
+        "owner": "h0ffmann",
+        "repo": "picasso",
+        "rev": "4bc03e520ff73d92cd0a11983362fa6962c9cf95",
+        "type": "github"
+      },
+      "original": {
+        "dir": "labs/code-graph",
+        "owner": "h0ffmann",
+        "repo": "picasso",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
@@ -20,15 +40,15 @@
     },
     "gleam-website": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs_2"
       },
       "locked": {
         "dir": "labs/gleam-website",
-        "lastModified": 1792552851,
-        "narHash": "sha256-FArtYRrPMOy5iHQelBLM5j4H6LvL71Gv/5HTMBF5sKc=",
+        "lastModified": 1792561928,
+        "narHash": "sha256-T9q3tmIIM5NUX1B2pzdt+LzVddwU7eCHO2fM123lmKs=",
         "owner": "h0ffmann",
         "repo": "picasso",
-        "rev": "099e036f8b8378dc9bb226be4e223cf73e99e164",
+        "rev": "4bc03e520ff73d92cd0a11983362fa6962c9cf95",
         "type": "github"
       },
       "original": {
@@ -56,6 +76,22 @@
     },
     "nixpkgs_2": {
       "locked": {
+        "lastModified": 1791594108,
+        "narHash": "sha256-XK4KceonkwD8LuMAt/vNrz982mXJM5jeHAxMwsUXXAQ=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "6510408d147d8c5e6d76043e899e9251756f6a75",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_3": {
+      "locked": {
         "lastModified": 1792210252,
         "narHash": "sha256-Mh0PUaIv4nFY+8wAGonaEh8iBzwsmdNlwjVHmFg1Biw=",
         "owner": "NixOS",
@@ -72,9 +108,10 @@
     },
     "root": {
       "inputs": {
+        "code-graph": "code-graph",
         "flake-utils": "flake-utils",
         "gleam-website": "gleam-website",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_3"
       }
     },
     "systems": {
