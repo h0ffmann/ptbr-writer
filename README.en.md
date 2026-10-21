@@ -136,6 +136,8 @@ For Claude Code to test in Firefox, the repo's `.mcp.json` registers Mozilla's F
 `scripts/firefox-mcp.sh`, on a throwaway profile). In the next session, approve the `firefox` server
 and ask: "install `extension/dist-firefox` with `install_extension` and open WhatsApp Web". On Ubuntu,
 the script uses the binary inside the snap, because geckodriver cannot start `/usr/bin/firefox`.
+The experiment of 2026-10-21, with the workstation and the steps to reproduce it, is in
+[`docs/EXTENSION_FIREFOX.md`](docs/EXTENSION_FIREFOX.md) (pt-BR).
 
 No key and no cloud: `just ext-ollama` serves Qwen through Ollama at `127.0.0.1:11434` (`qwen3.6:27b`,
 the model of `just opencode-qwen`; `just ext-ollama qwen3:8b` for a smaller GPU). In the popup,
