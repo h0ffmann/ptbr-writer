@@ -33,6 +33,7 @@ export function editableRoot(target: EventTarget | null): HTMLElement | null {
 export async function startContent(): Promise<() => void> {
   const fields = new Map<HTMLElement, FieldState>();
   let level: Level | null = null;
+  let delayMs: number | null = null;
   let watcher: ReturnType<typeof createWatcher> | null = null;
 
   const field = (el: HTMLElement) => {
@@ -93,13 +94,18 @@ export async function startContent(): Promise<() => void> {
   };
 
   const follow = async () => {
-    const next = levelFor(location.hostname, await loadSettings());
-    if (next === level) return;
+    const s = await loadSettings();
+    const next = levelFor(location.hostname, s);
+    // Only the level and the wait rebuild the watcher; tone, rewrite, the never-fix list and the
+    // provider are read at send time, so a save of those keeps the suggestions on screen.
+    if (next === level && s.delayMs === delayMs) return;
     stop();
     level = next;
+    delayMs = s.delayMs;
     if (!level) return;
     watcher = createWatcher({
       level,
+      delayMs,
       send: (r: CheckRequest) => chrome.runtime.sendMessage<CheckRequest, CheckResult>(r),
       onResult(el, located, offset) {
         Object.assign(field(el), { located, offset });

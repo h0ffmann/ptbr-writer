@@ -9,10 +9,13 @@ body { font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; margin: 
 h1 { font-size: 20px; margin: 0 0 16px; }
 h2 { font-size: 15px; margin: 24px 0 8px; padding-top: 16px; border-top: 1px solid var(--line); }
 p { margin: 0 0 12px; }
-#provider-fields { display: grid; gap: 10px; margin: 16px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); }
-#provider-fields label { display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 12px; }
+#provider-fields, #text-fields { display: grid; gap: 10px; margin: 16px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+#provider-fields label, #text-fields label { display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 12px; }
 select, input[type=text], input[type=password] { font: inherit; padding: 4px 6px; box-sizing: border-box; }
 #provider-fields select, #provider-fields input { width: 100%; max-width: 320px; }
+#never-fix { margin: 0 0 12px; padding-left: 20px; }
+#never-fix li { margin: 4px 0; }
+#never-fix button { margin-left: 8px; padding: 0 8px; }
 button { font: inherit; padding: 4px 12px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: inherit; cursor: pointer; }
 #save { border-color: var(--accent); color: var(--accent); }
 #status { color: var(--accent); margin-left: 8px; }
