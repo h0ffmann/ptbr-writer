@@ -12,6 +12,15 @@ let tabUrl: string | undefined;
 const send = vi.fn();
 const request = vi.fn();
 const remove = vi.fn();
+// A fake Ollama: llama3.2:1b installed; a pull installs what it is asked for.
+let pulled: string[];
+const ollama = vi.fn(async (url: string, init?: RequestInit) => {
+  if (url.endsWith('/api/pull')) {
+    pulled.push(JSON.parse(init?.body as string).model);
+    return new Response(JSON.stringify({ status: 'success' }));
+  }
+  return new Response(JSON.stringify({ models: [{ name: 'llama3.2:1b' }, ...pulled.map((name) => ({ name }))] }));
+});
 
 beforeEach(() => {
   store = {};
@@ -20,6 +29,9 @@ beforeEach(() => {
   send.mockReset();
   request.mockReset().mockImplementation(async () => granted);
   remove.mockReset().mockResolvedValue(true);
+  pulled = [];
+  ollama.mockClear();
+  vi.stubGlobal('fetch', ollama);
   (globalThis as any).chrome = {
     storage: { local: { get: async () => store, set: async (o: object) => void Object.assign(store, o) } },
     runtime: { sendMessage: send },
@@ -94,6 +106,41 @@ describe('provider, key and model', () => {
     expect($<HTMLSelectElement>('#model').value).toBe('deepseek-flash');
   });
 
+  it('picking Ollama asks for its local host permission; refused, the provider stays', async () => {
+    await renderOptions(root());
+    granted = false;
+    choose('ollama');
+    await flush();
+    expect(request).toHaveBeenCalledWith({ origins: ['http://127.0.0.1:11434/*'] });
+    expect($<HTMLSelectElement>('#provider').value).toBe('claude');
+    granted = true;
+    choose('ollama');
+    await flush();
+    expect($<HTMLSelectElement>('#provider').value).toBe('ollama');
+    expect($<HTMLInputElement>('#key').disabled).toBe(true);
+    expect(modelOptions()).toEqual(['qwen3.6:27b', 'qwen3:14b', 'qwen3:8b', 'qwen3:4b', 'llama3.2:1b']);
+    const labels = [...$<HTMLSelectElement>('#model').options].map((o) => o.textContent);
+    expect(labels[0]).toBe('qwen3.6:27b (sugerido) (baixar)');
+    expect(labels[4]).toBe('llama3.2:1b');
+    expect($<HTMLButtonElement>('#pull-model').hidden).toBe(false);
+  });
+
+  it('Baixar pulls the chosen Ollama model and lists it as installed', async () => {
+    store = { settings: { provider: 'ollama' } };
+    await renderOptions(root());
+    await flush();
+    $<HTMLButtonElement>('#pull-model').click();
+    await flush();
+    await flush();
+    expect(ollama).toHaveBeenCalledWith('http://127.0.0.1:11434/api/pull', {
+      method: 'POST',
+      body: JSON.stringify({ model: 'qwen3.6:27b', stream: false }),
+    });
+    expect($('#pull-status').textContent).toBe('pronto');
+    expect($<HTMLButtonElement>('#pull-model').hidden).toBe(true);
+    expect([...$<HTMLSelectElement>('#model').options][0].textContent).toBe('qwen3.6:27b (sugerido)');
+  });
+
   it('saving writes only the chosen provider and keeps the other key', async () => {
     store = { settings: { keys: { claude: 'sk-c-1111', deepseek: '' } } };
     await renderOptions(root());
@@ -104,7 +151,7 @@ describe('provider, key and model', () => {
     await flush();
     const s = await loadSettings();
     expect(s.provider).toBe('deepseek');
-    expect(s.keys).toEqual({ claude: 'sk-c-1111', deepseek: 'sk-new-9999' });
+    expect(s.keys).toEqual({ claude: 'sk-c-1111', deepseek: 'sk-new-9999', ollama: '' });
     expect(s.models.deepseek).toBe('deepseek-v4-pro');
     expect(s.models.claude).toBe('claude-haiku-5-5');
   });

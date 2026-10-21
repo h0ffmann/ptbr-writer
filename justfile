@@ -339,6 +339,43 @@ ext-build:
 ext-build-firefox:
     cd extension && npm ci && node build.mjs --firefox
 
+# Serve Qwen with Ollama for the extension's provider "Ollama + Qwen (local)", at 127.0.0.1:11434.
+# Ollama answers 403 to an extension's origin unless started with OLLAMA_ORIGINS; this sets it.
+# Requires: ollama on PATH; qwen3.6:27b is the model of opencode-qwen (~24 GB GPU), qwen3:8b is lighter.
+ext-ollama model="qwen3.6:27b":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    command -v ollama >/dev/null || { echo "ext-ollama: no ollama on PATH (https://ollama.com/download)" >&2; exit 1; }
+    export OLLAMA_HOST=127.0.0.1:11434 OLLAMA_ORIGINS="chrome-extension://*,moz-extension://*"
+    api="http://$OLLAMA_HOST/api/tags"
+    pull() { ollama list | awk 'NR>1 {print $1}' | grep -qx "{{ model }}" || ollama pull "{{ model }}"; }
+    if curl -sf -m 2 "$api" >/dev/null; then
+        # One already serves: it must accept the extension's origin, or every check is a 403.
+        code=$(curl -s -o /dev/null -w '%{http_code}' -m 2 -H 'Origin: chrome-extension://ptbr-writer' "$api")
+        if [ "$code" != 200 ]; then
+            echo "ext-ollama: the Ollama at $OLLAMA_HOST refuses extensions (HTTP $code). Stop it, or for the" >&2
+            echo "systemd service run 'sudo systemctl edit ollama', add under [Service]" >&2
+            echo "  Environment=\"OLLAMA_ORIGINS=$OLLAMA_ORIGINS\"" >&2
+            echo "then 'sudo systemctl restart ollama', and run this again." >&2
+            exit 1
+        fi
+        pull
+        echo "ext-ollama: {{ model }} ready at $OLLAMA_HOST"
+        exit 0
+    fi
+    log="${TMPDIR:-/tmp}/ollama-ptbr-writer.log"
+    echo "ollama log: $log"
+    ollama serve >"$log" 2>&1 &
+    srv=$!
+    trap 'kill $srv' EXIT
+    until curl -sf -m 1 "$api" >/dev/null; do
+        kill -0 $srv 2>/dev/null || { tail -n 20 "$log" >&2; echo "ollama exited" >&2; exit 1; }
+        sleep 1
+    done
+    pull
+    echo "ext-ollama: serving {{ model }} at $OLLAMA_HOST for the extension; Ctrl-C stops it"
+    wait $srv
+
 # Chrome extension: type check (tsconfig has noEmit) and unit tests.
 ext-test: ext-build
     cd extension && npx tsc -p . && npx vitest run

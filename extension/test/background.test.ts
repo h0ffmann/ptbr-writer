@@ -5,7 +5,7 @@ import { CIENTIFICO, SKILL } from '../src/skills';
 import { DEFAULT_SETTINGS } from '../src/settings';
 import type { CheckRequest, Settings } from '../src/types';
 
-const settings: Settings = { ...DEFAULT_SETTINGS, keys: { claude: 'sk-test', deepseek: 'sk-test' } };
+const settings: Settings = { ...DEFAULT_SETTINGS, keys: { claude: 'sk-test', deepseek: 'sk-test', ollama: '' } };
 const req: CheckRequest = { type: 'check', key: 'k1', text: 'texto de teste aqui', level: 'estrito' };
 const suggestion = { original: 'a nível de', replacement: 'em', rule: 'PTW-1', severity: 'aviso', occurrence: 1 };
 const claudeBody = { content: [{ type: 'text', text: JSON.stringify({ suggestions: [suggestion] }) }] };
@@ -36,6 +36,16 @@ describe('handleCheck', () => {
   it('rejecting fetch -> network', async () => {
     const f = vi.fn(async () => { throw new TypeError('fail'); }) as unknown as typeof fetch;
     expect(await handleCheck(req, { fetch: f, settings })).toEqual({ ok: false, error: 'network' });
+  });
+
+  it('ollama: checks without a key; down or 403 -> local', async () => {
+    const ollama: Settings = { ...DEFAULT_SETTINGS, provider: 'ollama' };
+    const body = { message: { content: JSON.stringify({ suggestions: [suggestion] }) }, done_reason: 'stop' };
+    const r = await handleCheck(req, { fetch: okFetch(body), settings: ollama });
+    expect(r.ok && r.suggestions).toHaveLength(1);
+    expect(await handleCheck(req, { fetch: okFetch({}, 403), settings: ollama })).toEqual({ ok: false, error: 'local' });
+    const down = vi.fn(async () => { throw new TypeError('fail'); }) as unknown as typeof fetch;
+    expect(await handleCheck(req, { fetch: down, settings: ollama })).toEqual({ ok: false, error: 'local' });
   });
 
   it('a truncated reply -> provider, not "no problems"', async () => {

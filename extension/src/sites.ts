@@ -76,6 +76,6 @@ export async function saveProviderFields(f: {
     enabled: f.enabled,
     provider: p,
     keys: { ...s.keys, [p]: resolveKey(s.keys[p], f.key) },
-    models: { ...s.models, [p]: MODELS[p].includes(f.model) ? f.model : s.models[p] },
+    models: { ...s.models, [p]: p === 'ollama' || MODELS[p].includes(f.model) ? f.model || s.models[p] : s.models[p] },
   });
 }

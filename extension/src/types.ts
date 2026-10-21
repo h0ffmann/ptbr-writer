@@ -1,5 +1,5 @@
 export type Level = 'estrito' | 'descritivo' | 'leve' | 'científico';
-export type ProviderId = 'claude' | 'deepseek';
+export type ProviderId = 'claude' | 'deepseek' | 'ollama';
 export type Severity = 'erro' | 'aviso';
 export interface Suggestion {
   original: string;
@@ -24,7 +24,7 @@ export interface Settings {
   sites: Record<string, SiteConfig>; // key: hostname
   apiBase?: Partial<Record<ProviderId, string>>; // honored only when __TEST__
 }
-export type CheckError = 'no-key' | 'auth' | 'rate-limit' | 'provider' | 'network';
+export type CheckError = 'no-key' | 'local' | 'auth' | 'rate-limit' | 'provider' | 'network';
 export interface CheckRequest {
   type: 'check';
   key: string;
