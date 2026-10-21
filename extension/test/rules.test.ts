@@ -1,9 +1,10 @@
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { buildSystemPrompt } from '../src/rules';
 
-const skill = readFileSync('../SKILL.md', 'utf8');
-const cientifico = readFileSync('../skills/cientifico/SKILL.md', 'utf8');
+const skill = readFileSync(fileURLToPath(new URL('../../SKILL.md', import.meta.url)), 'utf8');
+const cientifico = readFileSync(fileURLToPath(new URL('../../skills/cientifico/SKILL.md', import.meta.url)), 'utf8');
 
 describe('buildSystemPrompt', () => {
   it('inclui PTW-1 a PTW-13', () => {
@@ -21,6 +22,16 @@ describe('buildSystemPrompt', () => {
   it('científico embute CIE', () => {
     expect(buildSystemPrompt('científico', skill, cientifico)).toContain('### CIE-1');
     expect(buildSystemPrompt('leve', skill, cientifico)).not.toContain('### CIE-1');
+  });
+
+  it('científico só embute as Regras do cientifico', () => {
+    const prompt = buildSystemPrompt('científico', skill, cientifico);
+    expect(prompt).toContain('### CIE-1');
+    for (const h of ['## Formato de saída', '## Entrada', '## Fluxo']) expect(prompt).not.toContain(h);
+  });
+
+  it('falha se a seção Regras do cientifico some', () => {
+    expect(() => buildSystemPrompt('científico', skill, '# x')).toThrow('cientifico/SKILL.md: seção Regras não encontrada');
   });
 
   it('não vaza o front matter do científico', () => {
