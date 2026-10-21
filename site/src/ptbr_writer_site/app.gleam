@@ -76,7 +76,7 @@ fn anchors(text: String) -> List(Element(msg)) {
   }
 }
 
-fn section(
+pub fn section(
   id: String,
   heading: String,
   intro: String,
@@ -152,6 +152,22 @@ fn cover() -> Element(msg) {
         "grafo do código do picasso, no commit que este repositório fixa",
         "Grafo do picasso",
       ),
+      html.a(
+        [
+          attribute.class("ghost figure-pill"),
+          attribute.href("bipr.html"),
+          attribute.title("a skill /bipr e o PR que ela abriu"),
+        ],
+        [
+          html.img([
+            attribute.src("favicon.svg"),
+            attribute.alt(""),
+            attribute.width(20),
+            attribute.height(20),
+          ]),
+          html.text("/bipr"),
+        ],
+      ),
       // Each Archify page of docs/archify/, named by its title and marked with Archify's icon,
       // beside the GitHub pill.
       ..list.map(content.figures, fn(f) {
@@ -225,7 +241,7 @@ fn grafo_pill(href: String, title: String, name: String) -> Element(msg) {
 }
 
 /// "feito com [lucy] Gleam e [claude] Claude Code", on the cover and again in the footer.
-fn made_with_line(class: String) -> Element(msg) {
+pub fn made_with_line(class: String) -> Element(msg) {
   html.p([attribute.class(class)], [
     html.text("feito com "),
     made_with("Gleam", gleam_icon, "https://gleam.run"),

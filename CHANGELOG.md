@@ -5,6 +5,9 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- O site ganha a página `bipr.html` (Gleam, como a capa): a descrição, os passos e o rodapé da
+  `/bipr` lidos de `skills/bipr/`, as capturas do PR #49 com o rodapé renderizado pelo GitHub e a
+  instalação pela `main`. A capa tem a pílula `/bipr`.
 - `scripts/install_current.sh` instala o plugin da ponta da `main` (ou de `PTBR_REF`), sem release:
   remove a instalação e o marketplace anteriores e instala de novo, porque a `main` guarda o número da
   última versão. Dentro do Claude Code: `! curl -fsSL .../install_current.sh | bash` e `/reload-plugins`.

@@ -14,6 +14,7 @@ build: content
     rm -rf dist
     mkdir -p dist
     gleam run -m ptbr_writer_site/prerender --no-print-progress > dist/index.html
+    gleam run -m ptbr_writer_site/bipr --no-print-progress > dist/bipr.html
     cp -R static/. dist/
     # Each docs/archify/<slug>.json as figuras/<slug>.html (Archify's `render`: node only, the page inlines its template) and its PNG.
     mkdir -p dist/figuras
@@ -32,11 +33,12 @@ build: content
 
 # Formatting, tests and a build: what CI runs
 ci: content
-    gleam format --check src/ptbr_writer_site/app.gleam src/ptbr_writer_site/page.gleam src/ptbr_writer_site/prerender.gleam test
+    gleam format --check src/ptbr_writer_site/app.gleam src/ptbr_writer_site/page.gleam src/ptbr_writer_site/prerender.gleam src/ptbr_writer_site/bipr.gleam test
     gleam test
     just build
     for id in instalar uso niveis regras saida smart-note limites receitas figuras eli5 awesome roadmap; do grep -q "id=\"$id\"" dist/index.html || { echo "site: no #$id in index.html" >&2; exit 1; }; done
     test -s dist/grafo/graph.html && test -s dist/grafo/picasso.html || { echo "site: no grafo/graph.html or grafo/picasso.html" >&2; exit 1; }
+    test -s dist/bipr.html && test -s dist/img/bipr-pr49-corpo.png && test -s dist/img/bipr-pr49-rodape.png || { echo "site: no bipr.html or its screenshots" >&2; exit 1; }
     # Each graph page hops to the other: "↗ picasso" on ours, "← ptbr-writer" on picasso.html.
     grep -qF '<a class="hop" href="picasso.html">' dist/grafo/graph.html && grep -qF '<a class="hop back" href="graph.html">' dist/grafo/picasso.html || { echo "site: no hop link between the two graph pages" >&2; exit 1; }
     # Every picasso lab this repo pins is a node of its graph that links into picasso's page.
