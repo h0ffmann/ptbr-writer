@@ -11,8 +11,9 @@ const TYPED = 'Foi decidido que o deploy vai ser na sexta.';
 const FIXED = 'A equipe decidiu que o deploy vai ser na sexta.';
 
 let server: FakeServer;
-let context: BrowserContext;
-let profile: string;
+// Module state, one test at a time: playwright.config.ts sets workers: 1.
+let context: BrowserContext | undefined;
+let profile: string | undefined;
 
 test.beforeAll(async () => {
   server = await startFakeServer();
@@ -22,7 +23,9 @@ test.afterAll(async () => {
 });
 test.afterEach(async () => {
   await context?.close();
-  rmSync(profile, { recursive: true, force: true });
+  if (profile) rmSync(profile, { recursive: true, force: true });
+  context = undefined;
+  profile = undefined;
 });
 
 // A fresh profile with the extension, and its settings written before any page loads:
@@ -51,6 +54,7 @@ async function launch(provider: ProviderId): Promise<BrowserContext> {
 // once, then listens for focus, so typing earlier would go unseen. The wait runs in the script's
 // own world (found through CDP) and queues a storage read behind the script's own.
 async function open(host: string, page: string): Promise<Page> {
+  if (!context) throw new Error('launch() first');
   const p = await context.newPage();
   const cdp = await context.newCDPSession(p);
   const world = new Promise<number>((ok) =>
