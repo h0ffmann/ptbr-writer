@@ -39,6 +39,7 @@ pub fn view() -> Element(msg) {
     limits(),
     recipes(),
     figuras(),
+    eli5(),
     awesome(),
     roadmap(),
     footer(),
@@ -125,6 +126,7 @@ fn cover() -> Element(msg) {
       html.a([attribute.href("#smart-note")], [html.text("smart-note")]),
       html.a([attribute.href("#receitas")], [html.text("receitas")]),
       html.a([attribute.href("#figuras")], [html.text("figuras")]),
+      html.a([attribute.href("#eli5")], [html.text("ELI5")]),
       html.a([attribute.href("#awesome")], [html.text("awesome")]),
       html.a([attribute.href("#roadmap")], [html.text("roadmap")]),
     ]),
@@ -382,6 +384,49 @@ fn limits() -> Element(msg) {
     "limites",
     "o que a skill não faz, em nenhum nível.",
     optional("limits", content.limits),
+  )
+}
+
+/// docs/eli5/: PDFs the plugin generated inside this repository, each with its prompt and its tokens
+/// (docs/eli5/RESULTS.tsv); the PDFs are copied to eli5/ by `just site`.
+fn eli5() -> Element(msg) {
+  section(
+    "eli5",
+    "ELI5",
+    "pedidos reais, gerados pelo próprio plugin: o prompt, o PDF que ele escreveu e os tokens que gastou.",
+    [
+      html.table([attribute.class("eli5")], [
+        html.thead([], [
+          html.tr([], [
+            html.th([], [html.text("prompt")]),
+            html.th([], [html.text("PDF")]),
+            html.th([], [html.text("tokens")]),
+            html.th([], [html.text("nível")]),
+          ]),
+        ]),
+        html.tbody(
+          [],
+          list.map(content.eli5, fn(e) {
+            html.tr([], [
+              html.td([], [
+                html.a([attribute.href(blob <> "docs/eli5/" <> e.prompt)], [
+                  html.text(e.title),
+                ]),
+              ]),
+              html.td([], [
+                html.a([attribute.href("eli5/" <> e.pdf)], [html.text("PDF")]),
+              ]),
+              html.td([attribute.class("num")], [
+                html.text(e.total <> " (saída " <> e.output <> ")"),
+              ]),
+              html.td([], [
+                html.span([attribute.class("chip")], [html.text(e.level)]),
+              ]),
+            ])
+          }),
+        ),
+      ]),
+    ],
   )
 }
 
