@@ -21,4 +21,4 @@ jobs:
       - run: nix develop --no-update-lock-file --command just release-check "$GITHUB_REF_NAME"
       - env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes --title "ptbr-writter $GITHUB_REF_NAME"
+        run: gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes --title "ptbr-writer $GITHUB_REF_NAME"

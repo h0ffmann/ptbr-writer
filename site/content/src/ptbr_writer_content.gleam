@@ -1,5 +1,5 @@
 //// `gleam run` in site/content: reads SKILL.md, the justfile and site/data/*.tsv and writes
-//// ../src/ptbr_writter_site/content.gleam, the only place the site takes its facts from. Nothing in
+//// ../src/ptbr_writer_site/content.gleam, the only place the site takes its facts from. Nothing in
 //// site/src is typed by hand: a rule, a level, a step or a recipe that the page shows is read here.
 //// The pattern is h0ffmann/ww3-gpu's `site/content`.
 
@@ -50,16 +50,16 @@ pub type Planned {
 /// The statuses a roadmap row may have, in the order of the work.
 pub const statuses = ["feito", "em andamento", "planejado"]
 
-@external(javascript, "./ptbr_writter_content_ffi.mjs", "read")
+@external(javascript, "./ptbr_writer_content_ffi.mjs", "read")
 fn read(path: String) -> String
 
-@external(javascript, "./ptbr_writter_content_ffi.mjs", "write")
+@external(javascript, "./ptbr_writer_content_ffi.mjs", "write")
 fn write(path: String, text: String) -> Nil
 
-@external(javascript, "./ptbr_writter_content_ffi.mjs", "revision")
+@external(javascript, "./ptbr_writer_content_ffi.mjs", "revision")
 fn revision() -> String
 
-@external(javascript, "./ptbr_writter_content_ffi.mjs", "exit")
+@external(javascript, "./ptbr_writer_content_ffi.mjs", "exit")
 fn exit(code: Int) -> Nil
 
 // ---- reading SKILL.md --------------------------------------------------------------------------
@@ -467,6 +467,45 @@ pub type Planned {
 }
 "
 
+/// The value of a top-level `"key": "value"` in a JSON file: enough for plugin.json's strings.
+pub fn json_string(text: String, key: String) -> String {
+  case string.split_once(text, "\"" <> key <> "\"") {
+    Ok(#(_, rest)) ->
+      case string.split_once(rest, "\"") {
+        Ok(#(_, value)) ->
+          case string.split_once(value, "\"") {
+            Ok(#(v, _)) -> v
+            Error(_) -> ""
+          }
+        Error(_) -> ""
+      }
+    Error(_) -> ""
+  }
+}
+
+/// The one command that installs the plugin at its release tag, from plugin.json: its name, its
+/// version and its repository. Empty when plugin.json lacks one of them.
+pub fn install(plugin: String) -> String {
+  let name = json_string(plugin, "name")
+  let version = json_string(plugin, "version")
+  let slug = case
+    string.split_once(json_string(plugin, "repository"), "github.com/")
+  {
+    Ok(#(_, s)) -> s
+    Error(_) -> ""
+  }
+  case name, version, slug {
+    "", _, _ | _, "", _ | _, _, "" -> ""
+    _, _, _ ->
+      "claude plugin install "
+      <> name
+      <> " --marketplace "
+      <> slug
+      <> "#v"
+      <> version
+  }
+}
+
 /// The content module, from the text of SKILL.md and of the justfile.
 pub fn module(
   skill: String,
@@ -476,6 +515,7 @@ pub fn module(
   origin_rows: String,
   planned_rows: String,
   rev: String,
+  plugin: String,
 ) -> String {
   string.join(
     [
@@ -484,6 +524,8 @@ pub fn module(
       "pub const title = " <> lit(title(skill)) <> "\n",
       "pub const lede = " <> lit(lede(skill)) <> "\n",
       "pub const revision = " <> lit(rev) <> "\n",
+      "pub const install = " <> lit(install(plugin)) <> "\n",
+      "pub const version = " <> lit(json_string(plugin, "version")) <> "\n",
       "pub const limits = " <> lit(paragraph(skill, "Limites")) <> "\n",
       "pub const origin = " <> lit(paragraph(skill, "Origem")) <> "\n",
       items(
@@ -573,8 +615,13 @@ pub fn main() -> Nil {
   let roadmap = read("../data/roadmap.tsv")
   let origin_rows = read("../data/origins.tsv")
   let planned_rows = read("../data/planned.tsv")
+  let plugin = read(root <> "plugins/ptbr-writer/.claude-plugin/plugin.json")
   case
     list.flatten([
+      case install(plugin) {
+        "" -> ["plugin.json: no name, version or github repository"]
+        _ -> []
+      },
       errors(skill, justfile),
       data_errors(awesome, roadmap),
       origin_errors(skill, origin_rows),
@@ -583,7 +630,7 @@ pub fn main() -> Nil {
   {
     [] ->
       write(
-        "../src/ptbr_writter_site/content.gleam",
+        "../src/ptbr_writer_site/content.gleam",
         module(
           skill,
           justfile,
@@ -592,6 +639,7 @@ pub fn main() -> Nil {
           origin_rows,
           planned_rows,
           revision(),
+          plugin,
         ),
       )
     found -> {

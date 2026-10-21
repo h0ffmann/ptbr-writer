@@ -10,4 +10,4 @@ description: "(em desenvolvimento) Retórica para texto técnico em português. 
 > Need we ask anyone to tell us these things?
 
 Em desenvolvimento: sem regras, níveis nem formato de saída. Para reescrever texto, use a skill
-`ptbr-writter`.
+`ptbr-writer`.

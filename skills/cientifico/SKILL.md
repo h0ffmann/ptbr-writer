@@ -5,7 +5,7 @@ description: Escreve e revisa texto científico ou técnico com fontes (artigo, 
 
 # cientifico
 
-Prosa clara sem inventar evidência nem esconder incerteza. Aplica PTW-1 a PTW-13 da skill `ptbr-writter`; as regras CIE vêm a mais. Rascunho, verificação e aprovação são etapas separadas.
+Prosa clara sem inventar evidência nem esconder incerteza. Aplica PTW-1 a PTW-13 da skill `ptbr-writer`; as regras CIE vêm a mais. Rascunho, verificação e aprovação são etapas separadas.
 
 ## Entrada
 

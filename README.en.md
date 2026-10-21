@@ -2,18 +2,18 @@
 
 <img alt="A writing quill in a single line: original drawing" src="site/static/favicon.svg" width="120"/>
 
-# ptbr-writter
+# ptbr-writer
 
-<sub><a href="#install">install</a> · <a href="#use">use</a> · <a href="#levels">levels</a> · <a href="#rules">rules</a> · <a href="#roadmap">roadmap</a> · <a href="#development">development</a> · <a href="#credits">credits</a> · <a href="CHANGELOG.md">versions</a> · <a href="https://h0ffmann.github.io/ptbr-writter/">the site</a></sub>
+<sub><a href="#install">install</a> · <a href="#use">use</a> · <a href="#levels">levels</a> · <a href="#rules">rules</a> · <a href="#roadmap">roadmap</a> · <a href="#development">development</a> · <a href="#credits">credits</a> · <a href="CHANGELOG.md">versions</a> · <a href="https://h0ffmann.github.io/ptbr-writer/">the site</a></sub>
 
-[![site](https://github.com/h0ffmann/ptbr-writter/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writter/actions/workflows/site.yml)
-[![release](https://img.shields.io/github/v/release/h0ffmann/ptbr-writter?style=flat-square&label=release)](https://github.com/h0ffmann/ptbr-writter/releases/tag/v0.1.0)
+[![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
+[![release](https://img.shields.io/github/v/release/h0ffmann/ptbr-writer?style=flat-square&label=release)](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.2.0)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#license)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 
 </div>
 
-🇧🇷 [Leia em português](https://github.com/h0ffmann/ptbr-writter/blob/main/README.md) · this is the English version
+🇧🇷 [Leia em português](https://github.com/h0ffmann/ptbr-writer/blob/main/README.md) · this is the English version
 
 ## in one minute
 
@@ -30,7 +30,7 @@
 %% title: What happens to a request to write in Portuguese?
 flowchart LR
     A["request in Portuguese"] --> B{"does it ask for<br/>sources and paper-level<br/>rigor?"}
-    B -- "no" --> C["skill ptbr-writter<br/>rules PTW-1 to PTW-13"]
+    B -- "no" --> C["skill ptbr-writer<br/>rules PTW-1 to PTW-13"]
     B -- "yes" --> D["skill cientifico<br/>PTW-1 to PTW-13 and CIE"]
     C --> E{"does the request<br/>state the level?"}
     D --> E
@@ -57,7 +57,7 @@ outside the plugin.
 
 **Evidence.** Output format: the "Formato de saída" section of [`SKILL.md`](SKILL.md). Scientific
 skill: [`skills/cientifico/SKILL.md`](skills/cientifico/SKILL.md). Plugin skills:
-[`plugins/ptbr-writter/skills/`](plugins/ptbr-writter/skills) (`ptbr-writter`, `ptbr`,
+[`plugins/ptbr-writer/skills/`](plugins/ptbr-writer/skills) (`ptbr-writer`, `ptbr`,
 `cientifico`). Whether Claude picks `cientifico` by itself, from its description, was not
 measured ⚠.
 
@@ -65,12 +65,18 @@ measured ⚠.
 
 ## install
 
-The official version is **[v0.1.0](https://github.com/h0ffmann/ptbr-writter/releases/tag/v0.1.0)**.
-Install by tag: the plugin changes only when you change the tag.
+The official version is **[v0.2.0](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.2.0)**.
+Install by tag: the plugin changes only when you change the tag. One line, in a terminal:
 
 ```console
-/plugin marketplace add h0ffmann/ptbr-writter#v0.1.0
-/plugin install ptbr-writter@ptbr-writter
+claude plugin install ptbr-writer --marketplace h0ffmann/ptbr-writer#v0.2.0
+```
+
+Or, inside Claude Code:
+
+```console
+/plugin marketplace add h0ffmann/ptbr-writer#v0.2.0
+/plugin install ptbr-writer@ptbr-writer
 ```
 
 For everyone who opens a repository to use the same version, put this in its `.claude/settings.json`:
@@ -78,26 +84,72 @@ For everyone who opens a repository to use the same version, put this in its `.c
 ```json
 {
   "extraKnownMarketplaces": {
-    "ptbr-writter": {
-      "source": { "source": "github", "repo": "h0ffmann/ptbr-writter", "ref": "v0.1.0" }
+    "ptbr-writer": {
+      "source": { "source": "github", "repo": "h0ffmann/ptbr-writer", "ref": "v0.2.0" }
     }
   },
-  "enabledPlugins": { "ptbr-writter@ptbr-writter": true }
+  "enabledPlugins": { "ptbr-writer@ptbr-writer": true }
 }
 ```
 
-**Update:** change the tag (`/plugin marketplace remove ptbr-writter` and `add` again; in a
+**Update:** change the tag (`/plugin marketplace remove ptbr-writer` and `add` again; in a
 repository, the `ref`). What changes in each version is in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## use
 
 | Command | Does |
 | :------ | :--- |
-| `/ptbr-writter:ptbr` | rewrites at the requested level, or classifies the text and states the level |
-| `/ptbr-writter:ptbr-writter` | the same, with the full name |
-| `/ptbr-writter:cientifico` | scientific text with sources: paper, proposal, report (CIE rules) |
+| `/ptbr-writer:ptbr` | rewrites at the requested level, or classifies the text and states the level |
+| `/ptbr-writer:ptbr-writer` | the same, with the full name |
+| `/ptbr-writer:cientifico` | scientific text with sources: paper, proposal, report (CIE rules) |
 
 Or describe the task: "reescreva este runbook em português controlado".
+
+From v0.2.0, a request that starts with `ptbr` ("ptbr: reescreva este texto", `/ptbr`) uses
+`ptbr-writer.toml`. Naming ptbr-writer inside a sentence triggers nothing. The first time, with no
+such file, Claude asks once, multiple choice:
+
+- **levels:** one text per level;
+- **formats:** `.txt`, `.md`, `.pdf` and `notes` (smart-note);
+- **folder:** the session root (the default), `docs/`, or another one, typed in;
+- **languages:** pt-BR (the default) and/or ASD-STE100, Simplified Technical English; one text per language.
+
+and writes the answers to `./ptbr-writer.toml`. From then on it does not ask: edit the file, or
+write `ptbr reconfigurar`.
+
+```toml
+levels = ["estrito"]     # empty: the skill classifies and states the level
+formats = ["md", "pdf"]  # txt, md, pdf, notes; empty: only the answer
+folder = "docs"          # relative to the session root, no ".."
+print = ["txt", "md"]    # shown in full in the console, besides the file
+languages = ["pt-BR"]    # and/or "asd-ste100"; the ASD-STE100 file ends in -ste100
+```
+
+Each layer overrides the one before: the plugin's defaults
+([`ptbr-writer.default.toml`](plugins/ptbr-writer/ptbr-writer.default.toml)),
+`~/.config/ptbr-writer/ptbr-writer.toml`, `./ptbr-writer.toml` and, last, the request
+(`ptbr leve: ...` uses `leve`). An unknown value or a folder outside the root is ignored, with a
+warning. Files share one name pattern:
+
+```text
+ptbr-writer-<YYYYMMDDThhmmZ>-<goal>-<level>.<ext>
+ptbr-writer-20261020T2215Z-reinicio-servico-estrito.md
+```
+
+The timestamp is UTC and the same for every file of one request. Two levels in three formats make
+six files. So a `git add -A` does not pick them up, add `ptbr-writer-*` to `.gitignore`. Notes from
+`notes` follow the smart-note rules (`<id>-<slug>.md`). `.pdf` uses the machine's pandoc.
+Without it, Claude asks before downloading, through Nix, picasso's
+[`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) (a Rust binary,
+`to-pdf`, with Typst and fonts embedded). The binary is not in cache.nixos.org yet: Nix compiles it
+from source. Measured with `just pdf-bench` (x86_64-linux), at picasso v0.2.0, with the slim
+binary ([run](https://github.com/h0ffmann/ptbr-writer/actions/runs/39537436728)):
+
+| download | on disk | built on the machine | first run, fresh GitHub runner (4 cores) |
+| :------- | :------ | :------------------- | :--------------------------------------- |
+| 14 MiB, 6 paths from cache.nixos.org | 72 MiB, 7 paths | 25 MiB, 1 path (`to-pdf`, compiled) | 892 s (15 min) |
+
+The time depends on the network. From the second run on, Nix reuses the store.
 
 ## levels
 
@@ -110,7 +162,7 @@ Or describe the task: "reescreva este runbook em português controlado".
 | `smart-note` | notes for a second brain; combines with another level (`smart-note + estrito`) |
 
 Planned, outside `SKILL.md` and with no context cost: `retórico`, `ensaístico`, `crônico`,
-`anedótico`, `machado-writter`, `saramago-writter` (source: [`site/data/planned.tsv`](site/data/planned.tsv)).
+`anedótico`, `machado-writer`, `saramago-writer` (source: [`site/data/planned.tsv`](site/data/planned.tsv)).
 
 > [!WARNING]
 > An author level imitates style and never copies text. Citation and public-domain rules are in
@@ -118,7 +170,7 @@ Planned, outside `SKILL.md` and with no context cost: `retórico`, `ensaístico`
 
 ## rules
 
-The text of each rule is in [`SKILL.md`](SKILL.md) and [on the site](https://h0ffmann.github.io/ptbr-writter/#regras).
+The text of each rule is in [`SKILL.md`](SKILL.md) and [on the site](https://h0ffmann.github.io/ptbr-writer/#regras).
 The origin of each one comes from [`site/data/origins.tsv`](site/data/origins.tsv). The
 `cientifico` skill applies PTW-1 to PTW-13 and adds CIE-1 to CIE-12.
 
@@ -149,11 +201,11 @@ that the site and the README guard read.
 | [`evals/`](evals/cientifico.md) | in progress | regression cases written, not yet run by a harness ⚠ |
 | [skill científica](skills/cientifico/SKILL.md) | in progress | CIE rules; cases in `evals/cientifico-cie.md`, not yet run ⚠ |
 | [roteamento](skills/ptbr-routing/SKILL.md) | done | `route` picks the skill and the level before a skill loads |
-| [plugin](plugins/ptbr-writter/.claude-plugin/plugin.json) | in progress | Claude Code plugin ready; OpenCode is missing |
-| [distribuição](CHANGELOG.md) | done | release by tag with `just release`; v0.1.0 is the official version, installed by tag |
+| [plugin](plugins/ptbr-writer/.claude-plugin/plugin.json) | done | Claude Code plugin, installed with one command at the release version; OpenCode reads `SKILL.md` directly |
+| [distribuição](CHANGELOG.md) | done | release by tag with `just release`; v0.2.0 is the official version, installed by tag |
 | [retórica](skills/retorica/SKILL.md) | planned | only the skeleton, no rules |
 
-## awesome-ptbr-writter
+## awesome-ptbr-writer
 
 Other projects for people who write technical text in Portuguese (source: [`site/data/awesome.tsv`](site/data/awesome.tsv)).
 
@@ -202,7 +254,8 @@ the agent's skills folder.
 - Rhetoric: the epigraph is from Pirsig, *Zen and the Art of Motorcycle Maintenance* (1974), checked
   against two public reproductions, not the printed edition ⚠. Basis: Plato's *Phaedo* and *Phaedrus*.
 - Author level: the skill [orwell-writing](https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing), by @tamdogood (MIT).
-- Plugin and routing in the mould of [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit).
+- Plugin and routing in the mould of the plugin and the `routing` skill of [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit),
+  by [@brunogbv](https://github.com/brunogbv).
   README layout: [h0ffmann/picasso](https://github.com/h0ffmann/picasso) and ww3-gpu. Site stack:
   closed-source and ww3-gpu; Lustre (MIT) and the Gleam stdlib (Apache-2.0) only at build time;
   Google Fonts (SIL OFL); the flag and signature of Machado de Assis from Wikimedia Commons, in the
@@ -212,4 +265,4 @@ the agent's skills folder.
 
 MIT. See [`LICENSE`](LICENSE).
 
-<sub>ptbr-writter is a conceptual, independent fork of <a href="https://github.com/kayquer/portugues-tecnico-controlado">Português Técnico Controlado (PTC)</a>, by <a href="https://github.com/kayquer">kayquer</a> (MIT). The original methodology and rules are from there.</sub>
+<sub>ptbr-writer is a conceptual, independent fork of <a href="https://github.com/kayquer/portugues-tecnico-controlado">Português Técnico Controlado (PTC)</a>, by <a href="https://github.com/kayquer">kayquer</a> (MIT). The original methodology and rules are from there.</sub>

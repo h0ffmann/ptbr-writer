@@ -7,10 +7,10 @@
 #   session-check.sh --self-test
 set -euo pipefail
 
-PLUGIN="ptbr-writter@ptbr-writter"
+PLUGIN="ptbr-writer@ptbr-writer"
 
 optin_line() {
-  echo "▸ ptbr-writter plugin not installed. Before starting the person's request, if AskUserQuestion is available, ask once: \"This repo offers the ptbr-writter plugin (the /ptbr-writter, /ptbr and /cientifico skills, pt-BR technical writing). Routing works either way.\" Options: Install (they run \`! claude plugin install ${PLUGIN}\`), Not now (nothing), Never (add \"env\": {\"PTBR_PLUGIN_OPTOUT\": \"1\"} to $1). Then carry on. With no way to ask, say nothing about it."
+  echo "▸ ptbr-writer plugin not installed. Before starting the person's request, if AskUserQuestion is available, ask once: \"This repo offers the ptbr-writer plugin (the /ptbr-writer, /ptbr and /cientifico skills, pt-BR technical writing). Routing works either way.\" Options: Install (they run \`! claude plugin install ${PLUGIN}\`), Not now (nothing), Never (add \"env\": {\"PTBR_PLUGIN_OPTOUT\": \"1\"} to $1). Then carry on. With no way to ask, say nothing about it."
 }
 
 check() {
@@ -32,7 +32,7 @@ self_test() {
   unset PTBR_PLUGIN_OPTOUT CLAUDE_CODE_REMOTE
   mkdir -p "$tmp/plugins"
   out=$(CLAUDE_CONFIG_DIR=$tmp check <<<'{"source":"startup"}')
-  [[ $out == "▸ ptbr-writter plugin not installed."* ]] || { echo "FAIL: no offer when not installed" >&2; return 1; }
+  [[ $out == "▸ ptbr-writer plugin not installed."* ]] || { echo "FAIL: no offer when not installed" >&2; return 1; }
   out=$(CLAUDE_CONFIG_DIR=$tmp check <<<'{"source":"resume"}')
   [ -z "$out" ] || { echo "FAIL: offer on resume" >&2; return 1; }
   echo "{\"plugins\": {\"$PLUGIN\": []}}" >"$tmp/plugins/installed_plugins.json"

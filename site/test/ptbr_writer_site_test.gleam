@@ -3,9 +3,9 @@ import gleam/string
 import gleeunit
 import lustre/element
 import lustre/element/html
-import ptbr_writter_site/app
-import ptbr_writter_site/content
-import ptbr_writter_site/prerender
+import ptbr_writer_site/app
+import ptbr_writer_site/content
+import ptbr_writer_site/prerender
 
 pub fn main() -> Nil {
   gleeunit.main()
@@ -15,6 +15,7 @@ pub fn every_section_test() {
   let page = prerender.render()
   list.each(
     [
+      "instalar",
       "uso",
       "niveis",
       "regras",
@@ -66,7 +67,7 @@ pub fn rule_origins_test() {
   assert string.contains(page, "PTC-1, de ")
 }
 
-// awesome-ptbr-writter opens with the original PTC, the source of this fork.
+// awesome-ptbr-writer opens with the original PTC, the source of this fork.
 pub fn awesome_starts_with_ptc_test() {
   let assert [first, ..] = content.awesome
   assert first.name == "kayquer/portugues-tecnico-controlado"
@@ -129,7 +130,7 @@ pub fn star_pill_test() {
   assert string.contains(page, "star me")
   assert string.contains(
     page,
-    "img.shields.io/github/stars/h0ffmann/ptbr-writter",
+    "img.shields.io/github/stars/h0ffmann/ptbr-writer",
   )
 }
 
@@ -153,5 +154,16 @@ pub fn fork_notice_last_test() {
   let page = prerender.render()
   let assert Ok(#(_, after)) = string.split_once(page, "<footer")
   assert string.contains(after, "kayquer/portugues-tecnico-controlado")
-  assert !string.contains(page, "<script")
+  // One script only: the copy button's (page.gleam, DESIGN.md).
+  assert list.length(string.split(page, "<script")) == 2
+}
+
+// Install comes first, with the one command and a copy button the script shows.
+pub fn install_first_test() {
+  let html = prerender.render()
+  assert string.contains(html, content.install)
+  assert string.contains(html, "data-copy=\"" <> content.install <> "\"")
+  let assert Ok(#(before, _)) = string.split_once(html, "id=\"instalar\"")
+  assert !string.contains(before, "id=\"uso\"")
+  assert string.contains(html, "navigator.clipboard.writeText")
 }
