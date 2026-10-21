@@ -26,11 +26,11 @@ export const DEFAULT_SETTINGS: Settings = {
 export const MODELS: Readonly<Record<ProviderId, readonly string[]>> = {
   claude: ['claude-haiku-5-5', 'claude-sonnet-5-5', 'claude-opus-5-5'],
   deepseek: ['deepseek-flash', 'deepseek-v4-pro'],
-  ollama: ['qwen3.6:27b', 'qwen3:8b'],
+  ollama: ['qwen3.6:27b', 'qwen3:14b', 'qwen3:8b', 'qwen3:4b'], // suggestions; the model list also shows what Ollama has installed
 };
 
 const knownModel = (p: ProviderId, m: string | undefined) =>
-  m && MODELS[p].includes(m) ? m : DEFAULT_SETTINGS.models[p];
+  m && (p === 'ollama' || MODELS[p].includes(m)) ? m : DEFAULT_SETTINGS.models[p];
 
 export function levelFor(host: string, s: Settings): Level | null {
   if (!s.enabled) return null;

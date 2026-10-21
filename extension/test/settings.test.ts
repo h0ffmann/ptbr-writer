@@ -71,7 +71,7 @@ describe('loadSettings', () => {
     expect(MODELS.deepseek).toEqual(['deepseek-flash', 'deepseek-v4-pro']);
     expect(MODELS.claude[0]).toBe(DEFAULT_SETTINGS.models.claude);
     expect(MODELS.deepseek[0]).toBe(DEFAULT_SETTINGS.models.deepseek);
-    expect(MODELS.ollama).toEqual(['qwen3.6:27b', 'qwen3:8b']);
+    expect(MODELS.ollama).toEqual(['qwen3.6:27b', 'qwen3:14b', 'qwen3:8b', 'qwen3:4b']);
     expect(MODELS.ollama[0]).toBe(DEFAULT_SETTINGS.models.ollama);
   });
   it('keeps the default sites when storage has one host', async () => {

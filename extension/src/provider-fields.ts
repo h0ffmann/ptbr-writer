@@ -1,4 +1,4 @@
-import { OLLAMA_ORIGINS } from './providers';
+import { OLLAMA_ORIGINS, ollamaModels, ollamaPull } from './providers';
 import { MODELS } from './settings';
 import { maskKey } from './sites';
 import type { ProviderId, Settings } from './types';
@@ -44,10 +44,31 @@ export function mountProviderFields(
   key.autocomplete = 'off';
   const fields = { provider, model, key };
 
+  // Ollama's list: the suggested models (MODELS.ollama, the first one suggested) and the ones
+  // already installed; one not installed is downloaded with Baixar.
+  const pull = Object.assign(document.createElement('button'), { id: 'pull-model', type: 'button', textContent: 'Baixar' });
+  const status = Object.assign(document.createElement('span'), { id: 'pull-status' });
+  status.setAttribute('role', 'status');
+  let installed: string[] = [];
+  const models = (p: ProviderId) => (p === 'ollama' ? [...new Set([...MODELS.ollama, ...installed])] : MODELS[p]);
+  const label = (p: ProviderId, m: string) =>
+    p !== 'ollama'
+      ? m
+      : m + (m === MODELS.ollama[0] ? ' (sugerido)' : '') + (installed.includes(m) ? '' : ' (baixar)');
+  const fill = (p: ProviderId) => {
+    model.replaceChildren(...models(p).map((m) => option(m, label(p, m))));
+    model.value = s.models[p];
+    pull.hidden = p !== 'ollama' || installed.includes(model.value);
+  };
+  const refresh = async () => {
+    installed = await ollamaModels();
+    if (provider.value === 'ollama') fill('ollama');
+  };
+
   const show = (p: ProviderId) => {
     key.value = maskKey(s.keys[p]);
-    model.replaceChildren(...MODELS[p].map((m) => option(m, m)));
-    model.value = s.models[p];
+    fill(p);
+    if (p === 'ollama') void refresh();
     // Ollama runs on this machine and takes no key.
     key.disabled = p === 'ollama';
     key.placeholder = p === 'ollama' ? 'sem chave: just ext-ollama' : '';
@@ -67,8 +88,19 @@ export function mountProviderFields(
   });
   model.addEventListener('change', () => {
     s.models[provider.value as ProviderId] = model.value;
+    pull.hidden = provider.value !== 'ollama' || installed.includes(model.value);
     onChange(fields);
   });
-  container.append(labeled('Provedor', provider), labeled('Modelo', model), labeled('Chave', key));
+  pull.addEventListener('click', async () => {
+    pull.disabled = true;
+    status.textContent = `baixando ${model.value}…`;
+    const ok = await ollamaPull(model.value);
+    if (ok) await refresh();
+    status.textContent = ok ? 'pronto' : 'falhou: o Ollama está no ar (just ext-ollama)?';
+    pull.disabled = false;
+  });
+  const pullRow = document.createElement('p');
+  pullRow.append(pull, ' ', status);
+  container.append(labeled('Provedor', provider), labeled('Modelo', model), pullRow, labeled('Chave', key));
   return fields;
 }
