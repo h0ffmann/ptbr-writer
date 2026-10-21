@@ -1,0 +1,17 @@
+# ptbr-writter: o que o plugin faz quando um pedido começa com `ptbr`.
+# Estes são os padrões. Copie para ./ptbr-writter.toml (o projeto) ou
+# ~/.config/ptbr-writter/ptbr-writter.toml (você) e mude o que quiser:
+# o projeto vence o usuário, o usuário vence estes padrões, e o pedido vence todos.
+
+# Níveis de rigor, um texto por nível: estrito, descritivo, leve, científico.
+# Vazio: a skill classifica o texto e declara o nível.
+levels = []
+
+# Formatos gravados: txt, md, pdf, notes (notes = smart-note). Vazio: só a resposta.
+formats = []
+
+# Pasta dos arquivos, relativa à raiz da sessão: "." (a raiz) ou, por exemplo, "docs".
+folder = "."
+
+# Formatos cujo conteúdo aparece inteiro na resposta, além do arquivo.
+print = ["txt", "md"]
