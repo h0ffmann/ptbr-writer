@@ -302,6 +302,8 @@ E o grafo do código deste repositório, gerado a cada build do site pelo `code-
 [Grafo do código](https://h0ffmann.github.io/ptbr-writer/grafo/graph.html). Os nós que usam o picasso
 levam ao [grafo do picasso](https://h0ffmann.github.io/ptbr-writer/grafo/picasso.html), gerado do
 submódulo `forks/picasso` no mesmo commit dos outros pins.
+A extensão do Chrome, em TypeScript, tem o seu:
+[Grafo da extensão](https://h0ffmann.github.io/ptbr-writer/grafo/extensao.html), só de `extension/`.
 
 ## roadmap
 
