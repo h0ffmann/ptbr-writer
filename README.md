@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![versão](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=vers%C3%A3o&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
-[![leitura estimada: ~24 min](https://img.shields.io/badge/leitura%20estimada-~24%20min-1682D4?style=flat-square)](#tempo-de-leitura)
+[![leitura estimada: ~25 min](https://img.shields.io/badge/leitura%20estimada-~25%20min-1682D4?style=flat-square)](#tempo-de-leitura)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#instalar)
 
 </div>
@@ -241,7 +241,7 @@ Planejados, fora da `SKILL.md` e sem custo de contexto: `retórico`, `ensaístic
 
 O texto de cada regra está na [`SKILL.md`](SKILL.md) e [no site](https://h0ffmann.github.io/ptbr-writer/#regras).
 A origem de cada uma vem de [`site/data/origins.tsv`](site/data/origins.tsv). A skill `cientifico`
-aplica PTW-1 a PTW-13 e acrescenta CIE-1 a CIE-12.
+aplica PTW-1 a PTW-17 e acrescenta CIE-1 a CIE-12.
 
 | id | regra | origem | criador |
 | :- | :---- | :----- | :------ |
@@ -258,10 +258,10 @@ aplica PTW-1 a PTW-13 e acrescenta CIE-1 a CIE-12.
 | PTW-11 | Número com unidade e origem | ouro-paper; Audience and evidence | [@h0ffmann](https://github.com/h0ffmann) |
 | PTW-12 | Sem alegação de pioneirismo | estilo Vale `PriorityClaims` | [@h0ffmann](https://github.com/h0ffmann) |
 | PTW-13 | Fato separado de análise | ouro-paper | [@h0ffmann](https://github.com/h0ffmann) |
-| PTW-14 | Palavras inteiras e por extenso | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
-| PTW-15 | Pontuação | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
-| PTW-16 | Maiúsculas e concordância | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
-| PTW-17 | Frase reorganizada | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
+| PTW-14 | Palavras inteiras e por extenso | pedido do dono do repo | [@robkler](https://github.com/robkler) |
+| PTW-15 | Pontuação | pedido do dono do repo | [@robkler](https://github.com/robkler) |
+| PTW-16 | Maiúsculas e concordância | pedido do dono do repo | [@robkler](https://github.com/robkler) |
+| PTW-17 | Frase reorganizada | pedido do dono do repo | [@robkler](https://github.com/robkler) |
 
 ## tempo de leitura
 
@@ -361,6 +361,7 @@ pasta de skills do agente.
 - PTW-9 a PTW-13: a skill `ouro-paper` e o estilo `.vale/styles/research` de
   [marola-dev/marola-research](https://github.com/marola-dev/marola-research) (`041cedd`) e
   "Audience and evidence" de [h0ffmann/ww3-gpu](https://github.com/h0ffmann/ww3-gpu) (`319e4e2`).
+- PTW-14 a PTW-17: pedido de [@robkler](https://github.com/robkler).
 - Skill científica: `scientific-writing` de
   [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills/tree/a1043ef544e3a100c28e70a736b6cf32554d0677/skills/scientific-writing)
   (`a1043ef`, MIT, Copyright (c) 2025 K-Dense Inc.) e `artigo` de

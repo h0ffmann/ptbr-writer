@@ -7,9 +7,9 @@ const skill = readFileSync(fileURLToPath(new URL('../../SKILL.md', import.meta.u
 const cientifico = readFileSync(fileURLToPath(new URL('../../skills/cientifico/SKILL.md', import.meta.url)), 'utf8');
 
 describe('buildSystemPrompt', () => {
-  it('inclui PTW-1 a PTW-13', () => {
+  it('inclui PTW-1 a PTW-17', () => {
     const prompt = buildSystemPrompt('estrito', skill, cientifico);
-    for (let n = 1; n <= 13; n++) expect(prompt).toContain(`### PTW-${n}`);
+    for (let n = 1; n <= 17; n++) expect(prompt).toContain(`### PTW-${n}`);
   });
 
   it('exclui Uso, Smart note e Formato de saída', () => {
