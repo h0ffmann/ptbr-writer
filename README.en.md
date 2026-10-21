@@ -264,6 +264,7 @@ The origin of each one comes from [`site/data/origins.tsv`](site/data/origins.ts
 | PTW-11 | Número com unidade e origem (a number with unit and origin) | ouro-paper; Audience and evidence | [@h0ffmann](https://github.com/h0ffmann) |
 | PTW-12 | Sem alegação de pioneirismo (no priority claim) | Vale style `PriorityClaims` | [@h0ffmann](https://github.com/h0ffmann) |
 | PTW-13 | Fato separado de análise (fact apart from analysis) | ouro-paper | [@h0ffmann](https://github.com/h0ffmann) |
+| PTW-14 | Palavras inteiras e por extenso (whole words, spelled out) | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
 
 ## reading time
 
