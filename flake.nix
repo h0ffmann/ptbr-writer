@@ -29,6 +29,7 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             just
+            opencode # `just opencode` and `just opencode-qwen`
             git
             jq
             curl
