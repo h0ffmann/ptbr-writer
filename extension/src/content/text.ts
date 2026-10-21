@@ -5,6 +5,9 @@ export interface TextModel {
 
 export const MAX_CHARS = 4000;
 const QUOTED = 'blockquote, .gmail_quote';
+// Elements that start a new line. Each one that starts after some text adds a synthetic "\n" to
+// `text`, which belongs to no node: a span that covers it cannot be mapped back to the editor.
+const BREAKS = 'div, p, li, h1, h2, h3, h4, h5, h6, pre, tr, br';
 
 export function textModel(root: HTMLElement): TextModel {
   if (root instanceof HTMLTextAreaElement || root instanceof HTMLInputElement) {
@@ -14,12 +17,18 @@ export function textModel(root: HTMLElement): TextModel {
   const walker = doc.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
     acceptNode(n) {
       if (n.nodeType === Node.TEXT_NODE) return NodeFilter.FILTER_ACCEPT;
-      return (n as Element).matches(QUOTED) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_SKIP;
+      const e = n as Element;
+      if (e.matches(QUOTED)) return NodeFilter.FILTER_REJECT;
+      return e.matches(BREAKS) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
     },
   });
   let text = '';
   const nodes: TextModel['nodes'] = [];
   for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    if (n.nodeType !== Node.TEXT_NODE) {
+      if (text) text += '\n';
+      continue;
+    }
     const t = n as Text;
     nodes.push({ node: t, start: text.length });
     text += t.data;
@@ -41,7 +50,7 @@ export function caretOffset(root: HTMLElement, m: TextModel): number {
 export function selectForSending(text: string, caret: number): { text: string; offset: number } {
   if (text.length <= MAX_CHARS) return { text, offset: 0 };
   const c = Math.min(Math.max(caret, 0), text.length);
-  const before = text.lastIndexOf('\n', c - 1);
+  const before = c === 0 ? -1 : text.lastIndexOf('\n', c - 1);
   const start = before < 0 ? 0 : before + 1;
   const after = text.indexOf('\n', c);
   const end = after < 0 ? text.length : after;
@@ -57,6 +66,10 @@ export function rangeFor(m: TextModel, start: number, end: number): Range | null
   const a = find(start, false);
   const b = find(end, true);
   if (!a || !b) return null;
+  // Every position must belong to a node: a synthetic separator has none.
+  let covered = 0;
+  for (const x of m.nodes) covered += Math.max(0, Math.min(end, x.start + x.node.data.length) - Math.max(start, x.start));
+  if (covered !== end - start) return null;
   const r = a.node.ownerDocument.createRange();
   r.setStart(a.node, start - a.start);
   r.setEnd(b.node, end - b.start);

@@ -15,11 +15,17 @@ describe('textModel', () => {
     const el = editable('<p>Oi</p><div class="gmail_quote">antigo</div><blockquote>velho</blockquote>');
     expect(textModel(el).text).toBe('Oi');
   });
-  it('concatenates text nodes with no synthetic characters', () => {
-    const el = editable('<p>Oi </p><p>mundo</p>');
+  it('separates blocks with a synthetic newline that belongs to no node', () => {
+    const el = editable('<div>a b</div><div>c d</div>');
     const m = textModel(el);
-    expect(m.text).toBe('Oi mundo');
-    expect(m.nodes.map((n) => n.start)).toEqual([0, 3]);
+    expect(m.text).toBe('a b\nc d');
+    expect(m.nodes.map((n) => n.start)).toEqual([0, 4]);
+  });
+  it('a <br> is a newline too', () => {
+    expect(textModel(editable('<p>x<br>y</p>')).text).toBe('x\ny');
+  });
+  it('no newline before the first text, nor inside inline elements', () => {
+    expect(textModel(editable('<div><p>um <b>dois</b></p></div>')).text).toBe('um dois');
   });
   it('uses value for textarea and input', () => {
     const ta = document.createElement('textarea');
@@ -50,6 +56,16 @@ describe('selectForSending', () => {
     expect(selectForSending(text, 100)).toEqual({ text: text.slice(0, 4000), offset: 0 });
     expect(selectForSending(text, 9900)).toEqual({ text: text.slice(6000, 10000), offset: 6000 });
   });
+  it('with the caret at 0, sends the first paragraph even when it is empty', () => {
+    const text = '\n' + 'a '.repeat(2500);
+    expect(selectForSending(text, 0)).toEqual({ text: '', offset: 0 });
+  });
+  it('sends a contenteditable paragraph', () => {
+    const m = textModel(editable('<div>' + 'a '.repeat(1500) + '</div><div>c d</div><div>' + 'e '.repeat(1500) + '</div>'));
+    expect(m.text.length).toBeGreaterThan(4000);
+    const at = m.text.indexOf('c d');
+    expect(selectForSending(m.text, at + 1)).toEqual({ text: 'c d', offset: at });
+  });
   it('windows inside a later paragraph', () => {
     const text = 'a\n' + 'y'.repeat(6000);
     const r = selectForSending(text, 2 + 100);
@@ -69,6 +85,12 @@ describe('rangeFor', () => {
     const el = editable('<p>um <b>dois</b> três</p>');
     const m = textModel(el);
     expect(rangeFor(m, 1, 9)?.toString()).toBe('m dois t');
+  });
+  it('returns null across a block separator', () => {
+    const m = textModel(editable('<div>a b</div><div>c d</div>'));
+    expect(rangeFor(m, 2, 5)).toBeNull();
+    expect(rangeFor(m, 3, 4)).toBeNull();
+    expect(rangeFor(m, 4, 7)?.toString()).toBe('c d');
   });
   it('returns null out of bounds', () => {
     const m = textModel(editable('<p>oi</p>'));
