@@ -25,41 +25,30 @@
   with `⚠` what it did not check. Goal: keep a repository's PT-BR and EN documentation while
   spending fewer tokens.
 
-```mermaid
-%% figure: request-to-final-text
-%% title: What happens to a request to write in Portuguese?
-flowchart LR
-    A["request in Portuguese"] --> B{"does it ask for<br/>sources and paper-level<br/>rigor?"}
-    B -- "no" --> C["skill ptbr-writer<br/>rules PTW-1 to PTW-13"]
-    B -- "yes" --> D["skill cientifico<br/>PTW-1 to PTW-13 and CIE"]
-    C --> E{"does the request<br/>state the level?"}
-    D --> E
-    E -- "yes" --> F["requested level"]
-    E -- "no" --> G["the skill classifies<br/>and states the level"]
-    F --> H["level and reader"]
-    G --> H
-    H --> I["table of violations"]
-    I --> J["final text<br/>and what was kept on purpose"]
-```
+![Flow of a request (labels in Portuguese): you write ptbr; the first time, 4 questions saved in ptbr-writer.toml; then the ptbr-writer skill (or cientifico, if the text needs sources) writes one text per level and language; the output is the reply in the console and, if asked, .txt, .md, .pdf or notes files in the folder.](docs/img/em-um-minuto.png)
 
 <details open>
 <summary>How to read this figure</summary>
 
-**Takeaway.** The request enters through one of two skills, gets a level of rigor and leaves as
-final text, with the list of what was changed.
+**Takeaway.** You write `ptbr: …`; the first time the plugin asks 4 questions and saves the
+answers, and then the skill writes one text per level and per language, in the reply and, if you
+asked, in files.
 
-**How to read.** Left to right. A diamond is a question, with both exits labelled; a rectangle is a
-step. Both skills apply the same PTW rules; `cientifico` adds the CIE rules.
+**How to read.** Left to right, in the top lane, which every request goes through. The bottom lane
+is the configuration and the files. A labelled arrow says when the path applies. A box with an
+orange border is where you come in or what you get back.
 
-**Not shown.** The `smart-note` level (it combines with another level and delivers `RAW` and
-`nota`), the `⚠` list of the `científico` level, and the routing skill `ptbr-routing`, which is
-outside the plugin.
+**Not shown.** The levels and the rules (PTW and CIE), the `smart-note` level, the
+`ptbr reconfigurar` request and the routing skill `ptbr-routing`, which is outside the plugin. The
+figure is in Portuguese in both READMEs: its words are the plugin's own (`ptbr:`,
+`ptbr-writer.toml`, the file names), and one drawing keeps the two pages saying the same.
 
-**Evidence.** Output format: the "Formato de saída" section of [`SKILL.md`](SKILL.md). Scientific
-skill: [`skills/cientifico/SKILL.md`](skills/cientifico/SKILL.md). Plugin skills:
-[`plugins/ptbr-writer/skills/`](plugins/ptbr-writer/skills) (`ptbr-writer`, `ptbr`,
-`cientifico`). Whether Claude picks `cientifico` by itself, from its description, was not
-measured ⚠.
+**Evidence.** The 4 questions, `ptbr-writer.toml`, the formats and the languages:
+[`plugins/ptbr-writer/hooks/ask_levels.py`](plugins/ptbr-writer/hooks/ask_levels.py). The
+`cientifico` skill for sourced text and the output format: [`SKILL.md`](SKILL.md) and
+[`skills/cientifico/SKILL.md`](skills/cientifico/SKILL.md). Source of the figure:
+[`docs/archify/em-um-minuto.json`](docs/archify/em-um-minuto.json); `just figure` draws it again.
+Whether Claude picks `cientifico` by itself, from its description, was not measured ⚠.
 
 </details>
 
@@ -150,6 +139,32 @@ binary ([run](https://github.com/h0ffmann/ptbr-writer/actions/runs/39537436728))
 | 14 MiB, 6 paths from cache.nixos.org | 72 MiB, 7 paths | 25 MiB, 1 path (`to-pdf`, compiled) | 892 s (15 min) |
 
 The time depends on the network. From the second run on, Nix reuses the store.
+
+![Where the .pdf comes from: to-pdf.sh uses pandoc and xelatex if present; otherwise it downloads, through Nix, picasso v0.2.0 (commit 099e036), whose labs/ptbr-pdf compiles the to-pdf 0.1.0 crate, with pulldown-cmark 0.13.4, typst 0.15.1 and typst-as-lib 0.17.0 and 6 embedded fonts.](docs/img/pdf-dependencias.png)
+
+<details open>
+<summary>How to read this figure</summary>
+
+**Takeaway.** The `.pdf` comes from the machine's pandoc, if it has one with xelatex; otherwise from
+a Rust binary that Nix compiles from a fixed picasso commit, with each library at the version of
+`Cargo.lock`.
+
+**How to read.** Left to right. The middle lane is the path without pandoc; the bottom one, the
+binary's Rust libraries; the top one, the local path and the finished file. A box with an orange
+border is where a path starts or ends. The labels are in Portuguese, as in the first figure.
+
+**Not shown.** The dependencies of the dependencies (`Cargo.lock` has over 3000 lines), the
+`flake.lock` of `labs/ptbr-pdf` and Nix itself.
+
+**Evidence.** [`plugins/ptbr-writer/scripts/to-pdf.sh`](plugins/ptbr-writer/scripts/to-pdf.sh)
+(`PICASSO_REV`, both paths). In picasso, at commit `099e036`: `labs/ptbr-pdf/Cargo.toml` (the five
+dependencies), `labs/ptbr-pdf/Cargo.lock` (`pulldown-cmark` 0.13.4, `typst`, `typst-layout` and
+`typst-pdf` 0.15.1, `typst-as-lib` 0.17.0, `to-pdf` 0.1.0) and `labs/ptbr-pdf/fonts/` (six files:
+Libertinus Serif and DejaVu Sans Mono). Source of the figure:
+[`docs/archify/pdf-dependencias.json`](docs/archify/pdf-dependencias.json). That `to-pdf.sh` and
+the commit pinned in `forks/picasso` agree, `just pins` checks.
+
+</details>
 
 ## levels
 
@@ -253,6 +268,8 @@ the agent's skills folder.
 - Rhetoric: the epigraph is from Pirsig, *Zen and the Art of Motorcycle Maintenance* (1974), checked
   against two public reproductions, not the printed edition ⚠. Basis: Plato's *Phaedo* and *Phaedrus*.
 - Author level: the skill [orwell-writing](https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing), by @tamdogood (MIT).
+- Figures: [Archify](https://github.com/tt-a1i/archify) (@tt-a1i, MIT), the submodule `vendor/archify` pinned at v3.0.1
+  (`2ab3cae`), used only to draw `docs/archify/`; it is not part of the plugin. Look: [h0ffmann/picasso](https://github.com/h0ffmann/picasso).
 - Plugin and routing in the mould of the plugin and the `routing` skill of [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit),
   by [@brunogbv](https://github.com/brunogbv).
   README layout: [h0ffmann/picasso](https://github.com/h0ffmann/picasso) and ww3-gpu. Site stack:

@@ -6,6 +6,12 @@ Instructions for AI agents working on `ptbr-writer`.
 
 `ptbr-writer` is a personalized, OpenCode-first rewrite of the [Português Técnico Controlado (PTC)](https://github.com/kayquer/portugues-tecnico-controlado) rules for Brazilian Portuguese technical writing.
 
+## Goals
+
+- **Transparent.** Every fact on the site and in the README comes from a file in the repo or a pinned commit, and every dependency is visible (the figure of the `.pdf` dependency tree is one).
+- **Deterministic.** Versions are pinned: the plugin tag, the picasso commit, `flake.lock`, `Cargo.lock`. The same input gives the same output.
+- **Usage.** One command to install, one request to use; the site leads with the install.
+
 ## Hard rules
 
 - **No secrets in code.** Placeholders only; use `.env.example` if needed.
@@ -65,8 +71,10 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 ## Figures (hard rule)
 
 A diagram is a ```` ```mermaid ```` fence in the page it illustrates, starting with
-`%% figure: <id>` and `%% title: <question>`, followed by a *How to read this figure* card
+`%% figure: <id>` and `%% title: <question>`, or a PNG drawn by `just figure` (below), followed by a *How to read this figure* card
 (*Como ler esta figura* in the pt-BR page): takeaway, how to read, not shown, evidence. The
 `figure` skill (`.claude/skills/figure/`) has the visual grammar. Where a figure and its prose
-disagree, the figure is the bug. An interactive twin is drawn with the person's own `archify`
-skill, and only its `docs/archify/<slug>.json` is committed, never the HTML.
+disagree, the figure is the bug. A PNG is drawn with Archify, vendored as the pinned submodule `vendor/archify`
+(`.claude/skills/archify` links to it; it is never part of the plugin, so nothing of it goes under
+`plugins/`): commit `docs/archify/<slug>.json`, `docs/archify/figures.lock` and `docs/img/<slug>.png`,
+never the HTML. `just figure-init`, `just figure`, `just figure-check` (the last runs in `just quality`).

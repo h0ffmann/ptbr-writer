@@ -9,3 +9,4 @@ __pycache__/
 *.pyc
 .pytest_cache/
 plugins/ptbr-writer/evals/results/
+build/

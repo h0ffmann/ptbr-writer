@@ -38,6 +38,7 @@ pub fn view() -> Element(msg) {
     smart_note(),
     limits(),
     recipes(),
+    figuras(),
     awesome(),
     roadmap(),
     footer(),
@@ -123,6 +124,7 @@ fn cover() -> Element(msg) {
       html.a([attribute.href("#saida")], [html.text("saída")]),
       html.a([attribute.href("#smart-note")], [html.text("smart-note")]),
       html.a([attribute.href("#receitas")], [html.text("receitas")]),
+      html.a([attribute.href("#figuras")], [html.text("figuras")]),
       html.a([attribute.href("#awesome")], [html.text("awesome")]),
       html.a([attribute.href("#roadmap")], [html.text("roadmap")]),
     ]),
@@ -370,6 +372,33 @@ fn limits() -> Element(msg) {
     "limites",
     "o que a skill não faz, em nenhum nível.",
     optional("limits", content.limits),
+  )
+}
+
+/// The drawings of docs/archify/, each a page of its own (figuras/<slug>.html, built by `just site`)
+/// with the picture the README shows.
+fn figuras() -> Element(msg) {
+  section(
+    "figuras",
+    "figuras",
+    "os desenhos do README, como páginas que se abrem e se leem sozinhas. cada uma sai de um arquivo em docs/archify.",
+    [
+      html.ul(
+        [attribute.class("figures")],
+        list.map(content.figures, fn(f) {
+          html.li([], [
+            html.a([attribute.href("figuras/" <> f.slug <> ".html")], [
+              html.img([
+                attribute.src("figuras/" <> f.slug <> ".png"),
+                attribute.alt(f.title),
+                attribute.width(560),
+              ]),
+              html.text(f.title),
+            ]),
+          ])
+        }),
+      ),
+    ],
   )
 }
 

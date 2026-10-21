@@ -172,3 +172,6 @@ section, .foot { background: transparent; }
   .levels, .recipes { grid-template-columns: 1fr; gap: 2px; }
   .levels dd, .recipes dd { margin-bottom: 12px; }
 }
+
+.figures { list-style: none; padding: 0; display: grid; gap: 20px; }
+.figures img { display: block; max-width: 100%; height: auto; margin-bottom: 6px; border: 1px solid var(--rule); border-radius: 6px; }
