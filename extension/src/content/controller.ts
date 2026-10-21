@@ -1,10 +1,14 @@
-import { levelFor, loadSettings } from '../settings';
+import { addNeverFix } from '../never-fix';
+import { ruleTitles } from '../rules';
+import { levelFor, loadSettings, saveSettings } from '../settings';
+import { SKILL } from '../skills';
 import type { CheckError, CheckRequest, CheckResult, Level, Located } from '../types';
 import { acceptSuggestion } from './apply';
 import { forget, renderBadge, renderSuggestions, repositionAll } from './overlay';
 import { textModel } from './text';
 import { createWatcher } from './watcher';
 
+const TITLES = ruleTitles(SKILL);
 const TEXT_INPUTS = ['text', 'search', 'email', 'url'];
 
 interface FieldState {
@@ -61,7 +65,14 @@ export async function startContent(): Promise<() => void> {
         .map((x) => (x.start >= l.end ? { ...x, start: x.start + delta, end: x.end + delta } : x));
       render(el);
     };
-    renderSuggestions(el, f.located, f.offset, accept, drop);
+    // "Sempre ignorar" saves the phrase and drops the underline; the API is not called again.
+    const neverFix = (l: Located) => {
+      drop(l);
+      void loadSettings()
+        .then((s) => saveSettings({ ...s, neverFix: addNeverFix(s.neverFix, l.original) }))
+        .catch(() => {});
+    };
+    renderSuggestions(el, f.located, f.offset, accept, drop, { titles: TITLES, onNeverFix: neverFix });
     renderBadge(el, f.state, f.located.length);
   };
 

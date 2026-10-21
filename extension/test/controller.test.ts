@@ -25,7 +25,10 @@ beforeEach(() => {
   send.mockClear();
   (globalThis as any).chrome = {
     storage: {
-      local: { get: async () => store },
+      local: {
+        get: async () => store,
+        set: async (v: Record<string, unknown>) => Object.assign(store, v),
+      },
       onChanged: {
         addListener: (l: Listener) => listeners.push(l),
         removeListener: (l: Listener) => (listeners = listeners.filter((x) => x !== l)),
@@ -167,5 +170,26 @@ describe('accepting one of several suggestions', () => {
     expect(shadow().querySelectorAll('.ptbr-underline-erro').length).toBe(0);
     await vi.advanceTimersByTimeAsync(1000);
     expect(send).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('Sempre ignorar', () => {
+  it('saves the original in neverFix, drops the underline and does not call the API again', async () => {
+    site(true);
+    send.mockImplementation(
+      async () => ({ ok: true, suggestions: [{ original: 'a nível de', replacement: 'da', rule: 'PTW-5', severity: 'erro', occurrence: 1 }] }) as never,
+    );
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    type(el, 'O deploy a nível de equipe sai na sexta.');
+    await vi.advanceTimersByTimeAsync(1000);
+    const shadow = document.getElementById('ptbr-writer-root')!.shadowRoot!;
+    (shadow.querySelector('.ptbr-underline-erro') as HTMLElement).click();
+    (shadow.querySelector('.ptbr-card [data-action="never"]') as HTMLElement).click();
+    await vi.advanceTimersByTimeAsync(2000);
+    expect((store.settings as { neverFix: string[] }).neverFix).toEqual(['a nível de']);
+    expect(shadow.querySelectorAll('.ptbr-underline-erro').length).toBe(0);
+    expect(send).toHaveBeenCalledTimes(1);
   });
 });
