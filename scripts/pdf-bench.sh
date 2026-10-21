@@ -26,24 +26,16 @@ xargs -a "$tmp/paths" -P 16 -I{} sh -c \
   'nix path-info --json --json-format 1 --store https://cache.nixos.org "{}" 2>/dev/null || echo "{\"{}\": null}"' > "$tmp/cache.json"
 nix path-info --json --json-format 1 $(cat "$tmp/paths") > "$tmp/local.json"
 
-python3 -I - "$tmp/cache.json" "$tmp/local.json" "$rev" "$secs" "$(nproc)" <<'PY'
-import json, sys
-cache, local, rev, secs, cores = sys.argv[1:]
-text, i, dec, found = open(cache).read(), 0, json.JSONDecoder(), {}
-while True:
-    while i < len(text) and text[i].isspace():
-        i += 1
-    if i >= len(text):
-        break
-    o, i = dec.raw_decode(text, i)
-    found.update(o)
-local = json.load(open(local))
-M = 2**20
-served = {p: x for p, x in found.items() if x}
-built = [p for p in local if p not in served]
-print(f"picasso {rev[:7]}, labs/ptbr-pdf")
-print(f"  on disk            {sum(v['narSize'] for v in local.values())/M:6.0f} MiB  {len(local)} store paths")
-print(f"  download (zstd)    {sum(x.get('downloadSize', 0) for x in served.values())/M:6.0f} MiB  {len(served)} paths from cache.nixos.org")
-print(f"  built locally      {sum(local[p]['narSize'] for p in built)/M:6.0f} MiB  {len(built)} paths (the to-pdf binary)")
-print(f"  first run          {secs}  ({cores} cores; depends on the network)")
-PY
+M=1048576
+jq -s 'add' "$tmp/cache.json" > "$tmp/found.json"
+jq -r --arg rev "$rev" --arg secs "$secs" --arg cores "$(nproc)" --argjson M "$M" --slurpfile f "$tmp/found.json" '
+  ($f[0] | with_entries(select(.value != null))) as $served
+  | to_entries as $all
+  | ($all | map(select(.key as $k | $served | has($k) | not))) as $built
+  | def mib: . / $M | floor;
+    "picasso \($rev[:7]), labs/ptbr-pdf",
+    "  on disk            \($all | map(.value.narSize) | add | mib | tostring | (" " * (6 - length)) + .) MiB  \($all | length) store paths",
+    "  download (zstd)    \($served | to_entries | map(.value.downloadSize // 0) | add // 0 | mib | tostring | (" " * (6 - length)) + .) MiB  \($served | length) paths from cache.nixos.org",
+    "  built locally      \($built | map(.value.narSize) | add // 0 | mib | tostring | (" " * (6 - length)) + .) MiB  \($built | length) paths (the to-pdf binary)",
+    "  first run          \($secs)  (\($cores) cores; depends on the network)"
+' "$tmp/local.json"

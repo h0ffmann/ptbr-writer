@@ -26,6 +26,10 @@ cache=$(find "$cfg/plugins/cache" -mindepth 3 -maxdepth 3 -type d | head -1)
 for f in "$cache"/skills/*/SKILL.md; do
     grep -q '^description: .' "$f" || { echo "plugin-smoke: ${f#"$cache"/} has no description" >&2; exit 1; }
 done
+for f in "$cache"/bin/linux-*/ptbr; do
+    [ -x "$f" ] || { echo "plugin-smoke: ${f#"$cache"/} is not executable" >&2; exit 1; }
+done
+ls "$cache"/bin/linux-*/ptbr >/dev/null || { echo "plugin-smoke: no binaries in the installed copy" >&2; exit 1; }
 tok=$(sed -n 's/^ *Always-on: *~\{0,1\}\([0-9]*\).*/\1/p' <<<"$details")
 [ "${tok:-0}" -le "$max" ] || { echo "plugin-smoke: always-on cost ~$tok tok, ceiling $max" >&2; exit 1; }
 echo "plugin-smoke: ok ($got; always-on ~$tok tok)"

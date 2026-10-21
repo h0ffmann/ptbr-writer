@@ -40,7 +40,7 @@ opencode-status:
     set -euo pipefail
     if curl -sf http://127.0.0.1:8080/health >/dev/null; then
         echo "llama-server: healthy (127.0.0.1:8080)"
-        curl -sf http://127.0.0.1:8080/v1/models | python3 -m json.tool 2>/dev/null || true
+        curl -sf http://127.0.0.1:8080/v1/models | jq . 2>/dev/null || true
     else
         echo "llama-server: not reachable at 127.0.0.1:8080" >&2
         exit 1
@@ -83,7 +83,7 @@ site: figure-init
 
 # Build the site and serve it on http://localhost:8000.
 site-serve: site
-    nix develop --no-update-lock-file .#site --command python3 -m http.server -d site/dist 8000
+    nix develop --no-update-lock-file .#site --command nix run nixpkgs#caddy -- file-server --root site/dist --listen :8000
 
 # Check that flake.lock pins gleam-website to the forks/picasso submodule's revision.
 pins:
@@ -95,6 +95,7 @@ pins:
     pdf="$(sed -n 's/^PICASSO_REV=//p' plugins/ptbr-writer/scripts/to-pdf.sh)"
     [ "$pdf" = "$sub" ] || { echo "pins: to-pdf.sh has picasso $pdf, forks/picasso is $sub" >&2; exit 1; }
     echo "pins: picasso $sub"
+    just tools-check
 
 # Lint prose against Saramago's punctuation: no dash, quotes, ? ! ; : or ellipsis.
 saramago +files:
@@ -131,16 +132,8 @@ figure: figure-init
         ARCHIFY_UPDATE_CHECK_DISABLED=1 node vendor/archify/archify/bin/archify.mjs finalize "$(jq -r .diagram_type "$src")" "$src" "$out/page.html" --out-dir "$out/receipts" --quality showcase
         read -r w h < <(grep -o '<svg viewBox="[^"]*"' "$out/page.html" | head -1 | sed -E 's/.*0 0 ([0-9.]+) ([0-9.]+)"/\1 \2/')
         crop="$(awk -F'\t' -v s="$slug" '$1==s {print $2}' docs/archify/crop.tsv)"; h="${crop:-$h}"
-        python3 - "$out/page.html" "$out/frame.html" "$w" "$h" <<'PY'
-    import sys, re
-    src, dst, w, h = sys.argv[1:]
-    page = open(src, encoding="utf-8").read()
-    css = open("docs/archify/picasso.css", encoding="utf-8").read()
-    fonts = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Inter:wght@400;600&display=block">'
-    page = page.replace("</head>", fonts + "<style>" + css + "</style></head>", 1)
-    page = re.sub(r'<svg viewBox="0 0 [0-9.]+ [0-9.]+"', f'<svg viewBox="0 0 {w} {h}"', page, count=1)
-    open(dst, "w", encoding="utf-8").write(page)
-    PY
+        FONTS='<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Inter:wght@400;600&display=block">' CSS="$(cat docs/archify/picasso.css)" W="$w" H="$h" \
+            perl -0pe 's|</head>|$ENV{FONTS}<style>$ENV{CSS}</style></head>|; s|<svg viewBox="0 0 [0-9.]+ [0-9.]+"|<svg viewBox="0 0 $ENV{W} $ENV{H}"|' "$out/page.html" > "$out/frame.html"
         "${CHROME:-google-chrome}" --headless --disable-gpu --hide-scrollbars --force-dark-mode --force-device-scale-factor=2 --user-data-dir="$PWD/$out/profile" --window-size="$w,$h" --virtual-time-budget=3000 --screenshot="$PWD/docs/img/$slug.png" "file://$PWD/$out/frame.html" 2>/dev/null
         echo "figure: docs/img/$slug.png"
     done
@@ -168,20 +161,52 @@ figure-check:
 # Basic quality gate: justfile parses, required files exist, toolchain pins agree, linters self-test.
 # Pick the skill and the level for a writing request: just route "reescreva este runbook".
 route +request:
-    python3 skills/ptbr-routing/scripts/route.py "{{ request }}"
+    bash skills/ptbr-routing/bin/run.sh "{{ request }}"
+
+# The plugin's and the routing skill's static binaries (picasso labs/ptbr-tools) at picasso REV: build, copy, write tools.lock.
+tools-fetch rev:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    lock=plugins/ptbr-writer/bin/tools.lock
+    { echo "rev={{ rev }}"; echo "lab=labs/ptbr-tools"; echo "# sha256  size  path"; } > "$lock.new"
+    for t in "x86_64 static" "aarch64 static-aarch64"; do
+        set -- $t
+        out=$(nix build "github:h0ffmann/picasso/{{ rev }}?dir=labs/ptbr-tools#$2" --no-link --print-out-paths 2>/dev/null) || { echo "tools-fetch: no $1 build, skipped" >&2; continue; }
+        for d in plugins/ptbr-writer/bin/linux-$1 skills/ptbr-routing/bin/linux-$1; do
+            mkdir -p "$d"; install -m 755 "$out/bin/ptbr" "$d/ptbr"
+            echo "$(sha256sum "$d/ptbr" | cut -d' ' -f1)  $(stat -c %s "$d/ptbr")  $d/ptbr" >> "$lock.new"
+        done
+    done
+    mv "$lock.new" "$lock"
+    cat "$lock"
+
+# Each committed binary matches tools.lock (the rev there is the source of truth: tools-fetch writes it, nothing else reads it).
+tools-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    lock=plugins/ptbr-writer/bin/tools.lock
+    grep -qE '^rev=[0-9a-f]{40}$' "$lock" || { echo "tools-check: $lock has no rev" >&2; exit 1; }
+    n=0
+    while read -r sha size path; do
+        case $sha in rev=*|lab=*|'#') continue;; esac
+        [ "$(sha256sum "$path" | cut -d' ' -f1)" = "$sha" ] && [ "$(stat -c %s "$path")" = "$size" ] || { echo "tools-check: $path differs from tools.lock" >&2; exit 1; }
+        n=$((n+1))
+    done < "$lock"
+    [ "$n" -gt 0 ] || { echo "tools-check: tools.lock lists no binary" >&2; exit 1; }
+    echo "tools-check: $n binaries match $(sed -n 's/^rev=//p' "$lock" | cut -c1-9)"
 
 # Check the Claude Code plugin: manifests parse, every skill link resolves, the version has a CHANGELOG entry.
 plugin-check:
     #!/usr/bin/env bash
     set -euo pipefail
-    python3 -m json.tool .claude-plugin/marketplace.json >/dev/null
-    v=$(python3 -c 'import json; print(json.load(open("plugins/ptbr-writer/.claude-plugin/plugin.json"))["version"])')
+    jq . .claude-plugin/marketplace.json >/dev/null
+    v=$(jq -r .version plugins/ptbr-writer/.claude-plugin/plugin.json)
     [[ $v =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "plugin-check: version $v is not X.Y.Z" >&2; exit 1; }
     grep -q "^## v$v " CHANGELOG.md || { echo "plugin-check: CHANGELOG.md has no v$v" >&2; exit 1; }
     for f in plugins/ptbr-writer/skills/*/SKILL.md; do test -e "$f" || { echo "plugin-check: $f is a broken link" >&2; exit 1; }; done
     bash skills/ptbr-routing/scripts/session-check.sh --self-test
     bash plugins/ptbr-writer/hooks/ask-levels.sh --self-test
-    python3 -I plugins/ptbr-writer/scripts/reading_time.py --self-test
+    bash plugins/ptbr-writer/bin/run.sh reading-time --self-test
     echo "plugin-check: ok (v$v)"
 
 # What ships in the plugin changed since the last v* tag: lists the files and exits 1; installs keep the old text until a release.
@@ -218,26 +243,15 @@ release version:
     [ -z "$(git status --porcelain)" ] || { echo "release: the tree is not clean" >&2; exit 1; }
     git fetch -q origin main --tags
     ! git rev-parse -q --verify "refs/tags/v$v" >/dev/null || { echo "release: v$v exists" >&2; exit 1; }
-    now=$(git show "origin/main:$json" | python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')
+    now=$(git show "origin/main:$json" | jq -r .version)
     if [ "$now" != "$v" ]; then
         git switch -q -c "chore/release-v$v" origin/main
         # A release with nothing new for the plugin would reach no one: refuse it.
         due=$(just release-due | tail -n +2 || true)
         [ -n "$due" ] || { git switch -q -; git branch -q -D "chore/release-v$v"; echo "release: nothing in the plugin changed since the last tag" >&2; exit 1; }
-        python3 - "$json" "$v" <<'PY'
-    import json, sys
-    path, v = sys.argv[1], sys.argv[2]
-    d = json.load(open(path)); d["version"] = v
-    open(path, "w").write(json.dumps(d, indent=2, ensure_ascii=False) + "\n")
-    PY
-        python3 - "$v" "$(date -u +%F)" "$due" <<'PY'
-    import sys
-    v, day, due = sys.argv[1], sys.argv[2], sys.argv[3]
-    s = open("CHANGELOG.md").read()
-    head, rest = s.split("\n## ", 1)
-    files = ", ".join(f"`{f.strip()}`" for f in due.splitlines())
-    open("CHANGELOG.md", "w").write(f"{head}\n## v{v} — {day}\n\n- (descreva a release) mudou: {files}\n\n## {rest}")
-    PY
+        jq --arg v "$v" '.version = $v' "$json" > "$json.new" && mv "$json.new" "$json"
+        files=$(sed 's/^ *//; s/ *$//; s/.*/`&`/' <<<"$due" | paste -sd, - | sed 's/,/, /g')
+        awk -v v="$v" -v day="$(date -u +%F)" -v files="$files" '!done && /^## / {print "## v" v " — " day "\n\n- (descreva a release) mudou: " files "\n"; done=1} {print}' CHANGELOG.md > CHANGELOG.new && mv CHANGELOG.new CHANGELOG.md
         ${EDITOR:-vi} CHANGELOG.md
         ! grep -q '(descreva a release)' CHANGELOG.md || { echo "release: CHANGELOG.md still has the placeholder" >&2; exit 1; }
         just plugin-check
@@ -254,7 +268,7 @@ release version:
 
 # The tag a release pushes must be the plugin's version: just release-check v0.2.0 (release.yml runs it).
 release-check tag: plugin-check
-    test "{{ tag }}" = "v$(python3 -c 'import json; print(json.load(open("plugins/ptbr-writer/.claude-plugin/plugin.json"))["version"])')"
+    test "{{ tag }}" = "v$(jq -r .version plugins/ptbr-writer/.claude-plugin/plugin.json)"
 
 # Write each README's reading time (the plugin's calculator) under its language line.
 reading-time:
@@ -278,7 +292,7 @@ reading-time:
 _reading-badge file lang:
     #!/usr/bin/env bash
     set -euo pipefail
-    line=$(python3 -I plugins/ptbr-writer/scripts/reading_time.py --lang "{{ lang }}" "{{ file }}")
+    line=$(bash plugins/ptbr-writer/bin/run.sh reading-time --lang "{{ lang }}" "{{ file }}")
     min=$(sed -E 's/^[^:]+: ([^(]*[^ (]) *\(.*$/\1/' <<<"$line")
     enc=$(sed -e 's/ /%20/g' -e 's/</%3C/g' <<<"$min")
     if [ "{{ lang }}" = en ]; then
@@ -288,13 +302,13 @@ _reading-badge file lang:
     fi
 
 quality: pins saramago-check plugin-check figure-check
-    python3 skills/ptbr-routing/scripts/route.py --self-test
-    python3 skills/ptbr-routing/scripts/route.py --check
+    bash skills/ptbr-routing/bin/run.sh --self-test
+    bash skills/ptbr-routing/bin/run.sh --check
     just --list >/dev/null
     test -f .opencode.json
     test -f flake.nix
     test -f flake.lock
-    python3 -m json.tool .opencode.json >/dev/null
+    jq . .opencode.json >/dev/null
     # The README copies the tables of site/data/ by hand: each repo, roadmap item, rule and planned level must be in it.
     tail -n +2 site/data/awesome.tsv site/data/roadmap.tsv site/data/origins.tsv site/data/planned.tsv | grep -v '^==>' | cut -f1 | grep . | while read -r x; do grep -qF -- "$x" README.md || { echo "quality: README.md lacks $x" >&2; exit 1; }; done
     # Every Archify figure is indexed in both READMEs, by its published page.
