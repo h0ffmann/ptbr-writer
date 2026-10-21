@@ -124,6 +124,11 @@ pede para mudar. Instale do código-fonte:
    **Salvar**. Recarregue as abas que já estavam abertas. **Todas as configurações** abre a página
    com a lista de sites.
 
+No Firefox (128 ou mais novo), `just ext-build-firefox` gera `extension/dist-firefox/`: em
+`about:debugging#/runtime/this-firefox`, **Carregar extensão temporária…** e escolha o
+`manifest.json` dessa pasta; em `about:addons`, na aba **Permissões** da extensão, libere os sites e
+as APIs. Ela some quando o Firefox fecha. ⚠ Ainda não testada num Firefox de verdade.
+
 ## usar
 
 | Comando | Faz |

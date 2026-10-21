@@ -335,6 +335,10 @@ labels:
 ext-build:
     cd extension && npm ci && node build.mjs
 
+# The same extension for Firefox (128+), into extension/dist-firefox.
+ext-build-firefox:
+    cd extension && npm ci && node build.mjs --firefox
+
 # Chrome extension: type check (tsconfig has noEmit) and unit tests.
 ext-test: ext-build
     cd extension && npx tsc -p . && npx vitest run

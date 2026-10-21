@@ -5,6 +5,8 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- A extensão também sai para o Firefox (128+): `just ext-build-firefox` gera `extension/dist-firefox/`,
+  com `background.scripts` no lugar do service worker e o id `ptbr-writer@h0ffmann`.
 - O site ganha o grafo do código TypeScript da extensão do Chrome (`grafo/extensao.html`, gerado
   pelo `code-graph` só de `extension/`, com volta ao grafo do ptbr-writer) e a pílula **Grafo da
   extensão** na capa.
