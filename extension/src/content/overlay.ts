@@ -1,3 +1,4 @@
+import { NEVER_FIX_MAX_WORDS } from '../never-fix';
 import type { CheckError, Located } from '../types';
 import { rangeFor, textModel } from './text';
 
@@ -83,6 +84,8 @@ interface Drawn {
   offset: number;
   onAccept: (l: Located) => void;
   onIgnore: (l: Located) => void;
+  titles: Record<string, string>;
+  onNeverFix?: (l: Located) => void;
   layer: HTMLElement;
   badge?: HTMLElement;
   // Where each underlined span is on screen (client coordinates), for the hover test.
@@ -174,7 +177,7 @@ function entry(el: HTMLElement): Drawn {
     const layer = el.ownerDocument.createElement('div');
     layer.className = 'ptbr-layer';
     root.appendChild(layer);
-    d = { located: [], offset: 0, onAccept: () => {}, onIgnore: () => {}, layer, badge: d?.badge, hits: [] };
+    d = { located: [], offset: 0, onAccept: () => {}, onIgnore: () => {}, titles: {}, layer, badge: d?.badge, hits: [] };
     drawn.set(el, d);
   }
   return d;
@@ -186,9 +189,10 @@ export function renderSuggestions(
   offset: number,
   onAccept: (l: Located) => void,
   onIgnore: (l: Located) => void,
+  extra: { titles?: Record<string, string>; onNeverFix?: (l: Located) => void } = {},
 ): void {
   const d = entry(el);
-  Object.assign(d, { located, offset, onAccept, onIgnore });
+  Object.assign(d, { located, offset, onAccept, onIgnore, titles: extra.titles ?? {}, onNeverFix: extra.onNeverFix });
   if (card?.el === el) closeCard();
   draw(el, d);
 }
@@ -288,7 +292,8 @@ function openCard(el: HTMLElement, l: Located, d: Drawn, hover = false) {
   node.setAttribute('role', 'dialog');
   const rule = doc.createElement('p');
   rule.className = 'ptbr-rule';
-  rule.textContent = l.rule;
+  const title = d.titles[l.rule];
+  rule.textContent = l.severity === 'aviso' ? 'Reescrita' : title ? `${l.rule} · ${title}` : l.rule;
   const change = doc.createElement('p');
   change.className = 'ptbr-change';
   const s = doc.createElement('s');
@@ -312,6 +317,10 @@ function openCard(el: HTMLElement, l: Located, d: Drawn, hover = false) {
     return b;
   };
   actions.append(button('accept', 'Aceitar', () => d.onAccept(l)), button('ignore', 'Ignorar', () => d.onIgnore(l)));
+  if (d.onNeverFix && l.original.trim().split(/\s+/).length <= NEVER_FIX_MAX_WORDS) {
+    const never = d.onNeverFix;
+    actions.append(button('never', 'Sempre ignorar', () => never(l)));
+  }
   node.append(rule, change, actions);
   node.addEventListener('mousedown', (e) => e.preventDefault());
   overlayRoot(doc).appendChild(node);
