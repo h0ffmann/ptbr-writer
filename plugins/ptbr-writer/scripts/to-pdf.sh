@@ -7,7 +7,7 @@
 #   to-pdf.sh [--download] texto.md [saida.pdf]
 set -euo pipefail
 
-PICASSO_REV=53372f0e4fe8fbb8d3f17e7ec455e3849e034cf9
+PICASSO_REV=099e036f8b8378dc9bb226be4e223cf73e99e164
 SIZE="~14 MiB (72 MiB on disk)"  # labs/ptbr-pdf at PICASSO_REV, x86_64-linux: scripts/pdf-bench.sh
 download=false
 [ "${1-}" = --download ] && { download=true; shift; }
@@ -22,7 +22,7 @@ elif ! command -v nix >/dev/null; then
   echo "to-pdf: no pandoc+xelatex and no nix; deliver $in, and install pandoc and TeX Live (xelatex) for PDFs" >&2
   exit 1
 elif ! $download; then
-  echo "to-pdf: no pandoc+xelatex here; the PDF needs a one-time download of $SIZE through nix (the to-pdf binary, Typst with fonts embedded), plus compiling it from source: about 17 minutes on 4 cores, not in cache.nixos.org yet. Ask the person; if they agree, rerun with --download" >&2
+  echo "to-pdf: no pandoc+xelatex here; the PDF needs a one-time download of $SIZE through nix (the to-pdf binary, Typst with fonts embedded), plus compiling it from source: about 15 minutes on 4 cores, not in cache.nixos.org yet. Ask the person; if they agree, rerun with --download" >&2
   exit 3
 else
   nix --extra-experimental-features 'nix-command flakes' run \

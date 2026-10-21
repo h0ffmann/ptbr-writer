@@ -140,12 +140,12 @@ six files. So a `git add -A` does not pick them up, add `ptbr-writer-*` to `.git
 Without it, Claude asks before downloading, through Nix, picasso's
 [`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) (a Rust binary,
 `to-pdf`, with Typst and fonts embedded). The binary is not in cache.nixos.org yet: Nix compiles it
-from source. Measured with `just pdf-bench` (x86_64-linux), at picasso `e75838c`, before the size
-work on the binary ([run](https://github.com/h0ffmann/ptbr-writer/actions/runs/39525457779)):
+from source. Measured with `just pdf-bench` (x86_64-linux), at picasso v0.2.0, with the slim
+binary ([run](https://github.com/h0ffmann/ptbr-writer/actions/runs/39537436728)):
 
 | download | on disk | built on the machine | first run, fresh GitHub runner (4 cores) |
 | :------- | :------ | :------------------- | :--------------------------------------- |
-| 14 MiB, 6 paths from cache.nixos.org | 94 MiB, 7 paths | 47 MiB, 1 path (`to-pdf`, compiled) | 1029 s (17 min) |
+| 14 MiB, 6 paths from cache.nixos.org | 72 MiB, 7 paths | 25 MiB, 1 path (`to-pdf`, compiled) | 892 s (15 min) |
 
 The time depends on the network. From the second run on, Nix reuses the store.
 
