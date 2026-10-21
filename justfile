@@ -216,6 +216,7 @@ plugin-check:
     bash skills/ptbr-routing/scripts/session-check.sh --self-test
     bash plugins/ptbr-writer/hooks/ask-levels.sh --self-test
     bash plugins/ptbr-writer/bin/run.sh reading-time --self-test
+    bash scripts/opencode-smoke.sh
     echo "plugin-check: ok (v$v)"
 
 # What ships in the plugin changed since the last v* tag: lists the files and exits 1; installs keep the old text until a release.
