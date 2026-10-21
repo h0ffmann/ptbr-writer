@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { disableSite, enableSite, handleCheck, syncSites } from '../src/background';
+import { checkFromSender, disableSite, enableSite, handleCheck, syncSites } from '../src/background';
+import { buildSystemPrompt } from '../src/rules';
+import { CIENTIFICO, SKILL } from '../src/skills';
 import { DEFAULT_SETTINGS } from '../src/settings';
 import type { CheckRequest, Settings } from '../src/types';
 
@@ -124,5 +126,64 @@ describe('site registration', () => {
     expect(s.registerContentScripts).toHaveBeenCalledTimes(1);
     const arg = s.registerContentScripts.mock.calls[0][0];
     expect(arg.map((x) => x.id)).toEqual(['site:b.com']);
+  });
+});
+
+describe('checkFromSender', () => {
+  const site = (enabled: boolean): Settings => ({
+    ...settings,
+    sites: { ...settings.sites, 'example.com': { enabled, level: 'leve' } },
+  });
+  const tab = (id: number, url = 'https://example.com/x') => ({ tab: { id, url }, frameId: 0 });
+
+  it('a sender whose host is not enabled gets [] and no fetch', async () => {
+    const f = okFetch(claudeBody);
+    const r = await checkFromSender(req, tab(1), { fetch: f, settings: site(false) });
+    expect(r).toEqual({ ok: true, suggestions: [] });
+    expect(f).not.toHaveBeenCalled();
+  });
+
+  it('the extension switched off: no fetch', async () => {
+    const f = okFetch(claudeBody);
+    const r = await checkFromSender(req, tab(1), { fetch: f, settings: { ...site(true), enabled: false } });
+    expect(r).toEqual({ ok: true, suggestions: [] });
+    expect(f).not.toHaveBeenCalled();
+  });
+
+  it('a sender with no url: no fetch', async () => {
+    const f = okFetch(claudeBody);
+    expect(await checkFromSender(req, {}, { fetch: f, settings: site(true) })).toEqual({ ok: true, suggestions: [] });
+    expect(f).not.toHaveBeenCalled();
+  });
+
+  it('takes the level from the settings, not from the message', async () => {
+    const f = okFetch(claudeBody);
+    await checkFromSender({ ...req, level: 'estrito' }, tab(1), { fetch: f, settings: site(true) });
+    const [, init] = (f as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    const system = JSON.parse(init.body as string).system as string;
+    expect(system).toBe(buildSystemPrompt('leve', SKILL, CIENTIFICO));
+  });
+
+  it('falls back to sender.url', async () => {
+    const f = okFetch(claudeBody);
+    const r = await checkFromSender(req, { url: 'https://example.com/y' }, { fetch: f, settings: site(true) });
+    expect(r.ok && r.suggestions).toHaveLength(1);
+  });
+
+  it('the same message key from two tabs does not abort either', async () => {
+    const signals: AbortSignal[] = [];
+    const resolvers: Array<() => void> = [];
+    const f = vi.fn((_u: unknown, init?: RequestInit) => {
+      signals.push(init!.signal!);
+      return new Promise<Response>((ok) =>
+        resolvers.push(() => ok(new Response(JSON.stringify(claudeBody), { status: 200 }))),
+      );
+    }) as unknown as typeof fetch;
+    const a = checkFromSender(req, tab(1), { fetch: f, settings: site(true) });
+    const b = checkFromSender(req, tab(2), { fetch: f, settings: site(true) });
+    await vi.waitFor(() => expect(signals).toHaveLength(2));
+    expect(signals.map((s) => s.aborted)).toEqual([false, false]);
+    resolvers.forEach((r) => r());
+    for (const r of [await a, await b]) expect(r.ok && r.suggestions).toHaveLength(1);
   });
 });
