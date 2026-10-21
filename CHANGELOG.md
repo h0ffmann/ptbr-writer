@@ -5,6 +5,9 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- O site ganha o grafo do código TypeScript da extensão do Chrome (`grafo/extensao.html`, gerado
+  pelo `code-graph` só de `extension/`, com volta ao grafo do ptbr-writer) e a pílula **Grafo da
+  extensão** na capa.
 - O site ganha a página `bipr.html` (Gleam, como a capa): a descrição, os passos e o rodapé da
   `/bipr` lidos de `skills/bipr/`, as capturas do PR #49 com o rodapé renderizado pelo GitHub e a
   instalação pela `main`. A capa tem a pílula `/bipr`.

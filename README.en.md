@@ -307,6 +307,8 @@ And the code graph of this repository, built on each site build by the `code-gra
 [Code graph](https://h0ffmann.github.io/ptbr-writer/grafo/graph.html). The nodes that use picasso
 lead into [picasso's graph](https://h0ffmann.github.io/ptbr-writer/grafo/picasso.html), built from the
 `forks/picasso` submodule at the same commit as the other pins.
+The Chrome extension, in TypeScript, has its own:
+[Extension graph](https://h0ffmann.github.io/ptbr-writer/grafo/extensao.html), of `extension/` only.
 
 ## roadmap
 
