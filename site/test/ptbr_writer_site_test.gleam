@@ -191,6 +191,7 @@ pub fn figure_pills_test() {
   assert content.figures != []
   assert string.contains(actions, "href=\"grafo/graph.html\"")
   assert string.contains(actions, "href=\"grafo/picasso.html\"")
+  assert string.contains(actions, "href=\"grafo/extensao.html\"")
   assert string.contains(actions, "href=\"bipr.html\"")
 }
 
