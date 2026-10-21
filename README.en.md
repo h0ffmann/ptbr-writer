@@ -4,16 +4,16 @@
 
 # ptbr-writter
 
-<sub><a href="#install">install</a> · <a href="#use">use</a> · <a href="#levels">levels</a> · <a href="#rules">rules</a> · <a href="#roadmap">roadmap</a> · <a href="#development">development</a> · <a href="#credits">credits</a> · <a href="CHANGELOG.md">versions</a> · <a href="https://h0ffmann.github.io/ptbr-writter/">the site</a></sub>
+<sub><a href="#install">install</a> · <a href="#use">use</a> · <a href="#levels">levels</a> · <a href="#rules">rules</a> · <a href="#roadmap">roadmap</a> · <a href="#development">development</a> · <a href="#credits">credits</a> · <a href="CHANGELOG.md">versions</a> · <a href="https://h0ffmann.github.io/ptbr-writer/">the site</a></sub>
 
-[![site](https://github.com/h0ffmann/ptbr-writter/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writter/actions/workflows/site.yml)
-[![release](https://img.shields.io/github/v/release/h0ffmann/ptbr-writter?style=flat-square&label=release)](https://github.com/h0ffmann/ptbr-writter/releases/tag/v0.1.0)
+[![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
+[![release](https://img.shields.io/github/v/release/h0ffmann/ptbr-writer?style=flat-square&label=release)](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.1.0)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#license)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 
 </div>
 
-🇧🇷 [Leia em português](https://github.com/h0ffmann/ptbr-writter/blob/main/README.md) · this is the English version
+🇧🇷 [Leia em português](https://github.com/h0ffmann/ptbr-writer/blob/main/README.md) · this is the English version
 
 ## in one minute
 
@@ -65,11 +65,17 @@ measured ⚠.
 
 ## install
 
-The official version is **[v0.1.0](https://github.com/h0ffmann/ptbr-writter/releases/tag/v0.1.0)**.
-Install by tag: the plugin changes only when you change the tag.
+The official version is **[v0.1.0](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.1.0)**.
+Install by tag: the plugin changes only when you change the tag. One line, in a terminal:
 
 ```console
-/plugin marketplace add h0ffmann/ptbr-writter#v0.1.0
+claude plugin install ptbr-writter --marketplace h0ffmann/ptbr-writer#v0.1.0
+```
+
+Or, inside Claude Code:
+
+```console
+/plugin marketplace add h0ffmann/ptbr-writer#v0.1.0
 /plugin install ptbr-writter@ptbr-writter
 ```
 
@@ -79,7 +85,7 @@ For everyone who opens a repository to use the same version, put this in its `.c
 {
   "extraKnownMarketplaces": {
     "ptbr-writter": {
-      "source": { "source": "github", "repo": "h0ffmann/ptbr-writter", "ref": "v0.1.0" }
+      "source": { "source": "github", "repo": "h0ffmann/ptbr-writer", "ref": "v0.1.0" }
     }
   },
   "enabledPlugins": { "ptbr-writter@ptbr-writter": true }
@@ -135,7 +141,7 @@ Without it, Claude asks before downloading, through Nix, picasso's
 [`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) (a Rust binary,
 `to-pdf`, with Typst and fonts embedded). The binary is not in cache.nixos.org yet: Nix compiles it
 from source. Measured with `just pdf-bench` (x86_64-linux), at picasso `e75838c`, before the size
-work on the binary ([run](https://github.com/h0ffmann/ptbr-writter/actions/runs/39525457779)):
+work on the binary ([run](https://github.com/h0ffmann/ptbr-writer/actions/runs/39525457779)):
 
 | download | on disk | built on the machine | first run, fresh GitHub runner (4 cores) |
 | :------- | :------ | :------------------- | :--------------------------------------- |
@@ -162,7 +168,7 @@ Planned, outside `SKILL.md` and with no context cost: `retórico`, `ensaístico`
 
 ## rules
 
-The text of each rule is in [`SKILL.md`](SKILL.md) and [on the site](https://h0ffmann.github.io/ptbr-writter/#regras).
+The text of each rule is in [`SKILL.md`](SKILL.md) and [on the site](https://h0ffmann.github.io/ptbr-writer/#regras).
 The origin of each one comes from [`site/data/origins.tsv`](site/data/origins.tsv). The
 `cientifico` skill applies PTW-1 to PTW-13 and adds CIE-1 to CIE-12.
 
@@ -193,7 +199,7 @@ that the site and the README guard read.
 | [`evals/`](evals/cientifico.md) | in progress | regression cases written, not yet run by a harness ⚠ |
 | [skill científica](skills/cientifico/SKILL.md) | in progress | CIE rules; cases in `evals/cientifico-cie.md`, not yet run ⚠ |
 | [roteamento](skills/ptbr-routing/SKILL.md) | done | `route` picks the skill and the level before a skill loads |
-| [plugin](plugins/ptbr-writter/.claude-plugin/plugin.json) | in progress | Claude Code plugin ready; OpenCode is missing |
+| [plugin](plugins/ptbr-writter/.claude-plugin/plugin.json) | done | Claude Code plugin, installed with one command at the release version; OpenCode reads `SKILL.md` directly |
 | [distribuição](CHANGELOG.md) | done | release by tag with `just release`; v0.1.0 is the official version, installed by tag |
 | [retórica](skills/retorica/SKILL.md) | planned | only the skeleton, no rules |
 

@@ -4,16 +4,16 @@
 
 # ptbr-writter
 
-<sub><a href="#instalar">instalar</a> · <a href="#usar">usar</a> · <a href="#níveis">níveis</a> · <a href="#regras">regras</a> · <a href="#roadmap">roadmap</a> · <a href="#desenvolvimento">desenvolvimento</a> · <a href="#créditos">créditos</a> · <a href="CHANGELOG.md">versões</a> · <a href="https://h0ffmann.github.io/ptbr-writter/">o site</a></sub>
+<sub><a href="#instalar">instalar</a> · <a href="#usar">usar</a> · <a href="#níveis">níveis</a> · <a href="#regras">regras</a> · <a href="#roadmap">roadmap</a> · <a href="#desenvolvimento">desenvolvimento</a> · <a href="#créditos">créditos</a> · <a href="CHANGELOG.md">versões</a> · <a href="https://h0ffmann.github.io/ptbr-writer/">o site</a></sub>
 
-[![site](https://github.com/h0ffmann/ptbr-writter/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writter/actions/workflows/site.yml)
-[![release](https://img.shields.io/github/v/release/h0ffmann/ptbr-writter?style=flat-square&label=release)](https://github.com/h0ffmann/ptbr-writter/releases/tag/v0.1.0)
+[![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
+[![release](https://img.shields.io/github/v/release/h0ffmann/ptbr-writer?style=flat-square&label=release)](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.1.0)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#instalar)
 
 </div>
 
-🇬🇧 [Read in English](https://github.com/h0ffmann/ptbr-writter/blob/main/README.en.md)
+🇬🇧 [Read in English](https://github.com/h0ffmann/ptbr-writer/blob/main/README.en.md)
 
 ## em um minuto
 
@@ -62,11 +62,17 @@ lista de `⚠` do nível `científico` e a skill de roteamento `ptbr-routing`, q
 
 ## instalar
 
-A versão oficial é a **[v0.1.0](https://github.com/h0ffmann/ptbr-writter/releases/tag/v0.1.0)**.
-Instale por tag: o plugin só muda quando você trocar a tag.
+A versão oficial é a **[v0.1.0](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.1.0)**.
+Instale por tag: o plugin só muda quando você trocar a tag. Uma linha, num terminal:
 
 ```console
-/plugin marketplace add h0ffmann/ptbr-writter#v0.1.0
+claude plugin install ptbr-writter --marketplace h0ffmann/ptbr-writer#v0.1.0
+```
+
+Ou, dentro do Claude Code:
+
+```console
+/plugin marketplace add h0ffmann/ptbr-writer#v0.1.0
 /plugin install ptbr-writter@ptbr-writter
 ```
 
@@ -77,7 +83,7 @@ dele:
 {
   "extraKnownMarketplaces": {
     "ptbr-writter": {
-      "source": { "source": "github", "repo": "h0ffmann/ptbr-writter", "ref": "v0.1.0" }
+      "source": { "source": "github", "repo": "h0ffmann/ptbr-writer", "ref": "v0.1.0" }
     }
   },
   "enabledPlugins": { "ptbr-writter@ptbr-writter": true }
@@ -130,7 +136,7 @@ O carimbo é em UTC e o mesmo para todos os arquivos de um pedido. Com 2 níveis
 arquivos. Para um `git add -A` não levá-los, ponha `ptbr-writter-*` no `.gitignore`. As notas de
 `notes` seguem as regras de smart-note (`<id>-<slug>.md`). O `.pdf` usa o pandoc da máquina. Sem
 ele, o Claude pergunta antes de baixar, pelo Nix, o
-[`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) do picasso (um binário Rust, `to-pdf`, com Typst e fontes embutidas). O binário ainda não está no cache.nixos.org: o Nix o compila do código-fonte. Medido com `just pdf-bench` (x86_64-linux), no picasso `e75838c`, antes do trabalho de reduzir o binário ([execução](https://github.com/h0ffmann/ptbr-writter/actions/runs/39525457779)):
+[`labs/ptbr-pdf`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-pdf) do picasso (um binário Rust, `to-pdf`, com Typst e fontes embutidas). O binário ainda não está no cache.nixos.org: o Nix o compila do código-fonte. Medido com `just pdf-bench` (x86_64-linux), no picasso `e75838c`, antes do trabalho de reduzir o binário ([execução](https://github.com/h0ffmann/ptbr-writer/actions/runs/39525457779)):
 
 | download | em disco | montado na máquina | primeira vez, runner novo do GitHub (4 núcleos) |
 | :------- | :------- | :----------------- | :---------------------------------------------- |
@@ -157,7 +163,7 @@ Planejados, fora da `SKILL.md` e sem custo de contexto: `retórico`, `ensaístic
 
 ## regras
 
-O texto de cada regra está na [`SKILL.md`](SKILL.md) e [no site](https://h0ffmann.github.io/ptbr-writter/#regras).
+O texto de cada regra está na [`SKILL.md`](SKILL.md) e [no site](https://h0ffmann.github.io/ptbr-writer/#regras).
 A origem de cada uma vem de [`site/data/origins.tsv`](site/data/origins.tsv). A skill `cientifico`
 aplica PTW-1 a PTW-13 e acrescenta CIE-1 a CIE-12.
 
@@ -187,7 +193,7 @@ Fonte: [`site/data/roadmap.tsv`](site/data/roadmap.tsv).
 | [`evals/`](evals/cientifico.md) | em andamento | casos de regressão escritos, ainda não rodados por um harness ⚠ |
 | [skill científica](skills/cientifico/SKILL.md) | em andamento | regras CIE; casos em `evals/cientifico-cie.md`, ainda não rodados ⚠ |
 | [roteamento](skills/ptbr-routing/SKILL.md) | feito | `route` escolhe a skill e o nível antes de carregar uma skill |
-| [plugin](plugins/ptbr-writter/.claude-plugin/plugin.json) | em andamento | plugin do Claude Code pronto; falta o OpenCode |
+| [plugin](plugins/ptbr-writter/.claude-plugin/plugin.json) | feito | plugin do Claude Code, instalado com um comando na versão da release; o OpenCode lê o `SKILL.md` direto |
 | [distribuição](CHANGELOG.md) | feito | release por tag com `just release`; a v0.1.0 é a versão oficial, instalada por tag |
 | [retórica](skills/retorica/SKILL.md) | planejado | só o esqueleto, sem regras |
 
