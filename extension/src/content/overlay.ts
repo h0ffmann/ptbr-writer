@@ -165,14 +165,21 @@ export function renderBadge(el: HTMLElement, state: 'idle' | 'checking' | CheckE
   placeBadge(el, b);
 }
 
+// Removes everything drawn for an editor: its underlines, its card and its badge.
+export function forget(el: HTMLElement): void {
+  const d = drawn.get(el);
+  if (!d) return;
+  d.layer.remove();
+  d.badge?.remove();
+  if (card?.el === el) closeCard();
+  drawn.delete(el);
+}
+
 // Redraws every editor; called on scroll and resize. Forgets editors that left the page.
 export function repositionAll(): void {
   for (const [el, d] of drawn) {
     if (!el.isConnected) {
-      d.layer.remove();
-      d.badge?.remove();
-      if (card?.el === el) closeCard();
-      drawn.delete(el);
+      forget(el);
       continue;
     }
     draw(el, d);

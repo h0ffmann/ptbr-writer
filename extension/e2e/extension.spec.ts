@@ -29,7 +29,7 @@ test.afterEach(async () => {
 });
 
 // A fresh profile with the extension, and its settings written before any page loads:
-// the content script reads them once, at load.
+// the content script reads them at load (and again when they change).
 async function launch(provider: ProviderId): Promise<BrowserContext> {
   profile = mkdtempSync(join(tmpdir(), 'ptbr-e2e-'));
   context = await chromium.launchPersistentContext(profile, {
@@ -51,7 +51,7 @@ async function launch(provider: ProviderId): Promise<BrowserContext> {
 }
 
 // Opens a page and waits until the content script has read its settings: the script reads them
-// once, then listens for focus, so typing earlier would go unseen. The wait runs in the script's
+// first, then listens for focus, so typing earlier would go unseen. The wait runs in the script's
 // own world (found through CDP) and queues a storage read behind the script's own.
 async function open(host: string, page: string): Promise<Page> {
   if (!context) throw new Error('launch() first');
@@ -113,4 +113,25 @@ test('site não liberado não chama a API', async () => {
   await expect(page.locator('.ptbr-underline-erro')).toHaveCount(0);
   expect(server.calls.filter((c) => c.host.startsWith('localhost'))).toEqual([]);
   expect(server.calls.length).toBe(before);
+});
+
+test('desligar o site numa aba aberta para as chamadas', async () => {
+  await launch('claude');
+  const page = await open('127.0.0.1', 'textarea.html');
+  await page.locator('#field').click();
+  await page.keyboard.type(TYPED);
+  await expect(page.locator('.ptbr-underline-erro')).toHaveCount(1, { timeout: 5_000 });
+  const before = server.calls.length;
+  expect(before).toBeGreaterThan(0);
+  const worker = context!.serviceWorkers()[0];
+  await worker.evaluate(async () => {
+    const { settings } = (await chrome.storage.local.get('settings')) as { settings: object };
+    await chrome.storage.local.set({
+      settings: { ...settings, sites: { '127.0.0.1': { enabled: false, level: 'descritivo' } } },
+    });
+  });
+  await page.keyboard.type(' E mais uma frase foi escrita.');
+  await page.waitForTimeout(2_000);
+  expect(server.calls.length).toBe(before);
+  await expect(page.locator('.ptbr-underline-erro')).toHaveCount(0);
 });

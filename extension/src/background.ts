@@ -1,6 +1,6 @@
 import { buildRequest, classifyError, readText } from './providers';
 import { buildSystemPrompt } from './rules';
-import { DEFAULT_SETTINGS, loadSettings } from './settings';
+import { DEFAULT_SETTINGS, levelFor, loadSettings } from './settings';
 import { CIENTIFICO, SKILL } from './skills';
 import { parseSuggestions } from './suggestions';
 import type { CheckRequest, CheckResult, Settings } from './types';
@@ -45,6 +45,38 @@ export async function handleCheck(
   } finally {
     if (inflight.get(req.key) === controller) inflight.delete(req.key);
   }
+}
+
+// The part of chrome.runtime.MessageSender the gate reads.
+export interface Sender {
+  tab?: { id?: number; url?: string };
+  frameId?: number;
+  url?: string;
+}
+
+function senderHost(sender: Sender): string | null {
+  const url = sender.tab?.url ?? sender.url;
+  if (!url) return null;
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return null;
+  }
+}
+
+// A check from a content script: the sender's site must be enabled now (an open tab may have read
+// older settings), and its level comes from the settings, not from the message. Keys are per tab
+// and frame, so two tabs never cancel each other.
+export async function checkFromSender(
+  msg: CheckRequest,
+  sender: Sender,
+  deps: { fetch: typeof fetch; settings: Settings },
+): Promise<CheckResult> {
+  const host = senderHost(sender);
+  const level = host ? levelFor(host, deps.settings) : null;
+  if (!level) return { ok: true, suggestions: [] };
+  const key = `${sender.tab?.id}:${sender.frameId}:${msg.key}`;
+  return handleCheck({ ...msg, key, level }, deps);
 }
 
 // --- Content script registration for sites the user enables ---
@@ -100,10 +132,10 @@ export async function syncSites(settings: Settings, scripting: Scripting): Promi
 type Message = CheckRequest | { type: 'enable-site'; host: string } | { type: 'disable-site'; host: string };
 
 export function init(): void {
-  chrome.runtime.onMessage.addListener((msg: Message, _sender, sendResponse) => {
+  chrome.runtime.onMessage.addListener((msg: Message, sender, sendResponse) => {
     if (msg?.type === 'check') {
       loadSettings()
-        .then((settings) => handleCheck(msg, { fetch: globalThis.fetch.bind(globalThis), settings }))
+        .then((settings) => checkFromSender(msg, sender, { fetch: globalThis.fetch.bind(globalThis), settings }))
         .then(sendResponse, () => sendResponse({ ok: false, error: 'provider' } satisfies CheckResult));
       return true;
     }
