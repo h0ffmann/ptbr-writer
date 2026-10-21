@@ -45,7 +45,7 @@ figure is in Portuguese in both READMEs: its words are the plugin's own (`ptbr:`
 `ptbr-writer.toml`, the file names), and one drawing keeps the two pages saying the same.
 
 **Evidence.** The 4 questions, `ptbr-writer.toml`, the formats and the languages:
-[`plugins/ptbr-writer/hooks/ask_levels.py`](plugins/ptbr-writer/hooks/ask_levels.py). The
+[`labs/ptbr-tools`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-tools) (`ptbr-ask-levels`). The
 `cientifico` skill for sourced text and the output format: [`SKILL.md`](SKILL.md) and
 [`skills/cientifico/SKILL.md`](skills/cientifico/SKILL.md). Source of the figure:
 [`docs/archify/em-um-minuto.json`](docs/archify/em-um-minuto.json); `just figure` draws it again.
@@ -209,7 +209,7 @@ The origin of each one comes from [`site/data/origins.tsv`](site/data/origins.ts
 ## reading time
 
 Every text the plugin generates carries a line such as `Estimated reading time: ~3 min (612 words, 4 links, 2 code blocks)`,
-computed by [`reading_time.py`](plugins/ptbr-writer/scripts/reading_time.py) (python3, no dependencies), never guessed.
+computed by `ptbr-reading-time` (static binary, no dependencies), never guessed.
 It is an estimate: the same text always gives the same number, but people read 175 to 300 words per minute.
 
 | Part | How it counts |
@@ -226,7 +226,7 @@ they need to say what English says); pt-BR uses the same 238, unscaled. The comp
 times are this project's choices, not the paper's.
 
 ```console
-python3 -I plugins/ptbr-writer/scripts/reading_time.py README.md   # --lang en, --json, --self-test
+bash plugins/ptbr-writer/bin/run.sh reading-time README.md   # --lang en, --json, --self-test
 ```
 
 ## ELI5
@@ -275,7 +275,7 @@ Other projects for people who write technical text in Portuguese (source: [`site
 
 ## development
 
-Requirements: [Nix](https://nixos.org/download/) with flakes. Rules for agents and contributors:
+Plugin runtime: static Rust binaries (linux x86_64 and aarch64), no python3 or node. Requirements to develop: [Nix](https://nixos.org/download/) with flakes. Rules for agents and contributors:
 [`AGENTS.md`](AGENTS.md).
 
 ```console
