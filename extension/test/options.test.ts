@@ -137,6 +137,25 @@ describe('popup', () => {
       expect(root().textContent, url).toContain('Site não suportado.');
     }
   });
+  it('always offers Configurações, which opens the options page', async () => {
+    const openOptionsPage = vi.fn();
+    (globalThis as any).chrome.runtime.openOptionsPage = openOptionsPage;
+    for (const url of ['https://example.com/x', 'chrome://extensions', undefined]) {
+      tabUrl = url;
+      await renderPopup(root());
+      const b = document.querySelector('#open-options') as HTMLButtonElement;
+      expect(b?.textContent, String(url)).toBe('Configurações');
+    }
+    (document.querySelector('#open-options') as HTMLButtonElement).click();
+    expect(openOptionsPage).toHaveBeenCalledTimes(1);
+  });
+  it('says when the chosen provider has no key', async () => {
+    await renderPopup(root());
+    expect(root().textContent).toContain('Sem chave do Claude.');
+    store = { settings: { keys: { claude: 'sk-test-1234', deepseek: '' } } };
+    await renderPopup(root());
+    expect(root().textContent).not.toContain('Sem chave');
+  });
   it('no button on non-http pages or without url', async () => {
     tabUrl = 'chrome://extensions';
     await renderPopup(root());
