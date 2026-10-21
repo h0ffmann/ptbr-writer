@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # plugin-smoke — install the plugin from this checkout the way a third party would, in an empty
-# Claude Code config, and check what they get: the manifests validate, the three skills load from
+# Claude Code config, and check what they get: the manifests validate, the four skills load from
 # real files with a description, the ask-levels hook is there, and the always-on cost stays under
 # a ceiling. No login, no tokens.
 #
@@ -8,7 +8,7 @@
 set -euo pipefail
 
 max=${1:-300}
-want="cientifico, ptbr, ptbr-writer"
+want="bipr, cientifico, ptbr, ptbr-writer"
 root=$(git rev-parse --show-toplevel)
 cfg=$(mktemp -d); trap 'rm -rf "$cfg"' EXIT
 export CLAUDE_CONFIG_DIR=$cfg
