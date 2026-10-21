@@ -5,6 +5,9 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- `.mcp.json` registra o MCP do Firefox da Mozilla (`@mozilla/firefox-devtools-mcp` 0.10.4, por
+  `scripts/firefox-mcp.sh`): o Claude Code abre um Firefox e instala `extension/dist-firefox` com
+  `install_extension`.
 - A extensão ganha o provider **Ollama + Qwen (local)**, sem chave: `just ext-ollama` serve o
   `qwen3.6:27b` (ou outro modelo) com `OLLAMA_ORIGINS` para as origens de extensão; a permissão
   `http://127.0.0.1:11434/*` é opcional no manifesto e pedida no clique que escolhe o Ollama.

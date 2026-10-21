@@ -131,6 +131,12 @@ In Firefox (128 or newer), `just ext-build-firefox` writes `extension/dist-firef
 `manifest.json`; in `about:addons`, on the extension's **Permissions** tab, allow the sites and
 the APIs. It is gone when Firefox closes. ⚠ Not yet tested in a real Firefox.
 
+For Claude Code to test in Firefox, the repo's `.mcp.json` registers Mozilla's Firefox MCP
+([`@mozilla/firefox-devtools-mcp`](https://github.com/mozilla/firefox-devtools-mcp) 0.10.4, through
+`scripts/firefox-mcp.sh`, on a throwaway profile). In the next session, approve the `firefox` server
+and ask: "install `extension/dist-firefox` with `install_extension` and open WhatsApp Web". On Ubuntu,
+the script uses the binary inside the snap, because geckodriver cannot start `/usr/bin/firefox`.
+
 No key and no cloud: `just ext-ollama` serves Qwen through Ollama at `127.0.0.1:11434` (`qwen3.6:27b`,
 the model of `just opencode-qwen`; `just ext-ollama qwen3:8b` for a smaller GPU). In the popup,
 choose **Ollama + Qwen (local)**: in that click the browser asks for the permission to

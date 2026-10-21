@@ -129,6 +129,12 @@ No Firefox (128 ou mais novo), `just ext-build-firefox` gera `extension/dist-fir
 `manifest.json` dessa pasta; em `about:addons`, na aba **Permissões** da extensão, libere os sites e
 as APIs. Ela some quando o Firefox fecha. ⚠ Ainda não testada num Firefox de verdade.
 
+Para o Claude Code testar no Firefox, o `.mcp.json` do repo registra o MCP do Firefox da Mozilla
+([`@mozilla/firefox-devtools-mcp`](https://github.com/mozilla/firefox-devtools-mcp) 0.10.4, por
+`scripts/firefox-mcp.sh`, num perfil descartável). Na próxima sessão, aprove o servidor `firefox` e
+peça: "instale `extension/dist-firefox` com `install_extension` e abra o WhatsApp Web". No Ubuntu, o
+script usa o binário de dentro do snap, porque o geckodriver não abre o `/usr/bin/firefox`.
+
 Sem chave e sem nuvem: `just ext-ollama` serve o Qwen pelo Ollama em `127.0.0.1:11434` (`qwen3.6:27b`,
 o mesmo modelo do `just opencode-qwen`; `just ext-ollama qwen3:8b` para uma GPU menor). No popup,
 escolha **Ollama + Qwen (local)**: o navegador pede, nesse clique, a permissão para
