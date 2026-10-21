@@ -284,6 +284,12 @@ describe('text settings', () => {
     await flush();
     expect((await loadSettings()).tone).toBe('formal');
   });
+  it('popup: tone options are capitalized, values unchanged; the rewrite label is O quanto corrigir', async () => {
+    await renderPopup(root());
+    expect(optionTexts('#tone')).toEqual(['Informal', 'Neutro', 'Formal']);
+    expect([...$<HTMLSelectElement>('#tone').options].map((o) => o.value)).toEqual(['informal', 'neutro', 'formal']);
+    expect($('#rewrite').closest('label')!.textContent).toContain('O quanto corrigir');
+  });
   it('popup: Só erros saves rewrite false; the wait has 1, 2 and 3 s', async () => {
     await renderPopup(root());
     expect(optionTexts('#rewrite')).toEqual(['Só erros', 'Erros e reescrita']);
