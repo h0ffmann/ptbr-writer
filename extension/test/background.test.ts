@@ -188,7 +188,7 @@ describe('checkFromSender', () => {
     const system = JSON.parse(init.body as string).system as string;
     expect(system).toContain('mantenha a voz e as gírias');
     expect(system).toContain('não devolva nenhum aviso');
-    expect(system).toContain('nunca troque estas palavras: Kafka');
+    expect(system).toContain('nunca troque estas palavras, nem dentro de uma frase reescrita: Kafka');
   });
 
   it('falls back to sender.url', async () => {
