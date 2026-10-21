@@ -142,14 +142,24 @@ fn cover() -> Element(msg) {
           attribute.class("count"),
         ]),
       ]),
-      // Each Archify page of docs/archify/, named by its title, beside the GitHub pill.
+      // Each Archify page of docs/archify/, named by its title and marked with Archify's icon,
+      // beside the GitHub pill.
       ..list.map(content.figures, fn(f) {
         html.a(
           [
             attribute.class("ghost figure-pill"),
             attribute.href("figuras/" <> f.slug <> ".html"),
+            attribute.title("figura interativa, desenhada com o Archify"),
           ],
-          [html.text("◇ " <> f.title)],
+          [
+            html.img([
+              attribute.src(archify_icon),
+              attribute.alt("Archify"),
+              attribute.width(20),
+              attribute.height(18),
+            ]),
+            html.text(f.title),
+          ],
         )
       })
     ]),
@@ -165,6 +175,10 @@ const gleam_icon =
 
 const claude_code_icon =
   "https://code.claude.com/docs/_mintlify/favicons/claude-code/pLsy-mRpNksna2sx/_generated/favicon/favicon-32x32.png"
+
+// Archify's mark at the revision vendor/archify pins.
+const archify_icon =
+  "https://raw.githubusercontent.com/tt-a1i/archify/2ab3cae/docs/assets/archify-mark.svg"
 
 fn made_with(name: String, icon: String, href: String) -> Element(msg) {
   html.a([attribute.href(href), attribute.rel("noopener")], [
