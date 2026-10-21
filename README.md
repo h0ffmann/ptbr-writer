@@ -369,6 +369,7 @@ pasta de skills do agente.
   duas reproduções públicas, não na edição impressa ⚠. Base: o *Fédon* e o *Fedro*, de Platão.
 - Nível por autor: a skill [orwell-writing](https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing), de @tamdogood (MIT).
 - Tempo de leitura: Brysbaert, M. (2019). How many words do we read per minute? A review and meta-analysis of reading rate. *Journal of Memory and Language*, 109, 104047. <https://doi.org/10.1016/j.jml.2019.104047> (238 palavras por minuto, não ficção em inglês).
+- Extensão do Chrome (`extension/`): [@robkler](https://github.com/robkler), no #51. Ela não empacota código de terceiros: o `package.json` só tem dependências de desenvolvimento (build e testes), e `extension/src` não importa pacotes.
 - Figuras: [Archify](https://github.com/tt-a1i/archify) (@tt-a1i, MIT), submódulo `vendor/archify` fixado em v3.0.1
   (`2ab3cae`), só para desenhar `docs/archify/`; não faz parte do plugin. Aparência: [h0ffmann/picasso](https://github.com/h0ffmann/picasso).
 - Plugin e roteamento no molde do plugin e do `routing` de [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit),
