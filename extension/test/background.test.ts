@@ -38,6 +38,14 @@ describe('handleCheck', () => {
     expect(await handleCheck(req, { fetch: f, settings })).toEqual({ ok: false, error: 'network' });
   });
 
+  it('a truncated reply -> provider, not "no problems"', async () => {
+    const cut = { ...claudeBody, stop_reason: 'max_tokens' };
+    expect(await handleCheck(req, { fetch: okFetch(cut), settings })).toEqual({ ok: false, error: 'provider' });
+    const ds = { choices: [{ finish_reason: 'length', message: { content: '[{"original":' } }] };
+    const dsSettings: Settings = { ...settings, provider: 'deepseek' };
+    expect(await handleCheck(req, { fetch: okFetch(ds), settings: dsSettings })).toEqual({ ok: false, error: 'provider' });
+  });
+
   it('2xx with non-JSON body -> provider', async () => {
     const f = vi.fn(async () => new Response('<html>', { status: 200 })) as unknown as typeof fetch;
     expect(await handleCheck(req, { fetch: f, settings })).toEqual({ ok: false, error: 'provider' });

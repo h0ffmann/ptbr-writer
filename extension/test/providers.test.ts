@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildRequest, classifyError, readText } from '../src/providers';
+import { buildRequest, classifyError, isTruncated, readText } from '../src/providers';
 import { DEFAULT_SETTINGS } from '../src/settings';
 import type { Settings } from '../src/types';
 
@@ -38,6 +38,7 @@ describe('buildRequest', () => {
     const body = JSON.parse(init.body as string);
     expect(body.model).toBe(base.models.deepseek);
     expect(body.temperature).toBe(0);
+    expect(body.max_tokens).toBe(1024);
     expect(body.messages[0]).toEqual({ role: 'system', content: 'SYS' });
     expect(body.messages[1]).toEqual({ role: 'user', content: 'USER' });
   });
@@ -71,6 +72,21 @@ describe('readText', () => {
     expect(readText('deepseek', {})).toBe('');
     expect(readText('claude', null)).toBe('');
     expect(readText('deepseek', 'x')).toBe('');
+  });
+});
+
+describe('isTruncated', () => {
+  it('claude: stop_reason max_tokens', () => {
+    expect(isTruncated('claude', { stop_reason: 'max_tokens', content: [] })).toBe(true);
+    expect(isTruncated('claude', { stop_reason: 'end_turn', content: [] })).toBe(false);
+  });
+  it('deepseek: finish_reason length', () => {
+    expect(isTruncated('deepseek', { choices: [{ finish_reason: 'length', message: { content: '[' } }] })).toBe(true);
+    expect(isTruncated('deepseek', { choices: [{ finish_reason: 'stop', message: { content: '[]' } }] })).toBe(false);
+  });
+  it('unexpected shapes are not truncated', () => {
+    expect(isTruncated('claude', null)).toBe(false);
+    expect(isTruncated('deepseek', {})).toBe(false);
   });
 });
 

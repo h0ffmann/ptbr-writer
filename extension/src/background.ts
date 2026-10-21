@@ -1,4 +1,4 @@
-import { buildRequest, classifyError, readText } from './providers';
+import { buildRequest, classifyError, isTruncated, readText } from './providers';
 import { buildSystemPrompt } from './rules';
 import { DEFAULT_SETTINGS, levelFor, loadSettings } from './settings';
 import { CIENTIFICO, SKILL } from './skills';
@@ -41,6 +41,7 @@ export async function handleCheck(
         : { ok: false, error: 'provider' };
     }
     if (controller.signal.aborted) return { ok: true, suggestions: [] };
+    if (isTruncated(provider, json)) return { ok: false, error: 'provider' };
     return { ok: true, suggestions: parseSuggestions(readText(provider, json)) };
   } finally {
     if (inflight.get(req.key) === controller) inflight.delete(req.key);
