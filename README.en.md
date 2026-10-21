@@ -202,12 +202,14 @@ on 2026-10-21, not measured). Only that provider receives the text, and the keys
 `chrome.storage.local`. The spans to change are underlined; a click opens a card with **Aceitar**
 (accept) and **Ignorar** (ignore), and nothing changes until you accept. On from the start:
 `web.whatsapp.com` (`leve`), `mail.google.com` (`descritivo`) and `github.com` (`descritivo`). Other
-sites stay off until you click **Ativar neste site** (enable on this site) in the popup, or enable
+sites stay off until you click **Ativar neste site** (enable on this site) in the popup (https sites
+only), or enable
 them in the options; the levels are `estrito`, `descritivo`, `leve` and `científico`. Fields with
 fewer than 3 words and password fields are ignored; Gmail's quoted history is not sent; over 4000
 characters only the caret's paragraph is sent. Tests: `just ext-test` (Vitest) and `just ext-e2e`
 (Playwright, real Chromium, fake server, no real API); in CI, `.github/workflows/extension.yml`. ⚠
-Nobody has tested it with a valid key against the real Claude and DeepSeek APIs.
+Nobody has tested it with a valid key against the real Claude and DeepSeek APIs. ⚠ The extension
+has run only on local test pages, never on the real WhatsApp Web, Gmail or GitHub editors.
 
 ## levels
 
