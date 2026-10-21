@@ -4,6 +4,7 @@ import gleeunit
 import lustre/element
 import lustre/element/html
 import ptbr_writer_site/app
+import ptbr_writer_site/bipr
 import ptbr_writer_site/content
 import ptbr_writer_site/prerender
 
@@ -190,6 +191,7 @@ pub fn figure_pills_test() {
   assert content.figures != []
   assert string.contains(actions, "href=\"grafo/graph.html\"")
   assert string.contains(actions, "href=\"grafo/picasso.html\"")
+  assert string.contains(actions, "href=\"bipr.html\"")
 }
 
 // Every PDF of docs/eli5/RESULTS.tsv is linked from the ELI5 section, with its prompt and tokens.
@@ -201,4 +203,18 @@ pub fn eli5_test() {
     assert string.contains(html, e.title)
     assert string.contains(html, e.total)
   })
+}
+
+// The /bipr page shows the skill's description, every step, its footer and the screenshots of PR #49.
+pub fn bipr_page_test() {
+  let html = bipr.render()
+  assert content.bipr_steps != []
+  list.each(content.bipr_steps, fn(s) {
+    assert string.contains(html, s)
+  })
+  assert string.contains(html, "bipr-pr49-corpo.png")
+  assert string.contains(html, "bipr-pr49-rodape.png")
+  assert string.contains(html, "skills/bipr/SKILL.md")
+  assert string.contains(html, "install_current.sh")
+  assert string.contains(html, "href=\"index.html\"")
 }
