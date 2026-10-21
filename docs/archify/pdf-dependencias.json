@@ -64,8 +64,8 @@
       "lane": "nix",
       "col": 1,
       "type": "backend",
-      "label": "picasso v0.2.0",
-      "sublabel": "commit 099e036",
+      "label": "picasso (main)",
+      "sublabel": "commit 4bc03e5",
       "width": 150
     },
     {

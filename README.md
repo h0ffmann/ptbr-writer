@@ -137,7 +137,7 @@ ele, o Claude pergunta antes de baixar, pelo Nix, o
 
 O tempo depende da rede. Da segunda vez em diante, o Nix reusa o store.
 
-![De onde vem o .pdf: o to-pdf.sh usa pandoc e xelatex se houver; senão baixa pelo Nix o picasso v0.2.0 (commit 099e036), cujo labs/ptbr-pdf compila o crate to-pdf 0.1.0, com pulldown-cmark 0.13.4, typst 0.15.1 e typst-as-lib 0.17.0 e 6 fontes embutidas.](docs/img/pdf-dependencias.png)
+![De onde vem o .pdf: o to-pdf.sh usa pandoc e xelatex se houver; senão baixa pelo Nix o picasso (commit 4bc03e5, depois do v0.2.0), cujo labs/ptbr-pdf compila o crate to-pdf 0.1.0, com pulldown-cmark 0.13.4, typst 0.15.1 e typst-as-lib 0.17.0 e 6 fontes embutidas.](docs/img/pdf-dependencias.png)
 
 <details open>
 <summary>Como ler esta figura</summary>
@@ -154,7 +154,7 @@ onde o caminho começa ou termina.
 `flake.lock` do `labs/ptbr-pdf` e o Nix em si.
 
 **Evidência.** [`plugins/ptbr-writer/scripts/to-pdf.sh`](plugins/ptbr-writer/scripts/to-pdf.sh)
-(`PICASSO_REV`, os dois caminhos). No picasso, no commit `099e036`: `labs/ptbr-pdf/Cargo.toml`
+(`PICASSO_REV`, os dois caminhos). No picasso, no commit `4bc03e5`: `labs/ptbr-pdf/Cargo.toml`
 (as cinco dependências), `labs/ptbr-pdf/Cargo.lock` (`pulldown-cmark` 0.13.4, `typst`,
 `typst-layout` e `typst-pdf` 0.15.1, `typst-as-lib` 0.17.0, `to-pdf` 0.1.0) e `labs/ptbr-pdf/fonts/`
 (seis arquivos: Libertinus Serif e DejaVu Sans Mono). Fonte da figura:
@@ -241,6 +241,10 @@ Cada figura é uma página do Archify, publicada no site:
 
 - [O que acontece com um pedido ptbr](https://h0ffmann.github.io/ptbr-writer/figuras/em-um-minuto.html)
 - [De onde vem o .pdf](https://h0ffmann.github.io/ptbr-writer/figuras/pdf-dependencias.html)
+
+E o grafo do código deste repositório, gerado a cada build do site pelo `code-graph` do
+[h0ffmann/picasso](https://github.com/h0ffmann/picasso) (tree-sitter, sem modelo):
+[Grafo do código](https://h0ffmann.github.io/ptbr-writer/grafo/graph.html).
 
 ## roadmap
 
