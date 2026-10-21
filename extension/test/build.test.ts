@@ -13,7 +13,7 @@ describe('build', () => {
     const m = read('../dist/manifest.json');
     expect(m.version).toBe(plugin.version);
     expect(m.manifest_version).toBe(3);
-    expect(m.permissions).toEqual(['storage', 'scripting']);
+    expect(m.permissions).toEqual(['storage', 'scripting', 'activeTab']);
     expect(m.host_permissions).toEqual(['https://api.anthropic.com/*', 'https://api.deepseek.com/*']);
     expect(m.optional_host_permissions).toEqual(['<all_urls>']);
     expect(m.content_scripts[0].matches).toEqual([
