@@ -211,3 +211,13 @@ pub fn numbered_and_preamble_test() {
   assert c.preamble(text, "Smart note") == "Combina com outro nível."
   assert c.numbered(text, "Ausente") == []
 }
+
+// The install command comes from plugin.json; a missing field leaves it empty, and main fails.
+pub fn install_test() {
+  let plugin =
+    "{\n  \"name\": \"ptbr-writter\",\n  \"version\": \"0.1.0\",\n  \"repository\": \"https://github.com/h0ffmann/ptbr-writer\"\n}"
+  assert c.install(plugin)
+    == "claude plugin install ptbr-writter --marketplace h0ffmann/ptbr-writer#v0.1.0"
+  assert c.json_string(plugin, "version") == "0.1.0"
+  assert c.install("{\"name\": \"x\"}") == ""
+}
