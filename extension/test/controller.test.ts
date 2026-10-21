@@ -68,6 +68,16 @@ describe('startContent', () => {
     expect(document.getElementById('ptbr-writer-root')?.shadowRoot?.querySelector('.ptbr-badge')).toBeFalsy();
   });
 
+  it('attaches to a field focused before the script started', async () => {
+    site(true);
+    const el = textarea();
+    el.focus();
+    dispose = await startContent();
+    type(el, 'um dois três quatro');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
   it('switching the extension off also stops it', async () => {
     site(true);
     dispose = await startContent();
@@ -87,8 +97,6 @@ describe('startContent', () => {
     const el = textarea();
     el.focus();
     await change(true, 'leve');
-    el.blur();
-    el.focus();
     type(el, 'um dois três quatro');
     await vi.advanceTimersByTimeAsync(1000);
     expect(send.mock.calls.map((c) => c[0].level)).toEqual(['leve']);
@@ -103,8 +111,6 @@ describe('startContent', () => {
     await vi.advanceTimersByTimeAsync(2000);
     expect(send).not.toHaveBeenCalled();
     await change(true);
-    el.blur();
-    el.focus();
     type(el, 'um dois três quatro cinco');
     await vi.advanceTimersByTimeAsync(1000);
     expect(send).toHaveBeenCalledTimes(1);

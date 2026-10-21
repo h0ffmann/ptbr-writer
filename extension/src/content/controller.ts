@@ -84,6 +84,8 @@ export async function startContent(): Promise<() => void> {
         render(el);
       },
     });
+    // The focused field gets no new focusin: before the script ran, or when the site was switched on.
+    attach(document.activeElement);
   };
 
   await follow();
