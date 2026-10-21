@@ -27,7 +27,10 @@ beforeEach(() => {
     storage: {
       local: {
         get: async () => store,
-        set: async (v: Record<string, unknown>) => Object.assign(store, v),
+        set: async (v: Record<string, unknown>) => {
+          Object.assign(store, v);
+          for (const l of listeners) l({ settings: {} }, 'local');
+        },
       },
       onChanged: {
         addListener: (l: Listener) => listeners.push(l),
@@ -56,6 +59,21 @@ const type = (el: HTMLTextAreaElement, v: string) => {
 };
 
 describe('startContent', () => {
+  it('follows a new wait: no call before it, one call after it', async () => {
+    site(true);
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    store.settings = { sites: { [location.hostname]: { enabled: true, level: 'descritivo' } }, delayMs: 2000 };
+    for (const l of listeners) l({ settings: {} }, 'local');
+    await vi.advanceTimersByTimeAsync(0);
+    type(el, 'um dois três quatro');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(send).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
   it('stops sending once the site is switched off', async () => {
     site(true);
     dispose = await startContent();
@@ -154,6 +172,21 @@ describe('accepting one of several suggestions', () => {
     await vi.advanceTimersByTimeAsync(2000);
     expect(el.value).toBe('A equipe decidiu que o deploy da equipe acontece na sexta.');
     expect(shadow().querySelectorAll('.ptbr-underline-erro').length).toBe(0);
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  it('a save that only changes neverFix keeps the underlines and does not call the API again', async () => {
+    site(true);
+    send.mockImplementation(async () => ({ ok: true, suggestions }) as never);
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    type(el, TEXT);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(shadow().querySelectorAll('.ptbr-underline-erro').length).toBe(3);
+    await chrome.storage.local.set({ settings: { ...(store.settings as object), neverFix: ['Kafka'] } });
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(shadow().querySelectorAll('.ptbr-underline-erro').length).toBe(3);
     expect(send).toHaveBeenCalledTimes(1);
   });
 

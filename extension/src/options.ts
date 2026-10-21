@@ -1,6 +1,8 @@
 import { normalizeHost } from './hosts';
 import { mountProviderFields } from './provider-fields';
+import { addNeverFix } from './never-fix';
 import { loadSettings } from './settings';
+import { mountTextFields } from './text-fields';
 import {
   DEFAULT_SITE_HOSTS,
   LEVELS,
@@ -8,6 +10,7 @@ import {
   enableSiteFlow,
   removeSiteFlow,
   saveProviderFields,
+  saveTextSettings,
   setLevel,
 } from './sites';
 import type { Level, ProviderId } from './types';
@@ -30,12 +33,31 @@ export async function render(root: HTMLElement): Promise<void> {
     <p>${field('<input id="enabled" type="checkbox">', 'Ativado')}</p>
     <div id="provider-fields"></div>
     <p><button id="save" type="button">Salvar</button> <span id="status" role="status"></span></p>
+    <div id="text-fields"></div>
+    <h2>Nunca corrigir</h2>
+    <ul id="never-fix"></ul>
+    <p><input id="new-never-fix" type="text" placeholder="até 3 palavras"> <button id="add-never-fix" type="button">Adicionar</button></p>
     <h2>Sites</h2>
     <table id="sites"><thead><tr><th>Site</th><th>Nível</th><th>Ativo</th><th></th></tr></thead><tbody></tbody></table>
     <p><input id="new-host" type="text" placeholder="exemplo.com"> <button id="add-site" type="button">Adicionar site</button>
     <span id="site-error" role="alert"></span></p>`;
   el<HTMLInputElement>(root, '#enabled').checked = s.enabled;
   const { provider, model, key } = mountProviderFields(el(root, '#provider-fields'), s);
+  mountTextFields(el(root, '#text-fields'), s);
+  const list = el(root, '#never-fix');
+  for (const entry of s.neverFix) {
+    const li = document.createElement('li');
+    li.append(entry + ' ', button('Remover', async () => {
+      await saveTextSettings({ neverFix: s.neverFix.filter((e) => e !== entry) });
+      await render(root);
+    }));
+    list.append(li);
+  }
+  el<HTMLButtonElement>(root, '#add-never-fix').addEventListener('click', async () => {
+    const next = addNeverFix(s.neverFix, el<HTMLInputElement>(root, '#new-never-fix').value);
+    await saveTextSettings({ neverFix: next });
+    await render(root);
+  });
   const body = el<HTMLTableSectionElement>(root, '#sites tbody');
   for (const [host, cfg] of Object.entries(s.sites)) {
     const row = body.insertRow();

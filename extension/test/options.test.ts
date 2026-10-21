@@ -268,3 +268,55 @@ describe('popup settings', () => {
     expect((await loadSettings()).enabled).toBe(false);
   });
 });
+
+describe('text settings', () => {
+  const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as T;
+  const change = (sel: string, value: string) => {
+    const e = $<HTMLSelectElement>(sel);
+    e.value = value;
+    e.dispatchEvent(new Event('change'));
+  };
+  const optionTexts = (sel: string) => [...$<HTMLSelectElement>(sel).options].map((o) => o.textContent);
+
+  it('popup: the tone is saved at once', async () => {
+    await renderPopup(root());
+    change('#tone', 'formal');
+    await flush();
+    expect((await loadSettings()).tone).toBe('formal');
+  });
+  it('popup: Só erros saves rewrite false; the wait has 1, 2 and 3 s', async () => {
+    await renderPopup(root());
+    expect(optionTexts('#rewrite')).toEqual(['Só erros', 'Erros e reescrita']);
+    expect(optionTexts('#delay')).toEqual(['1 s', '2 s', '3 s']);
+    change('#rewrite', 'false');
+    await flush();
+    change('#delay', '3000');
+    await flush();
+    const s = await loadSettings();
+    expect(s.rewrite).toBe(false);
+    expect(s.delayMs).toBe(3000);
+  });
+  it('options: adding Kafka and then kafka leaves one entry', async () => {
+    await renderOptions(root());
+    for (const v of ['Kafka', 'kafka']) {
+      $<HTMLInputElement>('#new-never-fix').value = v;
+      $<HTMLButtonElement>('#add-never-fix').click();
+      await flush();
+    }
+    expect((await loadSettings()).neverFix).toEqual(['Kafka']);
+    expect($('#never-fix').textContent).toContain('Kafka');
+  });
+  it('options: Remover drops the entry', async () => {
+    store = { settings: { neverFix: ['Kafka', 'Redis'] } };
+    await renderOptions(root());
+    ($('#never-fix li button') as HTMLButtonElement).click();
+    await flush();
+    expect((await loadSettings()).neverFix).toEqual(['Redis']);
+  });
+  it('options: the selects save at once too', async () => {
+    await renderOptions(root());
+    change('#tone', 'informal');
+    await flush();
+    expect((await loadSettings()).tone).toBe('informal');
+  });
+});

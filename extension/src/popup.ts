@@ -1,6 +1,7 @@
 import { normalizeHost } from './hosts';
 import { mountProviderFields } from './provider-fields';
 import { loadSettings } from './settings';
+import { mountTextFields } from './text-fields';
 import { LEVELS, disableSiteFlow, enableSiteFlow, saveProviderFields, setEnabled, setLevel } from './sites';
 import type { Level, ProviderId } from './types';
 
@@ -79,6 +80,9 @@ export async function render(root: HTMLElement): Promise<void> {
       }),
     );
   }
+
+  const text = section(root);
+  mountTextFields(text, s);
 
   const provider = section(root);
   if (!s.keys[s.provider]) line(provider, `Sem chave do ${PROVIDER_NAMES[s.provider]}.`);
