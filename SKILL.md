@@ -89,6 +89,10 @@ Cada frase é fato com fonte ou leitura do autor, e diz qual. `A fonte não diz`
 
 Separe e junte palavras (`bomd ia` vira `bom dia`). Troque abreviação de internet pela palavra (`vc` vira `você`, `pq` vira `porque`). O Acordo de 1990 fica com a PTW-8.
 
+### PTW-15: Pontuação
+
+Vírgula depois de vocativo e de saudação. Ponto final no fim da frase. `?` em pergunta. Vírgula antes de `mas`. Nunca vírgula entre sujeito e verbo.
+
 ## Limites
 
 A skill não muda tese, autoria nem conclusões: quem decide é o humano. Ela não busca fontes; marca o que não foi checado.
