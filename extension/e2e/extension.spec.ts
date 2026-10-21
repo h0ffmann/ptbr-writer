@@ -9,6 +9,10 @@ import { startFakeServer, type FakeServer } from './fake-server';
 const EXTENSION = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist-test');
 const TYPED = 'Foi decidido que o deploy vai ser na sexta.';
 const FIXED = 'A equipe decidiu que o deploy vai ser na sexta.';
+// How long the pipeline (debounce, service worker, fetch, render) may take before a test fails. The
+// wait ends as soon as the underline shows, so a fast run stays fast; a loaded machine (CI, parallel
+// builds) can take several seconds, and 5 s made the first test flaky.
+const UI_TIMEOUT = 20_000;
 
 let server: FakeServer;
 // Module state, one test at a time: playwright.config.ts sets workers: 1.
@@ -75,7 +79,7 @@ async function open(host: string, page: string): Promise<Page> {
 
 async function accept(page: Page) {
   const underline = page.locator('.ptbr-underline-erro');
-  await expect(underline).toHaveCount(1, { timeout: 5_000 });
+  await expect(underline).toHaveCount(1, { timeout: UI_TIMEOUT });
   await underline.locator('.ptbr-hit').first().click();
   await page.locator('.ptbr-card [data-action=accept]').click();
 }
@@ -120,7 +124,7 @@ test('desligar o site numa aba aberta para as chamadas', async () => {
   const page = await open('127.0.0.1', 'textarea.html');
   await page.locator('#field').click();
   await page.keyboard.type(TYPED);
-  await expect(page.locator('.ptbr-underline-erro')).toHaveCount(1, { timeout: 5_000 });
+  await expect(page.locator('.ptbr-underline-erro')).toHaveCount(1, { timeout: UI_TIMEOUT });
   const before = server.calls.length;
   expect(before).toBeGreaterThan(0);
   const worker = context!.serviceWorkers()[0];
