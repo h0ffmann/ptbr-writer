@@ -92,8 +92,9 @@ code { font-size: 0.85em; background: var(--sheet); border: 1px solid var(--rule
 .ghost { border: 1px solid var(--pen); background: var(--sheet); }
 .ghost:hover { transform: translateY(-1px); }
 .star { display: inline-flex; align-items: center; gap: 8px; }
-/* the Archify pages, named, beside the GitHub pill */
-.figure-pill { font-size: 0.9rem; }
+/* the Archify pages, named and marked with Archify's icon, beside the GitHub pill */
+.figure-pill { font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; }
+.figure-pill img { width: 20px; height: 18px; }
 .count { height: 20px; }
 /* made with Gleam and Claude Code: the owners' icons, on the cover and in the footer */
 .made-with { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 0.95rem; color: var(--muted); margin: 0.6em 0 0; }
