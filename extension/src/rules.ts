@@ -8,7 +8,9 @@ export interface PromptOptions {
 }
 
 const TONE_LINES: Record<Tone, string> = {
-  informal: 'Tom informal: mantenha a voz e as gírias da pessoa; só corrija e esclareça.',
+  informal:
+    'Tom informal: mantenha a voz e as gírias da pessoa; só corrija e esclareça. ' +
+    'Neste tom, mantenha `vc`, `pq`, `tb` e abreviações parecidas: a PTW-14 só separa e junta palavras.',
   neutro: 'Tom neutro: claro e direto, nem coloquial nem cerimonioso.',
   formal: 'Tom formal: registro profissional, sem gíria.',
 };
@@ -61,12 +63,14 @@ export function buildSystemPrompt(level: Level, skill: string, cientifico: strin
       '- occurrence: qual ocorrência do trecho no texto, contando a partir de 1.',
       'Texto sem problemas: responda []. Não reescreva nada fora dos trechos apontados.',
       'Severidade: `erro` para as regras PTW-8 e PTW-14 a PTW-16; `aviso` só para a PTW-17.',
+      'As demais regras (PTW-1 a 7 e PTW-9 a 13, e CIE) usam `erro`.',
       'Um `aviso` cobre a frase inteira e já traz todas as correções dela; nenhum `erro` cai dentro de um `aviso`.',
       'Num `aviso`, o original é a frase inteira e o replacement é a frase reescrita.',
       'Copie o original letra por letra, sem normalizar espaços nem aspas.',
+      'Não mexa em código, comando, URL, caminho de arquivo ou identificador, com ou sem crases.',
       TONE_LINES[opts.tone],
       ...(opts.rewrite ? [] : ['Só erros: não devolva nenhum aviso, ignore a PTW-17; não reorganize frases.']),
-      ...(never.length ? [`Palavras da pessoa: nunca troque estas palavras: ${never.join(', ')}.`] : []),
+      ...(never.length ? [`Palavras da pessoa: nunca troque estas palavras, nem dentro de uma frase reescrita: ${never.join(' | ')}.`] : []),
     ].join('\n'),
   );
   return parts.join('\n\n');
