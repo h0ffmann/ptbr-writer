@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=version&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#license)
-[![estimated reading time: ~23 min](https://img.shields.io/badge/reading%20time-~23%20min-1682D4?style=flat-square)](#reading-time)
+[![estimated reading time: ~24 min](https://img.shields.io/badge/reading%20time-~24%20min-1682D4?style=flat-square)](#reading-time)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 
 </div>
@@ -374,6 +374,7 @@ the agent's skills folder.
   against two public reproductions, not the printed edition ⚠. Basis: Plato's *Phaedo* and *Phaedrus*.
 - Author level: the skill [orwell-writing](https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing), by @tamdogood (MIT).
 - Reading time: Brysbaert, M. (2019). How many words do we read per minute? A review and meta-analysis of reading rate. *Journal of Memory and Language*, 109, 104047. <https://doi.org/10.1016/j.jml.2019.104047> (238 words per minute, English non-fiction).
+- Chrome extension (`extension/`): [@robkler](https://github.com/robkler), in #51. It bundles no third-party code: `package.json` has only development dependencies (build and tests), and `extension/src` imports no packages.
 - Figures: [Archify](https://github.com/tt-a1i/archify) (@tt-a1i, MIT), the submodule `vendor/archify` pinned at v3.0.1
   (`2ab3cae`), used only to draw `docs/archify/`; it is not part of the plugin. Look: [h0ffmann/picasso](https://github.com/h0ffmann/picasso).
 - Plugin and routing in the mould of the plugin and the `routing` skill of [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit),
