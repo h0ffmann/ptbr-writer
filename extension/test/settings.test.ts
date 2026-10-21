@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { DEFAULT_SETTINGS, levelFor, loadSettings, saveSettings } from '../src/settings';
+import { DEFAULT_SETTINGS, MODELS, levelFor, loadSettings, saveSettings } from '../src/settings';
 import type { Settings } from '../src/types';
 
 function stub(initial: Record<string, unknown>) {
@@ -57,10 +57,20 @@ describe('loadSettings', () => {
     expect(await loadSettings()).toEqual(DEFAULT_SETTINGS);
   });
   it('keeps default keys and models missing from storage', async () => {
-    stub({ settings: { keys: { claude: 'sk-test' }, models: { deepseek: 'm-x' } } });
+    stub({ settings: { keys: { claude: 'sk-test' }, models: { deepseek: 'deepseek-v4-pro' } } });
     const s = await loadSettings();
     expect(s.keys).toEqual({ claude: 'sk-test', deepseek: '' });
-    expect(s.models).toEqual({ claude: DEFAULT_SETTINGS.models.claude, deepseek: 'm-x' });
+    expect(s.models).toEqual({ claude: DEFAULT_SETTINGS.models.claude, deepseek: 'deepseek-v4-pro' });
+  });
+  it('a stored model outside the list falls back to the provider default', async () => {
+    stub({ settings: { models: { claude: 'claude-typo', deepseek: 'deepseek-chat' } } });
+    expect((await loadSettings()).models).toEqual(DEFAULT_SETTINGS.models);
+  });
+  it('every default model is in its provider list', () => {
+    expect(MODELS.claude).toEqual(['claude-haiku-5-5', 'claude-sonnet-5-5', 'claude-opus-5-5']);
+    expect(MODELS.deepseek).toEqual(['deepseek-flash', 'deepseek-v4-pro']);
+    expect(MODELS.claude[0]).toBe(DEFAULT_SETTINGS.models.claude);
+    expect(MODELS.deepseek[0]).toBe(DEFAULT_SETTINGS.models.deepseek);
   });
   it('keeps the default sites when storage has one host', async () => {
     stub({ settings: { sites: { 'bank.example': { enabled: true, level: 'estrito' } } } });
