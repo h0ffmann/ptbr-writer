@@ -15,3 +15,5 @@ build/
 extension/node_modules/
 extension/dist/
 extension/dist-test/
+extension/test-results/
+extension/playwright-report/
