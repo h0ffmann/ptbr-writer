@@ -85,6 +85,10 @@ No nível `científico`, número sem unidade, ou sem comando ou fonte, é sinali
 
 Cada frase é fato com fonte ou leitura do autor, e diz qual. `A fonte não diz` não é `não é assim`.
 
+### PTW-14: Palavras inteiras e por extenso
+
+Separe e junte palavras (`bomd ia` vira `bom dia`). Troque abreviação de internet pela palavra (`vc` vira `você`, `pq` vira `porque`). O Acordo de 1990 fica com a PTW-8.
+
 ## Limites
 
 A skill não muda tese, autoria nem conclusões: quem decide é o humano. Ela não busca fontes; marca o que não foi checado.
