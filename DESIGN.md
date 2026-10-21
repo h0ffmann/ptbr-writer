@@ -89,7 +89,7 @@ their owners' marks, not licensed here.
 - Calligraphy: Machado de Assis's signature, in ink, beside the title (on its own line below
   1000 px).
 - Each section heading carries `§ 01`, `§ 02`…, counted by CSS: the numbers are never typed.
-- A rule is a card on `--sheet` with a `--review` edge; two columns when the page is wide enough.
+- A rule is a small card on `--sheet` with a `--review` edge: text at 0.92 rem, the origin line smaller still, and three columns when the page is wide enough (two, then one, as it narrows).
 - A roadmap item is a card; a planned one is dashed.
 
 ## Motion
