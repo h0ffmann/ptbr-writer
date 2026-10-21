@@ -7,8 +7,30 @@ const ENDPOINTS: Record<ProviderId, string> = {
   // max_tokens on its reasoning.
   ollama: 'http://127.0.0.1:11434/api/chat',
 };
+const OLLAMA = 'http://127.0.0.1:11434';
 // The host permission Ollama needs: optional in the manifest, asked when the user picks it.
-export const OLLAMA_ORIGINS = { origins: ['http://127.0.0.1:11434/*'] };
+export const OLLAMA_ORIGINS = { origins: [`${OLLAMA}/*`] };
+
+// The models this Ollama has; none when it is down or refuses the extension.
+export async function ollamaModels(): Promise<string[]> {
+  try {
+    const res = await fetch(`${OLLAMA}/api/tags`);
+    const j = (await res.json()) as { models?: Array<{ name?: unknown }> };
+    return (j.models ?? []).map((m) => m.name).filter((n): n is string => typeof n === 'string');
+  } catch {
+    return [];
+  }
+}
+
+// Downloads a model into Ollama; Ollama resumes a pull cut short, so an interrupted one can be asked again.
+export async function ollamaPull(model: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${OLLAMA}/api/pull`, { method: 'POST', body: JSON.stringify({ model, stream: false }) });
+    return res.ok && ((await res.json()) as { status?: unknown }).status === 'success';
+  } catch {
+    return false;
+  }
+}
 const PATHS: Record<ProviderId, string> = {
   claude: '/v1/messages',
   deepseek: '/chat/completions',

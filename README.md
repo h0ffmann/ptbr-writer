@@ -132,7 +132,10 @@ as APIs. Ela some quando o Firefox fecha. ⚠ Ainda não testada num Firefox de 
 Sem chave e sem nuvem: `just ext-ollama` serve o Qwen pelo Ollama em `127.0.0.1:11434` (`qwen3.6:27b`,
 o mesmo modelo do `just opencode-qwen`; `just ext-ollama qwen3:8b` para uma GPU menor). No popup,
 escolha **Ollama + Qwen (local)**: o navegador pede, nesse clique, a permissão para
-`http://127.0.0.1:11434/*`, e o texto não sai da máquina. O Ollama recusa (403) a origem de uma
+`http://127.0.0.1:11434/*`, e o texto não sai da máquina. A lista de modelos sugere o `qwen3.6:27b` e
+oferece `qwen3:14b`, `qwen3:8b`, `qwen3:4b` e os modelos já instalados no Ollama; um modelo ainda não
+instalado aparece com `(baixar)`, e o botão **Baixar** o baixa pelo Ollama (deixe o popup aberto; o
+Ollama retoma um download interrompido). O Ollama recusa (403) a origem de uma
 extensão se não subir com `OLLAMA_ORIGINS=chrome-extension://*,moz-extension://*`; a receita sobe
 assim e, se já houver um Ollama sem isso (o serviço do systemd, por exemplo), diz como liberar.
 ⚠ Ainda não testado com o Qwen de verdade na extensão.

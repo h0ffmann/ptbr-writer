@@ -134,7 +134,10 @@ the APIs. It is gone when Firefox closes. ⚠ Not yet tested in a real Firefox.
 No key and no cloud: `just ext-ollama` serves Qwen through Ollama at `127.0.0.1:11434` (`qwen3.6:27b`,
 the model of `just opencode-qwen`; `just ext-ollama qwen3:8b` for a smaller GPU). In the popup,
 choose **Ollama + Qwen (local)**: in that click the browser asks for the permission to
-`http://127.0.0.1:11434/*`, and the text never leaves the machine. Ollama refuses (403) an
+`http://127.0.0.1:11434/*`, and the text never leaves the machine. The model list suggests `qwen3.6:27b`
+and offers `qwen3:14b`, `qwen3:8b`, `qwen3:4b` and the models already installed in Ollama; a model
+not yet installed shows `(baixar)`, and the **Baixar** (download) button downloads it through Ollama
+(keep the popup open; Ollama resumes an interrupted download). Ollama refuses (403) an
 extension's origin unless started with `OLLAMA_ORIGINS=chrome-extension://*,moz-extension://*`;
 the recipe starts it so and, when an Ollama without it already runs (the systemd service, say),
 says how to allow it. ⚠ Not yet tested with the real Qwen in the extension.
