@@ -122,6 +122,24 @@ describe('filterSuggestions', () => {
     expect(filterSuggestions(text, [drop], { rewrite: true, neverFix: ['vc'] })).toEqual([]);
     expect(filterSuggestions(text, [keep], { rewrite: true, neverFix: ['vc'] })).toEqual([keep]);
   });
+  it('lista: troca só de maiúscula também some; com a entrada intacta, fica', () => {
+    const t = 'falei com maria ontem';
+    const up = mk('maria', 'Maria', 'erro');
+    const comma = mk('maria', 'maria,', 'erro');
+    expect(filterSuggestions(t, [up], { rewrite: true, neverFix: ['maria'] })).toEqual([]);
+    expect(filterSuggestions(t, [comma], { rewrite: true, neverFix: ['maria'] })).toEqual([comma]);
+  });
+  it('aviso descartado pela lista devolve os seus erros', () => {
+    const drop = mk('bomd ia tudo bem com vc.', 'Bom dia, tudo bem com você.', 'aviso');
+    const bomd = mk('bomd ia', 'bom dia', 'erro');
+    expect(filterSuggestions(text, [drop, bomd], { rewrite: true, neverFix: ['vc'] })).toEqual([bomd]);
+  });
+  it('aviso que atravessa uma quebra de linha some e devolve os seus erros', () => {
+    const t = 'bomd ia tudo\nbem com vc.';
+    const across = mk('bomd ia tudo\nbem com vc.', 'Bom dia, tudo bem com você?', 'aviso');
+    const bomd = mk('bomd ia', 'bom dia', 'erro');
+    expect(filterSuggestions(t, [across, bomd], on)).toEqual([bomd]);
+  });
   it('sobreposição parcial: fica só o primeiro, sem erro', () => {
     const a = mk(text.slice(0, 10), 'A', 'aviso');
     const e = mk(text.slice(5, 15), 'E', 'erro');

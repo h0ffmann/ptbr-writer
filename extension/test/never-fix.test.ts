@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { NEVER_FIX_MAX, addNeverFix, containsEntry } from '../src/never-fix';
+import { NEVER_FIX_MAX, addNeverFix, breaksEntry, containsEntry } from '../src/never-fix';
 
 describe('addNeverFix', () => {
   it('trims the ends', () => {
@@ -34,5 +34,22 @@ describe('containsEntry', () => {
   it('tells accents apart', () => {
     expect(containsEntry('ação rápida', 'acao')).toBe(false);
     expect(containsEntry('ação rápida', 'ação')).toBe(true);
+  });
+});
+
+describe('breaksEntry', () => {
+  it('a change of case alone breaks the entry', () => {
+    expect(breaksEntry('maria', 'Maria', 'maria')).toBe(true);
+    expect(breaksEntry('use o github', 'use o GitHub', 'github')).toBe(true);
+  });
+  it('keeps the text as written, whatever the case of the entry', () => {
+    expect(breaksEntry('maria', 'maria,', 'maria')).toBe(false);
+    expect(breaksEntry('o GitHub caiu', 'o GitHub caiu.', 'github')).toBe(false);
+  });
+  it('needs a whole word in the replacement', () => {
+    expect(breaksEntry('api', 'apis', 'api')).toBe(true);
+  });
+  it('an original without the entry breaks nothing', () => {
+    expect(breaksEntry('a capital', 'A capital', 'api')).toBe(false);
   });
 });
