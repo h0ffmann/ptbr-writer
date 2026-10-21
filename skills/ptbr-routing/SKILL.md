@@ -10,8 +10,8 @@ resposta é uma linha: a skill a carregar e o nível.
 
 - Carregue só a skill que a linha nomeia. Não leia as outras.
 - Pedido que já diz o nível ou a skill: não rode `route`.
-- Sem correspondência: carregue `ptbr-writter` sem nível. Ela classifica o texto e declara o nível.
+- Sem correspondência: carregue `ptbr-writer` sem nível. Ela classifica o texto e declara o nível.
 - Mais de um nível empatado: escolha um e declare-o na saída.
 - `smart-note + <nível>`: aplique as regras do nível e entregue em notas.
-- Com o plugin instalado, a skill `X` é `ptbr-writter:X`.
+- Com o plugin instalado, a skill `X` é `ptbr-writer:X`.
 - Sem Python: leia `routes.tsv`, ao lado deste arquivo, uma linha por nível com suas palavras.

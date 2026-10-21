@@ -2,7 +2,7 @@
 description: Reescreve texto técnico em português brasileiro por nível de rigor (estrito, descritivo, leve, científico, smart-note). Use ao escrever, reescrever ou revisar runbook, documentação, comunicado ou notas em pt-BR.
 ---
 
-# ptbr-writter
+# ptbr-writer
 
 Reescreva texto técnico em português brasileiro para leitura única, com sujeito explícito, proposições claras e termos consistentes.
 
@@ -11,7 +11,7 @@ Reescreva texto técnico em português brasileiro para leitura única, com sujei
 Invoque pelo nome ou pelo alias:
 
 ```
-/ptbr-writter
+/ptbr-writer
 /ptbr
 ```
 

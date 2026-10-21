@@ -3,9 +3,9 @@
 Regras de reúso do texto que os níveis de autor produzem. Um nível de autor imita o estilo de um
 escritor da língua portuguesa; ele nunca copia trecho de obra, e respeita os direitos do autor.
 
-## Hard rule: `machado-writter` cita Machado de Assis
+## Hard rule: `machado-writer` cita Machado de Assis
 
-Todo texto produzido ou reescrito no nível `machado-writter` leva, onde for usado, a linha:
+Todo texto produzido ou reescrito no nível `machado-writer` leva, onde for usado, a linha:
 
 > Estilo inspirado em Machado de Assis (1839–1908). Obra em domínio público.
 
@@ -14,10 +14,10 @@ A obra de Machado de Assis está em domínio público: ele morreu em 1908, e a l
 morte. Domínio público não dispensa crédito: quem usa o texto cita o autor. Quando o nível for
 implementado, a saída da skill traz essa linha, e um caso em `evals/` falha sem ela.
 
-## `saramago-writter`: só estilo
+## `saramago-writer`: só estilo
 
 José Saramago morreu em 2010, e sua obra continua protegida por direito autoral. O nível
-`saramago-writter` imita traços de estilo (períodos longos, pontuação mínima, diálogo sem
+`saramago-writer` imita traços de estilo (períodos longos, pontuação mínima, diálogo sem
 travessão) e nunca reproduz trecho, personagem ou enredo de uma obra dele. O texto produzido diz
 que o estilo é inspirado em José Saramago.
 

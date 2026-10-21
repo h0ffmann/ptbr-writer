@@ -1,6 +1,6 @@
-# ptbr-writter: o que o plugin faz quando um pedido começa com `ptbr`.
-# Estes são os padrões. Copie para ./ptbr-writter.toml (o projeto) ou
-# ~/.config/ptbr-writter/ptbr-writter.toml (você) e mude o que quiser:
+# ptbr-writer: o que o plugin faz quando um pedido começa com `ptbr`.
+# Estes são os padrões. Copie para ./ptbr-writer.toml (o projeto) ou
+# ~/.config/ptbr-writer/ptbr-writer.toml (você) e mude o que quiser:
 # o projeto vence o usuário, o usuário vence estes padrões, e o pedido vence todos.
 
 # Níveis de rigor, um texto por nível: estrito, descritivo, leve, científico.

@@ -1,17 +1,17 @@
 # AGENTS.md
 
-Instructions for AI agents working on `ptbr-writter`.
+Instructions for AI agents working on `ptbr-writer`.
 
 ## Goal
 
-`ptbr-writter` is a personalized, OpenCode-first rewrite of the [Português Técnico Controlado (PTC)](https://github.com/kayquer/portugues-tecnico-controlado) rules for Brazilian Portuguese technical writing.
+`ptbr-writer` is a personalized, OpenCode-first rewrite of the [Português Técnico Controlado (PTC)](https://github.com/kayquer/portugues-tecnico-controlado) rules for Brazilian Portuguese technical writing.
 
 ## Hard rules
 
 - **No secrets in code.** Placeholders only; use `.env.example` if needed.
 - **One feature, one PR.** Keep commits small and focused.
 - **Commit trailers.** Use `Tested:` and `Co-Authored-By: Claude <noreply@anthropic.com>`.
-- **An author level respects the author's rights.** A level that imitates a writer (`machado-writter`, `saramago-writter`) never copies a passage; it cites the author as `REUSE.md` says, and `machado-writter` always cites Machado de Assis. Check that a new author's work is in the public domain before adding one, and write its rule in `REUSE.md`.
+- **An author level respects the author's rights.** A level that imitates a writer (`machado-writer`, `saramago-writer`) never copies a passage; it cites the author as `REUSE.md` says, and `machado-writer` always cites Machado de Assis. Check that a new author's work is in the public domain before adding one, and write its rule in `REUSE.md`.
 - **No credits in a skill's body.** A skill file (`SKILL.md`, `skills/*/SKILL.md`) holds instructions only: no credits, sources, links, commit pins, author names or history. They are loaded into other people's context. Credits go to `README.md` and `site/data/origins.tsv`.
 - **No paid resources** without explicit human confirmation.
 
@@ -38,9 +38,9 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 - `.claude/skills/figure/` — the `figure` dev skill (not in the plugin): the rules for a Mermaid figure and its reading card.
 - `lint/saramago/` — Vale prose linter for Saramago's punctuation; `just saramago FILE`, self-test `just saramago-check` (part of `just quality`).
 - `REUSE.md` — reuse rules for the author levels (citation, public domain, style only).
-- `plugins/ptbr-writter/` — the Claude Code plugin, listed by `.claude-plugin/marketplace.json`; its `skills/` are symlinks to the repo's skills (no copies). Code and plugin share one version: `plugin.json`'s `version`, a `CHANGELOG.md` heading and the tag `vX.Y.Z` (`just release X.Y.Z`: a release PR, then the tag on main; `release.yml` runs `just release-check`). Installs see a change only when the version moves: a change to a plugin file (`just release-due` lists them) is not out until a release. A new skill in the plugin needs its link.
-- `plugins/ptbr-writter/hooks/` — `ask-levels.sh` runs `ask_levels.py` on every prompt (UserPromptSubmit): a request that starts with `ptbr` gets one instruction built from `ptbr-writter.toml` (plugin defaults `ptbr-writter.default.toml` < `~/.config/ptbr-writter/` < `./ptbr-writter.toml` < the request); any other prompt gets nothing. Its self-test runs in `just plugin-check`.
-- `plugins/ptbr-writter/evals/` — `claude plugin eval` cases (prompt.md + graders/), run by hand: `just plugin-eval` on your login, or `plugin.yml` → Run workflow on `ANTHROPIC_API_KEY`. `scripts/plugin-smoke.sh` installs the plugin into an empty config; `plugin.yml` runs it when the plugin changes.
+- `plugins/ptbr-writer/` — the Claude Code plugin, listed by `.claude-plugin/marketplace.json`; its `skills/` are symlinks to the repo's skills (no copies). Code and plugin share one version: `plugin.json`'s `version`, a `CHANGELOG.md` heading and the tag `vX.Y.Z` (`just release X.Y.Z`: a release PR, then the tag on main; `release.yml` runs `just release-check`). Installs see a change only when the version moves: a change to a plugin file (`just release-due` lists them) is not out until a release. A new skill in the plugin needs its link.
+- `plugins/ptbr-writer/hooks/` — `ask-levels.sh` runs `ask_levels.py` on every prompt (UserPromptSubmit): a request that starts with `ptbr` gets one instruction built from `ptbr-writer.toml` (plugin defaults `ptbr-writer.default.toml` < `~/.config/ptbr-writer/` < `./ptbr-writer.toml` < the request); any other prompt gets nothing. Its self-test runs in `just plugin-check`.
+- `plugins/ptbr-writer/evals/` — `claude plugin eval` cases (prompt.md + graders/), run by hand: `just plugin-eval` on your login, or `plugin.yml` → Run workflow on `ANTHROPIC_API_KEY`. `scripts/plugin-smoke.sh` installs the plugin into an empty config; `plugin.yml` runs it when the plugin changes.
 - `skills/ptbr-routing/` — the `ptbr-routing` skill: `scripts/route.py` (stdlib) picks the skill and the level from `routes.tsv`, and `scripts/session-check.sh` is the SessionStart hook that offers the plugin; outside any plugin, vendored as `.claude/skills/ptbr-routing` (here a symlink). A new level in `SKILL.md` needs its row, or `just quality` fails.
 - `skills/retorica/SKILL.md` — a second skill, rhetoric from Plato's *Phaedo* and *Phaedrus* and Pirsig's Phaedrus (ZAMM); a skeleton with no rules yet.
 - `site/` — the website (Gleam + Lustre, prerendered). `site/content` writes its facts from `SKILL.md`, `justfile` and `site/data/*.tsv` (`awesome.tsv`: related repos, each with its curated source; `roadmap.tsv`: production readiness; `origins.tsv`: each rule's source repo and creator's GitHub login (never a full name) — a new rule needs its row or the build fails); never type a rule, level, recipe, repo or status into `site/src`. Look rules: `DESIGN.md`.

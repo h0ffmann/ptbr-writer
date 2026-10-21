@@ -1,6 +1,6 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
-# ptbr-writter — recipes for developing and running the skill with OpenCode + local Qwen.
+# ptbr-writer — recipes for developing and running the skill with OpenCode + local Qwen.
 
 default:
     @just --list
@@ -24,7 +24,7 @@ opencode-qwen *args:
       let p = import (builtins.getFlake (toString ./.)).inputs.nixpkgs {
         system = builtins.currentSystem; config = { allowUnfree = true; cudaSupport = true; };
       }; in p.llama-cpp')/bin/llama-server
-    log="${TMPDIR:-/tmp}/llama-server-ptbr-writter.log"
+    log="${TMPDIR:-/tmp}/llama-server-ptbr-writer.log"
     echo "llama-server log: $log"
     LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:/run/opengl-driver/lib" "$srv" >"$log" 2>&1 &
     trap 'kill $!' EXIT
@@ -59,7 +59,7 @@ opencode-stop:
 opencode-logs *args="-n 40":
     #!/usr/bin/env bash
     set -euo pipefail
-    log="${TMPDIR:-/tmp}/llama-server-ptbr-writter.log"
+    log="${TMPDIR:-/tmp}/llama-server-ptbr-writer.log"
     [ -f "$log" ] || { echo "no log at $log" >&2; exit 1; }
     tail {{ args }} "$log"
 
@@ -92,7 +92,7 @@ pins:
     lock="$(jq -r '.nodes["gleam-website"].locked.rev' flake.lock)"
     sub="$(git ls-files -s forks/picasso | cut -d' ' -f2)"
     [ "$lock" = "$sub" ] || { echo "pins: flake.lock has picasso $lock, forks/picasso is $sub" >&2; exit 1; }
-    pdf="$(sed -n 's/^PICASSO_REV=//p' plugins/ptbr-writter/scripts/to-pdf.sh)"
+    pdf="$(sed -n 's/^PICASSO_REV=//p' plugins/ptbr-writer/scripts/to-pdf.sh)"
     [ "$pdf" = "$sub" ] || { echo "pins: to-pdf.sh has picasso $pdf, forks/picasso is $sub" >&2; exit 1; }
     echo "pins: picasso $sub"
 
@@ -122,19 +122,19 @@ plugin-check:
     #!/usr/bin/env bash
     set -euo pipefail
     python3 -m json.tool .claude-plugin/marketplace.json >/dev/null
-    v=$(python3 -c 'import json; print(json.load(open("plugins/ptbr-writter/.claude-plugin/plugin.json"))["version"])')
+    v=$(python3 -c 'import json; print(json.load(open("plugins/ptbr-writer/.claude-plugin/plugin.json"))["version"])')
     [[ $v =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "plugin-check: version $v is not X.Y.Z" >&2; exit 1; }
     grep -q "^## v$v " CHANGELOG.md || { echo "plugin-check: CHANGELOG.md has no v$v" >&2; exit 1; }
-    for f in plugins/ptbr-writter/skills/*/SKILL.md; do test -e "$f" || { echo "plugin-check: $f is a broken link" >&2; exit 1; }; done
+    for f in plugins/ptbr-writer/skills/*/SKILL.md; do test -e "$f" || { echo "plugin-check: $f is a broken link" >&2; exit 1; }; done
     bash skills/ptbr-routing/scripts/session-check.sh --self-test
-    bash plugins/ptbr-writter/hooks/ask-levels.sh --self-test
+    bash plugins/ptbr-writer/hooks/ask-levels.sh --self-test
     echo "plugin-check: ok (v$v)"
 
 # What ships in the plugin changed since the last v* tag: lists the files and exits 1; installs keep the old text until a release.
 release-due:
     #!/usr/bin/env bash
     set -euo pipefail
-    files=$(find -L plugins/ptbr-writter .claude-plugin -path "*/evals" -prune -o -type f -exec realpath --relative-to=. {} + | sort -u)
+    files=$(find -L plugins/ptbr-writer .claude-plugin -path "*/evals" -prune -o -type f -exec realpath --relative-to=. {} + | sort -u)
     last=$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)
     if [ -z "$last" ]; then changed=$files; since="(no release yet)"
     else changed=$(git diff --name-only "$last" HEAD -- $files); since="since $last"; fi
@@ -149,7 +149,7 @@ plugin-smoke:
 
 # Run the plugin's eval cases on your own Claude login, once each: just plugin-eval --case 'estrito*'.
 plugin-eval *args:
-    claude plugin eval plugins/ptbr-writter --trust-plugin --no-publish --runs 1 {{ args }}
+    claude plugin eval plugins/ptbr-writer --trust-plugin --no-publish --runs 1 {{ args }}
 
 # What the .pdf output downloads and builds on a machine with Nix and no pandoc, timed into an empty store.
 pdf-bench:
@@ -159,7 +159,7 @@ pdf-bench:
 release version:
     #!/usr/bin/env bash
     set -euo pipefail
-    v="{{ version }}"; json=plugins/ptbr-writter/.claude-plugin/plugin.json
+    v="{{ version }}"; json=plugins/ptbr-writer/.claude-plugin/plugin.json
     [[ $v =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "release: $v is not X.Y.Z" >&2; exit 1; }
     [ -z "$(git status --porcelain)" ] || { echo "release: the tree is not clean" >&2; exit 1; }
     git fetch -q origin main --tags
@@ -193,14 +193,14 @@ release version:
     else
         [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] || { echo "release: check out origin/main first (git switch main && git pull)" >&2; exit 1; }
         just release-check "v$v"
-        git tag -a "v$v" -m "ptbr-writter v$v"
+        git tag -a "v$v" -m "ptbr-writer v$v"
         git push -q origin "v$v"
         echo "release: v$v pushed; release.yml publishes it"
     fi
 
-# The tag a release pushes must be the plugin's version: just release-check v0.1.0 (release.yml runs it).
+# The tag a release pushes must be the plugin's version: just release-check v0.2.0 (release.yml runs it).
 release-check tag: plugin-check
-    test "{{ tag }}" = "v$(python3 -c 'import json; print(json.load(open("plugins/ptbr-writter/.claude-plugin/plugin.json"))["version"])')"
+    test "{{ tag }}" = "v$(python3 -c 'import json; print(json.load(open("plugins/ptbr-writer/.claude-plugin/plugin.json"))["version"])')"
 
 quality: pins saramago-check plugin-check
     python3 skills/ptbr-routing/scripts/route.py --self-test

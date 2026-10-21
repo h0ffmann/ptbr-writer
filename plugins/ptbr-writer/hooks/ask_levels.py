@@ -1,12 +1,12 @@
 """ask-levels: the UserPromptSubmit hook's logic, run by ask-levels.sh.
 
-A request that starts with `ptbr` (`ptbr: ...`, `ptbr ...`, `/ptbr`, `/ptbr-writter:...`) gets one
+A request that starts with `ptbr` (`ptbr: ...`, `ptbr ...`, `/ptbr`, `/ptbr-writer:...`) gets one
 instruction for Claude; any other request gets nothing, so the hook costs no context.
 
-The choices live in ptbr-writter.toml, read in this order, each overriding the one before:
-the plugin's ptbr-writter.default.toml, ~/.config/ptbr-writter/ptbr-writter.toml, then
-./ptbr-writter.toml; the request itself overrides all. With no config file, Claude asks the
-levels, the formats and the folder once and writes ./ptbr-writter.toml. `ptbr reconfigurar`
+The choices live in ptbr-writer.toml, read in this order, each overriding the one before:
+the plugin's ptbr-writer.default.toml, ~/.config/ptbr-writer/ptbr-writer.toml, then
+./ptbr-writer.toml; the request itself overrides all. With no config file, Claude asks the
+levels, the formats and the folder once and writes ./ptbr-writer.toml. `ptbr reconfigurar`
 asks again.
 
     python3 -I ask_levels.py SKILL.md TO_PDF DEFAULTS < hook-input.json
@@ -27,9 +27,9 @@ except ImportError:  # python < 3.11: Claude reads the file itself
 COMPOSES = "smart-note"  # combines with another level: the `notes` format, not one of the levels
 MAX = 4  # AskUserQuestion takes at most 4 options; "Other" is added by itself
 FORMATS = ("txt", "md", "pdf", "notes")
-TRIGGER = re.compile(r"^\s*/?ptbr(-writter)?(:\S*)?(?=[\s:,.]|$)", re.I)
-RECONFIG = re.compile(r"^\s*/?ptbr(-writter)?\s*:?\s*(reconfigur\w*|config\w*)\b", re.I)
-NAME = "ptbr-writter-<AAAAMMDDThhmmZ>-<objetivo>-<nível>.<ext>"
+TRIGGER = re.compile(r"^\s*/?ptbr(-writer)?(:\S*)?(?=[\s:,.]|$)", re.I)
+RECONFIG = re.compile(r"^\s*/?ptbr(-writer)?\s*:?\s*(reconfigur\w*|config\w*)\b", re.I)
+NAME = "ptbr-writer-<AAAAMMDDThhmmZ>-<objetivo>-<nível>.<ext>"
 
 
 def fold(s):
@@ -83,10 +83,10 @@ def instruction(prompt, skill_md, to_pdf, defaults_path, home, cwd):
         return None
     if not levels:
         return None
-    project = os.path.join(cwd, "ptbr-writter.toml")
-    user = os.path.join(home, ".config", "ptbr-writter", "ptbr-writter.toml")
+    project = os.path.join(cwd, "ptbr-writer.toml")
+    user = os.path.join(home, ".config", "ptbr-writer", "ptbr-writer.toml")
     problems, cfg, found = [], {}, []
-    for path, where in ((defaults_path, "padrões"), (user, user), (project, "./ptbr-writter.toml")):
+    for path, where in ((defaults_path, "padrões"), (user, user), (project, "./ptbr-writer.toml")):
         table = load(path)
         if table is None:
             problems.append(f"{where}: não consegui ler; leia o arquivo você mesmo e siga-o")
@@ -119,11 +119,11 @@ def instruction(prompt, skill_md, to_pdf, defaults_path, home, cwd):
         "2. header \"Formato\", multiSelect, \"Em quais formatos?\", opções: " + "; ".join(fmts) + ".",
         "3. header \"Pasta\", uma escolha, \"Onde gravar os arquivos?\", opções nesta ordem: raiz (Recommended), "
         "a pasta da sessão, o padrão; docs/. Outra pasta vem pelo Other.",
-        "Depois grave as respostas em ./ptbr-writter.toml, com `levels`, `formats`, `folder` (\".\" para a raiz) e "
+        "Depois grave as respostas em ./ptbr-writer.toml, com `levels`, `formats`, `folder` (\".\" para a raiz) e "
         f"`print = {json.dumps(cfg.get('print', ['txt', 'md']))}`, uma linha de comentário dizendo que o arquivo "
         "pode ser editado ou refeito com `ptbr reconfigurar`, e diga isso à pessoa numa frase.",
     ]
-    head = "ptbr-writter: um pedido de escrita com o plugin."
+    head = "ptbr-writer: um pedido de escrita com o plugin."
     no_ask = "Sem AskUserQuestion (sessão não interativa): não pergunte nem grave arquivo; use o nível que a skill classificar, declare-o e responda sob `## <nível>`."
     lines = [head]
     if RECONFIG.search(prompt):
@@ -140,12 +140,12 @@ def instruction(prompt, skill_md, to_pdf, defaults_path, home, cwd):
             + ". Não pergunte nada disso."
         )
         lines.append(
-            "Carregue a skill ptbr-writter e escreva uma versão por nível de `levels` (vazio: a skill classifica e declara o nível). "
+            "Carregue a skill ptbr-writer e escreva uma versão por nível de `levels` (vazio: a skill classifica e declara o nível). "
             + ("Sem formatos: só a resposta, sem arquivo. " if not use.get("formats") else write)
         )
     else:
-        lines += ["Não há ptbr-writter.toml ainda: esta é a única vez que se pergunta."] + ask
-        lines.append("Então carregue a skill ptbr-writter e escreva uma versão por nível marcado. " + write)
+        lines += ["Não há ptbr-writer.toml ainda: esta é a única vez que se pergunta."] + ask
+        lines.append("Então carregue a skill ptbr-writer e escreva uma versão por nível marcado. " + write)
         lines.append(no_ask)
     lines += [f"Aviso da configuração: {p}." for p in problems]
     return {"hookSpecificOutput": {"hookEventName": "UserPromptSubmit", "additionalContext": "\n".join(lines)}}
@@ -162,7 +162,7 @@ def self_test():
         with open(defaults, "w", encoding="utf-8") as f:
             f.write('levels = []\nformats = []\nfolder = "."\nprint = ["txt", "md"]\n')
         home, cwd = os.path.join(tmp, "home"), os.path.join(tmp, "proj")
-        os.makedirs(os.path.join(home, ".config", "ptbr-writter"))
+        os.makedirs(os.path.join(home, ".config", "ptbr-writer"))
         os.makedirs(cwd)
 
         def ask(p):
@@ -170,7 +170,7 @@ def self_test():
             return out and out["hookSpecificOutput"]["additionalContext"]
 
         def project(text):
-            with open(os.path.join(cwd, "ptbr-writter.toml"), "w", encoding="utf-8") as f:
+            with open(os.path.join(cwd, "ptbr-writer.toml"), "w", encoding="utf-8") as f:
                 f.write(text)
 
         checks = []
@@ -180,14 +180,14 @@ def self_test():
 
         out = ask("ptbr: reescreva este texto")
         check("no config: asks once, three questions", out and "única vez" in out and "três perguntas" in out)
-        check("no config: writes ./ptbr-writter.toml", out and "grave as respostas em ./ptbr-writter.toml" in out)
+        check("no config: writes ./ptbr-writer.toml", out and "grave as respostas em ./ptbr-writer.toml" in out)
         check("notes is a format, smart-note is not a level option", out and "`notes` (o nível smart-note" in out and "smart-note (notas)" not in out)
         check("pdf points at to-pdf", out and "bash /p/to-pdf.sh <arquivo>.md" in out)
         check("folder question: raiz first, docs/ offered", out and "raiz (Recommended)" in out and "docs/" in out)
         check("non-interactive fallback", out and "Sem AskUserQuestion" in out)
-        for p in ("/ptbr revise isto", "/ptbr-writter:ptbr revise", "PTBR reescreva", "ptbr"):
+        for p in ("/ptbr revise isto", "/ptbr-writer:ptbr revise", "PTBR reescreva", "ptbr"):
             check(f"trigger: {p!r}", ask(p))
-        for p in ("for ptbr-writter", "abra skills/ptbr/SKILL.md", "rode o ptbr-routing", "reescreva este runbook", "o plugin ptbr é bom"):
+        for p in ("for ptbr-writer", "abra skills/ptbr/SKILL.md", "rode o ptbr-routing", "reescreva este runbook", "o plugin ptbr é bom"):
             check(f"no trigger: {p!r}", ask(p) is None)
         check("bad input is silent", instruction("", skill, "x", defaults, home, cwd) is None)
 
@@ -201,7 +201,7 @@ def self_test():
         out = ask("ptbr reconfigurar")
         check("reconfigure asks again", out and "reconfigurar" in out and "três perguntas" in out)
 
-        with open(os.path.join(home, ".config", "ptbr-writter", "ptbr-writter.toml"), "w", encoding="utf-8") as f:
+        with open(os.path.join(home, ".config", "ptbr-writer", "ptbr-writer.toml"), "w", encoding="utf-8") as f:
             f.write('formats = ["txt"]\nfolder = "notas"\n')
         project('folder = "docs"\n')
         out = ask("ptbr: x")
