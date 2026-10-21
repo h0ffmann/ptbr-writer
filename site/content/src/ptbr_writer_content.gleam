@@ -52,6 +52,17 @@ pub type Figure {
   Figure(slug: String, title: String)
 }
 
+pub type Eli5 {
+  Eli5(
+    title: String,
+    prompt: String,
+    pdf: String,
+    level: String,
+    total: String,
+    output: String,
+  )
+}
+
 /// The statuses a roadmap row may have, in the order of the work.
 pub const statuses = ["feito", "em andamento", "planejado"]
 
@@ -351,6 +362,18 @@ pub fn planned(text: String) -> List(Planned) {
   })
 }
 
+/// docs/eli5/RESULTS.tsv: one PDF the plugin generated per row, with its prompt, level and tokens.
+pub fn eli5(text: String) -> List(Eli5) {
+  tsv(text)
+  |> list.filter_map(fn(cells) {
+    case cells {
+      [_, prompt, pdf, _, _, output, _, _, total, _, _, _, title, level] ->
+        Ok(Eli5(title, prompt, pdf, level, total, output))
+      _ -> Error(Nil)
+    }
+  })
+}
+
 /// The drawings of the text `figure_rows` reads: one per `docs/archify/<slug>.json`.
 pub fn figures(text: String) -> List(Figure) {
   tsv(text)
@@ -461,6 +484,10 @@ const types =
   Figure(slug: String, title: String)
 }
 
+pub type Eli5 {
+  Eli5(title: String, prompt: String, pdf: String, level: String, total: String, output: String)
+}
+
 pub type Rule {
   Rule(id: String, title: String, body: String)
 }
@@ -540,6 +567,7 @@ pub fn module(
   rev: String,
   plugin: String,
   figure_text: String,
+  eli5_text: String,
 ) -> String {
   string.join(
     [
@@ -603,6 +631,13 @@ pub fn module(
         "Figure",
         list.map(figures(figure_text), fn(f) {
           call("Figure", [f.slug, f.title])
+        }),
+      ),
+      items(
+        "eli5",
+        "Eli5",
+        list.map(eli5(eli5_text), fn(e) {
+          call("Eli5", [e.title, e.prompt, e.pdf, e.level, e.total, e.output])
         }),
       ),
       items(
@@ -672,6 +707,7 @@ pub fn main() -> Nil {
           revision(),
           plugin,
           figure_rows(root <> "docs/archify"),
+          read(root <> "docs/eli5/RESULTS.tsv"),
         ),
       )
     found -> {
