@@ -121,8 +121,12 @@ describe('the card', () => {
     expect(open([{ ...erro, rule: 'PTW-15' }], {}).querySelector('.ptbr-rule')?.textContent).toBe('PTW-15');
   });
 
-  it('shows Reescrita on a warning', () => {
-    expect(open([aviso], { titles: { 'PTW-2': 'Algo' } }).querySelector('.ptbr-rule')?.textContent).toBe('Reescrita');
+  it('shows Reescrita on a PTW-17 warning', () => {
+    expect(open([{ ...aviso, rule: 'PTW-17' }], { titles: { 'PTW-17': 'Frase reorganizada' } }).querySelector('.ptbr-rule')?.textContent).toBe('Reescrita');
+  });
+
+  it('shows the code and the title of a warning from another rule', () => {
+    expect(open([{ ...aviso, rule: 'PTW-2' }], { titles: { 'PTW-2': 'Algo' } }).querySelector('.ptbr-rule')?.textContent).toBe('PTW-2 · Algo');
   });
 
   it('has no Sempre ignorar when the original has more than 3 words', () => {

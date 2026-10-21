@@ -293,7 +293,8 @@ function openCard(el: HTMLElement, l: Located, d: Drawn, hover = false) {
   const rule = doc.createElement('p');
   rule.className = 'ptbr-rule';
   const title = d.titles[l.rule];
-  rule.textContent = l.severity === 'aviso' ? 'Reescrita' : title ? `${l.rule} · ${title}` : l.rule;
+  const rewritten = l.severity === 'aviso' && l.rule === 'PTW-17';
+  rule.textContent = rewritten ? 'Reescrita' : title ? `${l.rule} · ${title}` : l.rule;
   const change = doc.createElement('p');
   change.className = 'ptbr-change';
   const s = doc.createElement('s');

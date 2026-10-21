@@ -226,3 +226,20 @@ describe('Sempre ignorar', () => {
     expect(send).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('card titles', () => {
+  it('a CIE card shows the title from cientifico/SKILL.md', async () => {
+    site(true, 'científico');
+    send.mockImplementation(
+      async () => ({ ok: true, suggestions: [{ original: 'aumentou 40%', replacement: 'aumentou', rule: 'CIE-1', severity: 'erro', occurrence: 1 }] }) as never,
+    );
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    type(el, 'O uso da ferramenta aumentou 40% no trimestre.');
+    await vi.advanceTimersByTimeAsync(1000);
+    const shadow = document.getElementById('ptbr-writer-root')!.shadowRoot!;
+    (shadow.querySelector('.ptbr-underline-erro') as HTMLElement).click();
+    expect(shadow.querySelector('.ptbr-card .ptbr-rule')?.textContent).toBe('CIE-1 · Nada inventado');
+  });
+});
