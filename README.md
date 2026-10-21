@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![versão](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=vers%C3%A3o&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
-[![leitura estimada: ~24 min](https://img.shields.io/badge/leitura%20estimada-~24%20min-1682D4?style=flat-square)](#tempo-de-leitura)
+[![leitura estimada: ~25 min](https://img.shields.io/badge/leitura%20estimada-~25%20min-1682D4?style=flat-square)](#tempo-de-leitura)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#instalar)
 
 </div>
@@ -128,6 +128,14 @@ No Firefox (128 ou mais novo), `just ext-build-firefox` gera `extension/dist-fir
 `about:debugging#/runtime/this-firefox`, **Carregar extensão temporária…** e escolha o
 `manifest.json` dessa pasta; em `about:addons`, na aba **Permissões** da extensão, libere os sites e
 as APIs. Ela some quando o Firefox fecha. ⚠ Ainda não testada num Firefox de verdade.
+
+Sem chave e sem nuvem: `just ext-ollama` serve o Qwen pelo Ollama em `127.0.0.1:11434` (`qwen3.6:27b`,
+o mesmo modelo do `just opencode-qwen`; `just ext-ollama qwen3:8b` para uma GPU menor). No popup,
+escolha **Ollama + Qwen (local)**: o navegador pede, nesse clique, a permissão para
+`http://127.0.0.1:11434/*`, e o texto não sai da máquina. O Ollama recusa (403) a origem de uma
+extensão se não subir com `OLLAMA_ORIGINS=chrome-extension://*,moz-extension://*`; a receita sobe
+assim e, se já houver um Ollama sem isso (o serviço do systemd, por exemplo), diz como liberar.
+⚠ Ainda não testado com o Qwen de verdade na extensão.
 
 ## usar
 

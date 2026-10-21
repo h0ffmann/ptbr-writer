@@ -94,6 +94,21 @@ describe('provider, key and model', () => {
     expect($<HTMLSelectElement>('#model').value).toBe('deepseek-flash');
   });
 
+  it('picking Ollama asks for its local host permission; refused, the provider stays', async () => {
+    await renderOptions(root());
+    granted = false;
+    choose('ollama');
+    await flush();
+    expect(request).toHaveBeenCalledWith({ origins: ['http://127.0.0.1:11434/*'] });
+    expect($<HTMLSelectElement>('#provider').value).toBe('claude');
+    granted = true;
+    choose('ollama');
+    await flush();
+    expect($<HTMLSelectElement>('#provider').value).toBe('ollama');
+    expect($<HTMLInputElement>('#key').disabled).toBe(true);
+    expect(modelOptions()).toEqual(['qwen3.6:27b', 'qwen3:8b']);
+  });
+
   it('saving writes only the chosen provider and keeps the other key', async () => {
     store = { settings: { keys: { claude: 'sk-c-1111', deepseek: '' } } };
     await renderOptions(root());
@@ -104,7 +119,7 @@ describe('provider, key and model', () => {
     await flush();
     const s = await loadSettings();
     expect(s.provider).toBe('deepseek');
-    expect(s.keys).toEqual({ claude: 'sk-c-1111', deepseek: 'sk-new-9999' });
+    expect(s.keys).toEqual({ claude: 'sk-c-1111', deepseek: 'sk-new-9999', ollama: '' });
     expect(s.models.deepseek).toBe('deepseek-v4-pro');
     expect(s.models.claude).toBe('claude-haiku-5-5');
   });
