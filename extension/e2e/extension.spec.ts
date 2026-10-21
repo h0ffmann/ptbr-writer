@@ -46,7 +46,7 @@ async function launch(provider: ProviderId): Promise<BrowserContext> {
   const settings: Partial<Settings> = {
     enabled: true,
     provider,
-    keys: { claude: 'sk-test', deepseek: 'sk-test' },
+    keys: { claude: 'sk-test', deepseek: 'sk-test', ollama: '' },
     apiBase: { claude: base, deepseek: base },
     sites: { '127.0.0.1': { enabled: true, level: 'descritivo' } },
   };
