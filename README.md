@@ -279,6 +279,7 @@ nix develop           # o shell de desenvolvimento
 just quality          # tudo o que o CI checa, inclusive este README
 just site             # o site em site/dist
 just release-due      # o plugin mudou desde a última tag?
+just labels           # os rótulos das issues, de ISSUE_LABELS.md, no GitHub
 ```
 
 Sem o Claude Code (OpenCode ou outro agente que lê skills): copie [`SKILL.md`](SKILL.md) para a
