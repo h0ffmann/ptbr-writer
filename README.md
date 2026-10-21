@@ -4,7 +4,7 @@
 
 # ptbr-writer
 
-<sub><a href="#instalar">instalar</a> · <a href="#usar">usar</a> · <a href="#níveis">níveis</a> · <a href="#regras">regras</a> · <a href="#roadmap">roadmap</a> · <a href="#desenvolvimento">desenvolvimento</a> · <a href="#créditos">créditos</a> · <a href="CHANGELOG.md">versões</a> · <a href="https://h0ffmann.github.io/ptbr-writer/">o site</a></sub>
+<sub><a href="#instalar">instalar</a> · <a href="#usar">usar</a> · <a href="#níveis">níveis</a> · <a href="#regras">regras</a> · <a href="#figuras">figuras</a> · <a href="#roadmap">roadmap</a> · <a href="#desenvolvimento">desenvolvimento</a> · <a href="#créditos">créditos</a> · <a href="CHANGELOG.md">versões</a> · <a href="https://h0ffmann.github.io/ptbr-writer/">o site</a></sub>
 
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![release](https://img.shields.io/github/v/release/h0ffmann/ptbr-writer?style=flat-square&label=release)](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.2.0)
@@ -223,6 +223,16 @@ tempos de código e de link são escolhas deste projeto, não do artigo.
 ```console
 python3 -I plugins/ptbr-writer/scripts/reading_time.py README.md   # --lang en, --json, --self-test
 ```
+
+## figuras
+
+Cada figura é uma página do Archify, publicada no site; a imagem está no README e a fonte em
+`docs/archify/`.
+
+| figura | página | imagem | fonte |
+| :----- | :----- | :----- | :---- |
+| O que acontece com um pedido ptbr (em [em um minuto](#em-um-minuto)) | [em-um-minuto.html](https://h0ffmann.github.io/ptbr-writer/figuras/em-um-minuto.html) | [em-um-minuto.png](docs/img/em-um-minuto.png) | [`em-um-minuto.json`](docs/archify/em-um-minuto.json) |
+| De onde vem o .pdf (em [usar](#usar)) | [pdf-dependencias.html](https://h0ffmann.github.io/ptbr-writer/figuras/pdf-dependencias.html) | [pdf-dependencias.png](docs/img/pdf-dependencias.png) | [`pdf-dependencias.json`](docs/archify/pdf-dependencias.json) |
 
 ## roadmap
 

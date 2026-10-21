@@ -173,3 +173,17 @@ pub fn install_first_test() {
   assert !string.contains(before, "id=\"uso\"")
   assert string.contains(html, "navigator.clipboard.writeText")
 }
+
+// Each Archify page is a named pill in the cover's actions, after the GitHub pill.
+pub fn figure_pills_test() {
+  let html = prerender.render()
+  let assert Ok(#(_, after_star)) = string.split_once(html, "star me no github")
+  let assert Ok(#(actions, _)) = string.split_once(after_star, "</div>")
+  list.each(content.figures, fn(f) {
+    assert string.contains(
+      actions,
+      "href=\"figuras/" <> f.slug <> ".html\">◇ " <> f.title,
+    )
+  })
+  assert content.figures != []
+}
