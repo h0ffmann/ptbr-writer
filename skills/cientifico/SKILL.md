@@ -93,7 +93,7 @@ Trate comentário de revisor como confidencial. Para cada pedido: classifique (e
 4. Nota sobre o que foi mantido de propósito.
 5. Lista de `⚠`: o que falta checar e o que buscar.
 6. Procurado e não citado (CIE-3).
-7. Linha de tempo de leitura no texto final: `Leitura estimada: ~N min (P palavras, L links, B blocos de código)`, ou `< 1 min`; em inglês, `Estimated reading time: ...`. Com Bash e o caminho de `reading_time.py` (o pedido `ptbr` o dá), rode `python3 -I <caminho> [--lang en] <arquivo>`; sem eles, calcule à mão: palavras da prosa ÷ 238 por minuto, × 1,15 se a frase média passa de 20 palavras, × 1,15 se mais de 25% das palavras têm 10 letras ou mais, + 10 s por linha de código, + 5 s por link, arredondado para cima. Nunca invente o número.
+7. Linha de tempo de leitura no texto final: `Leitura estimada: ~N min (P palavras, L links, B blocos de código)`, ou `< 1 min`; em inglês, `Estimated reading time: ...`. Com Bash e o comando de tempo de leitura (o pedido `ptbr` o dá), rode `<comando> [--lang en] <arquivo>`; sem eles, calcule à mão: palavras da prosa ÷ 238 por minuto, × 1,15 se a frase média passa de 20 palavras, × 1,15 se mais de 25% das palavras têm 10 letras ou mais, + 10 s por linha de código, + 5 s por link, arredondado para cima. Nunca invente o número.
 
 ## Limites
 
