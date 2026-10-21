@@ -313,6 +313,39 @@ describe('text settings', () => {
     await flush();
     expect((await loadSettings()).neverFix).toEqual(['Redis']);
   });
+  it('options: Add keeps an entry another tab wrote after the render', async () => {
+    await renderOptions(root());
+    store.settings = { neverFix: ['Redis'] };
+    $<HTMLInputElement>('#new-never-fix').value = 'Kafka';
+    $<HTMLButtonElement>('#add-never-fix').click();
+    await flush();
+    expect((await loadSettings()).neverFix).toEqual(['Redis', 'Kafka']);
+  });
+  it('options: Remover keeps an entry another tab wrote after the render', async () => {
+    store = { settings: { neverFix: ['Kafka'] } };
+    await renderOptions(root());
+    store.settings = { neverFix: ['Kafka', 'Redis'] };
+    ($('#never-fix li button') as HTMLButtonElement).click();
+    await flush();
+    expect((await loadSettings()).neverFix).toEqual(['Redis']);
+  });
+  it('options: an entry with markup is shown as text', async () => {
+    const evil = '<img src=x onerror=alert(1)>';
+    store = { settings: { neverFix: [evil] } };
+    await renderOptions(root());
+    expect($('#never-fix').querySelector('img')).toBeNull();
+    expect($('#never-fix').textContent).toContain(evil);
+  });
+  it('options: empty or long input shows a message and saves nothing', async () => {
+    await renderOptions(root());
+    for (const v of ['', 'um dois três quatro']) {
+      $<HTMLInputElement>('#new-never-fix').value = v;
+      $<HTMLButtonElement>('#add-never-fix').click();
+      await flush();
+      expect($('#never-fix-error').textContent).toBe('Use de 1 a 3 palavras.');
+    }
+    expect((await loadSettings()).neverFix).toEqual([]);
+  });
   it('options: the selects save at once too', async () => {
     await renderOptions(root());
     change('#tone', 'informal');

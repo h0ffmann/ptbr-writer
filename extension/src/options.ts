@@ -1,6 +1,6 @@
 import { normalizeHost } from './hosts';
 import { mountProviderFields } from './provider-fields';
-import { addNeverFix } from './never-fix';
+import { NEVER_FIX_MAX_WORDS, addNeverFix } from './never-fix';
 import { loadSettings } from './settings';
 import { mountTextFields } from './text-fields';
 import {
@@ -36,7 +36,8 @@ export async function render(root: HTMLElement): Promise<void> {
     <div id="text-fields"></div>
     <h2>Nunca corrigir</h2>
     <ul id="never-fix"></ul>
-    <p><input id="new-never-fix" type="text" placeholder="até 3 palavras"> <button id="add-never-fix" type="button">Adicionar</button></p>
+    <p><input id="new-never-fix" type="text" placeholder="até 3 palavras"> <button id="add-never-fix" type="button">Adicionar</button>
+    <span id="never-fix-error" role="alert"></span></p>
     <h2>Sites</h2>
     <table id="sites"><thead><tr><th>Site</th><th>Nível</th><th>Ativo</th><th></th></tr></thead><tbody></tbody></table>
     <p><input id="new-host" type="text" placeholder="exemplo.com"> <button id="add-site" type="button">Adicionar site</button>
@@ -48,14 +49,21 @@ export async function render(root: HTMLElement): Promise<void> {
   for (const entry of s.neverFix) {
     const li = document.createElement('li');
     li.append(entry + ' ', button('Remover', async () => {
-      await saveTextSettings({ neverFix: s.neverFix.filter((e) => e !== entry) });
+      const cur = (await loadSettings()).neverFix;
+      await saveTextSettings({ neverFix: cur.filter((e) => e !== entry) });
       await render(root);
     }));
     list.append(li);
   }
   el<HTMLButtonElement>(root, '#add-never-fix').addEventListener('click', async () => {
-    const next = addNeverFix(s.neverFix, el<HTMLInputElement>(root, '#new-never-fix').value);
-    await saveTextSettings({ neverFix: next });
+    const typed = el<HTMLInputElement>(root, '#new-never-fix').value.trim();
+    if (!typed || typed.split(/\s+/).length > NEVER_FIX_MAX_WORDS) {
+      el(root, '#never-fix-error').textContent = 'Use de 1 a 3 palavras.';
+      return;
+    }
+    // Reloaded here: another tab may have added entries since this page was drawn.
+    const cur = (await loadSettings()).neverFix;
+    await saveTextSettings({ neverFix: addNeverFix(cur, typed) });
     await render(root);
   });
   const body = el<HTMLTableSectionElement>(root, '#sites tbody');
