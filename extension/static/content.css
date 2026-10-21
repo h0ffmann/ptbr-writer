@@ -1,0 +1,14 @@
+/* Positions the host of the ptbr-writer overlay; its own styles live in its shadow root. */
+#ptbr-writer-root {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: visible !important;
+  z-index: 2147483647 !important;
+  pointer-events: none !important;
+}
