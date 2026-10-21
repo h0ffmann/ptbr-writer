@@ -169,7 +169,19 @@ describe('checkFromSender', () => {
     await checkFromSender({ ...req, level: 'estrito' }, tab(1), { fetch: f, settings: site(true) });
     const [, init] = (f as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
     const system = JSON.parse(init.body as string).system as string;
-    expect(system).toBe(buildSystemPrompt('leve', SKILL, CIENTIFICO));
+    const s = site(true);
+    expect(system).toBe(buildSystemPrompt('leve', SKILL, CIENTIFICO, { tone: s.tone, rewrite: s.rewrite, neverFix: s.neverFix }));
+  });
+
+  it('passes the tone, rewrite and never-fix settings into the prompt', async () => {
+    const f = okFetch(claudeBody);
+    const s: Settings = { ...site(true), tone: 'informal', rewrite: false, neverFix: ['Kafka'] };
+    await checkFromSender(req, tab(1), { fetch: f, settings: s });
+    const [, init] = (f as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    const system = JSON.parse(init.body as string).system as string;
+    expect(system).toContain('mantenha a voz e as gírias');
+    expect(system).toContain('não devolva nenhum aviso');
+    expect(system).toContain('nunca troque estas palavras: Kafka');
   });
 
   it('falls back to sender.url', async () => {
