@@ -15,6 +15,9 @@ build: content
     mkdir -p dist
     gleam run -m ptbr_writer_site/prerender --no-print-progress > dist/index.html
     cp -R static/. dist/
+    # Each docs/archify/<slug>.json as figuras/<slug>.html (Archify's `render`: node only, the page inlines its template) and its PNG.
+    mkdir -p dist/figuras
+    for src in ../docs/archify/*.json; do slug="$(basename "$src" .json)"; ARCHIFY_UPDATE_CHECK_DISABLED=1 node ../vendor/archify/archify/bin/archify.mjs render "$(node -p "require('$PWD/$src').diagram_type")" "$src" "dist/figuras/$slug.html" --quality showcase; cp "../docs/img/$slug.png" dist/figuras/; done
     touch dist/.nojekyll
 
 # Formatting, tests and a build: what CI runs
@@ -22,4 +25,5 @@ ci: content
     gleam format --check src/ptbr_writer_site/app.gleam src/ptbr_writer_site/page.gleam src/ptbr_writer_site/prerender.gleam test
     gleam test
     just build
-    for id in instalar uso niveis regras saida smart-note limites receitas awesome roadmap; do grep -q "id=\"$id\"" dist/index.html || { echo "site: no #$id in index.html" >&2; exit 1; }; done
+    for id in instalar uso niveis regras saida smart-note limites receitas figuras awesome roadmap; do grep -q "id=\"$id\"" dist/index.html || { echo "site: no #$id in index.html" >&2; exit 1; }; done
+    for f in ../docs/archify/*.json; do test -s "dist/figuras/$(basename "$f" .json).html" || { echo "site: no page for $f" >&2; exit 1; }; done

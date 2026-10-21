@@ -2,3 +2,7 @@
 	path = forks/picasso
 	url = https://github.com/h0ffmann/picasso.git
 	shallow = true
+[submodule "vendor/archify"]
+	path = vendor/archify
+	url = https://github.com/tt-a1i/archify.git
+	shallow = true

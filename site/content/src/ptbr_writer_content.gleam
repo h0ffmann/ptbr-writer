@@ -47,11 +47,19 @@ pub type Planned {
   Planned(name: String, what: String)
 }
 
+/// A drawing of docs/archify/: its slug (the name of its JSON) and its title.
+pub type Figure {
+  Figure(slug: String, title: String)
+}
+
 /// The statuses a roadmap row may have, in the order of the work.
 pub const statuses = ["feito", "em andamento", "planejado"]
 
 @external(javascript, "./ptbr_writer_content_ffi.mjs", "read")
 fn read(path: String) -> String
+
+@external(javascript, "./ptbr_writer_content_ffi.mjs", "figures")
+fn figure_rows(dir: String) -> String
 
 @external(javascript, "./ptbr_writer_content_ffi.mjs", "write")
 fn write(path: String, text: String) -> Nil
@@ -343,6 +351,17 @@ pub fn planned(text: String) -> List(Planned) {
   })
 }
 
+/// The drawings of the text `figure_rows` reads: one per `docs/archify/<slug>.json`.
+pub fn figures(text: String) -> List(Figure) {
+  tsv(text)
+  |> list.filter_map(fn(cells) {
+    case cells {
+      [slug, title] -> Ok(Figure(slug, title))
+      _ -> Error(Nil)
+    }
+  })
+}
+
 /// What is wrong with planned.tsv: no row, a row that is not two cells, or a level that SKILL.md
 /// already has (then it is implemented, and its row goes).
 pub fn planned_errors(skill: String, text: String) -> List(String) {
@@ -438,7 +457,11 @@ fn items(name: String, type_: String, rows: List(String)) -> String {
 }
 
 const types =
-  "pub type Rule {
+  "pub type Figure {
+  Figure(slug: String, title: String)
+}
+
+pub type Rule {
   Rule(id: String, title: String, body: String)
 }
 
@@ -516,6 +539,7 @@ pub fn module(
   planned_rows: String,
   rev: String,
   plugin: String,
+  figure_text: String,
 ) -> String {
   string.join(
     [
@@ -572,6 +596,13 @@ pub fn module(
         "Origin",
         list.map(origins(origin_rows), fn(o) {
           call("Origin", [o.id, o.origin, o.repo, o.creator])
+        }),
+      ),
+      items(
+        "figures",
+        "Figure",
+        list.map(figures(figure_text), fn(f) {
+          call("Figure", [f.slug, f.title])
         }),
       ),
       items(
@@ -640,6 +671,7 @@ pub fn main() -> Nil {
           planned_rows,
           revision(),
           plugin,
+          figure_rows(root <> "docs/archify"),
         ),
       )
     found -> {

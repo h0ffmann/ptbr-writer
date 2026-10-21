@@ -1,0 +1,187 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "De onde vem o .pdf",
+    "locale": "pt-BR",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "hidden"
+    },
+    "output": "pdf-dependencias.html"
+  },
+  "lanes": [
+    {
+      "id": "saida",
+      "label": "Máquina com pandoc e xelatex"
+    },
+    {
+      "id": "nix",
+      "label": "Sem eles: Rust e Typst, baixados com Nix"
+    },
+    {
+      "id": "libs",
+      "label": "Bibliotecas Rust do binário"
+    }
+  ],
+  "mainPath": [
+    "script",
+    "picasso",
+    "flake",
+    "crate",
+    "pdf"
+  ],
+  "nodes": [
+    {
+      "id": "script",
+      "lane": "nix",
+      "col": 0,
+      "type": "external",
+      "label": "to-pdf.sh",
+      "sublabel": "plugin ptbr-writer v0.2.0",
+      "width": 150
+    },
+    {
+      "id": "pandoc",
+      "lane": "saida",
+      "col": 1,
+      "type": "frontend",
+      "label": "pandoc + xelatex",
+      "sublabel": "do PATH, fonte DejaVu",
+      "width": 150
+    },
+    {
+      "id": "pdf",
+      "lane": "saida",
+      "col": 5,
+      "type": "external",
+      "label": "arquivo .pdf",
+      "sublabel": "na pasta do pedido",
+      "width": 150
+    },
+    {
+      "id": "picasso",
+      "lane": "nix",
+      "col": 1,
+      "type": "backend",
+      "label": "picasso v0.2.0",
+      "sublabel": "commit 099e036",
+      "width": 150
+    },
+    {
+      "id": "flake",
+      "lane": "nix",
+      "col": 2,
+      "type": "backend",
+      "label": "labs/ptbr-pdf",
+      "sublabel": "flake do Nix",
+      "width": 150
+    },
+    {
+      "id": "crate",
+      "lane": "nix",
+      "col": 3,
+      "type": "backend",
+      "label": "crate to-pdf 0.1.0",
+      "sublabel": "Cargo.lock fixa as versões",
+      "width": 150
+    },
+    {
+      "id": "fontes",
+      "lane": "nix",
+      "col": 4,
+      "type": "database",
+      "label": "6 fontes embutidas",
+      "sublabel": "Libertinus Serif, DejaVu Mono",
+      "width": 150
+    },
+    {
+      "id": "md",
+      "lane": "libs",
+      "col": 3,
+      "type": "cloud",
+      "label": "pulldown-cmark",
+      "sublabel": "0.13.4 · lê o Markdown",
+      "width": 150
+    },
+    {
+      "id": "typst",
+      "lane": "libs",
+      "col": 4,
+      "type": "cloud",
+      "label": "typst 0.15.1",
+      "sublabel": "com typst-layout e typst-pdf",
+      "width": 150
+    },
+    {
+      "id": "lib",
+      "lane": "libs",
+      "col": 5,
+      "type": "cloud",
+      "label": "typst-as-lib",
+      "sublabel": "0.17.0 · liga o Typst",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "script",
+      "to": "pandoc",
+      "label": "se há os dois",
+      "role": "branch"
+    },
+    {
+      "id": "e2",
+      "from": "pandoc",
+      "to": "pdf"
+    },
+    {
+      "id": "e3",
+      "from": "script",
+      "to": "picasso",
+      "label": "senão, --download"
+    },
+    {
+      "id": "e4",
+      "from": "picasso",
+      "to": "flake"
+    },
+    {
+      "id": "e5",
+      "from": "flake",
+      "to": "crate",
+      "label": "compila"
+    },
+    {
+      "id": "e6",
+      "from": "crate",
+      "to": "fontes",
+      "label": "embute"
+    },
+    {
+      "id": "e7",
+      "from": "crate",
+      "to": "md",
+      "label": "usa",
+      "role": "branch"
+    },
+    {
+      "id": "e8",
+      "from": "md",
+      "to": "typst"
+    },
+    {
+      "id": "e9",
+      "from": "typst",
+      "to": "lib"
+    },
+    {
+      "id": "e10",
+      "from": "crate",
+      "to": "pdf",
+      "label": "gera",
+      "role": "branch"
+    }
+  ]
+}
