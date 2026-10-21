@@ -12,6 +12,7 @@ on:
       - SKILL.md
       - skills/cientifico/SKILL.md
       - plugins/ptbr-writer/.claude-plugin/plugin.json
+      - .github/workflows/extension.yml
   push:
     branches: [main]
     paths:
@@ -19,6 +20,7 @@ on:
       - SKILL.md
       - skills/cientifico/SKILL.md
       - plugins/ptbr-writer/.claude-plugin/plugin.json
+      - .github/workflows/extension.yml
   workflow_dispatch:
 
 permissions:
