@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=version&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#license)
-[![estimated reading time: ~22 min](https://img.shields.io/badge/reading%20time-~22%20min-1682D4?style=flat-square)](#reading-time)
+[![estimated reading time: ~23 min](https://img.shields.io/badge/reading%20time-~23%20min-1682D4?style=flat-square)](#reading-time)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 
 </div>
@@ -114,6 +114,17 @@ tool was not measured (`opencode run` does not offer it). It needs `bash`, `curl
 binaries are `linux-x86_64` and `linux-aarch64`. `ptbr-routing` is not included: it depends on a
 Claude Code hook.
 
+### Chrome
+
+An extension (outside the plugin, not yet released) underlines, in the field you are typing in,
+what the level asks to change. Install it from source:
+
+1. `just ext-build`
+2. Open `chrome://extensions` and turn on **Developer mode**.
+3. Under **Load unpacked**, choose `extension/dist/`.
+4. In the extension's popup, click **Configurações** (settings), choose the provider (Claude or
+   DeepSeek) and paste the key. Reload the tabs that were already open.
+
 ## use
 
 | Command | Does |
@@ -196,6 +207,21 @@ Libertinus Serif and DejaVu Sans Mono). Source of the figure:
 the commit pinned in `forks/picasso` agree, `just pins` checks.
 
 </details>
+
+**Chrome extension.** After a 1 s pause in typing, the field's text goes to the chosen provider
+(Claude, default model `claude-haiku-5-5`; or DeepSeek, `deepseek-flash` ⚠ read from DeepSeek's docs
+on 2026-10-21, not measured). Only that provider receives the text, and the keys stay only in
+`chrome.storage.local`. The spans to change are underlined; a click on the underline, or on the
+number in the field's corner, opens a card with **Aceitar** (accept) and **Ignorar** (ignore), and nothing changes until you accept. On from the start:
+`web.whatsapp.com` (`leve`), `mail.google.com` (`descritivo`) and `github.com` (`descritivo`). Other
+sites stay off until you click **Ativar neste site** (enable on this site) in the popup (https sites
+only), or enable
+them in the options; the levels are `estrito`, `descritivo`, `leve` and `científico`. Fields with
+fewer than 3 words and password fields are ignored; Gmail's quoted history is not sent; over 4000
+characters only the caret's paragraph is sent. Tests: `just ext-test` (Vitest) and `just ext-e2e`
+(Playwright, real Chromium, fake server, no real API); in CI, `.github/workflows/extension.yml`. ⚠
+On 2026-10-21 the repo owner tested it by hand on WhatsApp Web, with a real key for one of the
+providers; Gmail and GitHub have not been tested with their real editors yet.
 
 ## levels
 

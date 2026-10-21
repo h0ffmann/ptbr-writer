@@ -18,6 +18,9 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
   e `cientifico` como arquivos em `~/.config/opencode/skills/` (ou `./.opencode/` com `--project`),
   mais o plugin `ask-levels` (`opencode/ptbr-writer.js`), que roda o mesmo binário `ptbr` do hook do
   Claude Code. `scripts/opencode-smoke.sh` roda em `just plugin-check`.
+- Extensão do Chrome em `extension/` (fora do plugin): sublinha no campo o que o nível pede para mudar,
+  pelo Claude ou pela DeepSeek com a chave do usuário; `just ext-build`, `just ext-test` e `just ext-e2e`.
+  ⚠ Não testada com uma chave válida nas APIs reais.
 
 ## v0.2.0 — 2026-10-21
 

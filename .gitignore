@@ -10,3 +10,10 @@ __pycache__/
 .pytest_cache/
 plugins/ptbr-writer/evals/results/
 build/
+.superpowers/
+
+extension/node_modules/
+extension/dist/
+extension/dist-test/
+extension/test-results/
+extension/playwright-report/
