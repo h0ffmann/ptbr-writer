@@ -5,6 +5,10 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- A extensão do Chrome sublinha de vermelho a ortografia, a pontuação e a concordância (PTW-14 a 16) e
+  de amarelo a frase reorganizada (PTW-17, cartão **Reescrita**); as configurações ganham o tom, o
+  quanto corrigir, a espera e a lista "nunca corrigir". O teste ponta a ponta cobre a frase
+  reorganizada.
 - O site ganha o grafo do código TypeScript da extensão do Chrome (`grafo/extensao.html`, gerado
   pelo `code-graph` só de `extension/`, com volta ao grafo do ptbr-writer) e a pílula **Grafo da
   extensão** na capa.
