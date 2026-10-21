@@ -112,6 +112,13 @@ code { font-size: 0.85em; background: var(--sheet); border: 1px solid var(--rule
 .copy:focus-visible { outline: 2px solid var(--sheet); outline-offset: -4px; }
 .install-note { color: var(--muted); font-size: 0.9rem; margin: 8px 0 0; }
 
+/* ELI5: the PDFs the plugin generated, one row each */
+.eli5 { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.eli5 th, .eli5 td { text-align: left; padding: 8px 10px; border-bottom: 1px dashed var(--rule); vertical-align: baseline; }
+.eli5 th { font: 600 0.75rem var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.eli5 .num { font-family: var(--mono); font-size: 0.85em; white-space: nowrap; }
+@media (max-width: 560px) { .eli5 .num { white-space: normal; } }
+
 /* the sections */
 section { padding: 44px 24px; border-top: 1px solid var(--rule); }
 section, .foot { background: transparent; }

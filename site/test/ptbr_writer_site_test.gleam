@@ -23,6 +23,7 @@ pub fn every_section_test() {
       "limites",
       "receitas",
       "figuras",
+      "eli5",
       "awesome",
       "roadmap",
     ],
@@ -186,4 +187,15 @@ pub fn figure_pills_test() {
     )
   })
   assert content.figures != []
+}
+
+// Every PDF of docs/eli5/RESULTS.tsv is linked from the ELI5 section, with its prompt and tokens.
+pub fn eli5_test() {
+  let html = prerender.render()
+  assert content.eli5 != []
+  list.each(content.eli5, fn(e) {
+    assert string.contains(html, "href=\"eli5/" <> e.pdf <> "\"")
+    assert string.contains(html, e.title)
+    assert string.contains(html, e.total)
+  })
 }
