@@ -116,3 +116,56 @@ describe('startContent', () => {
     expect(send).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('accepting one of several suggestions', () => {
+  const TEXT = 'Foi decidido que o deploy a nível de equipe vai ser realizado na sexta.';
+  const suggestions = [
+    { original: 'Foi decidido', replacement: 'A equipe decidiu', rule: 'PTW-1', severity: 'erro', occurrence: 1 },
+    { original: 'a nível de', replacement: 'da', rule: 'PTW-5', severity: 'erro', occurrence: 1 },
+    { original: 'vai ser realizado', replacement: 'acontece', rule: 'PTW-4', severity: 'erro', occurrence: 1 },
+  ];
+  const shadow = () => document.getElementById('ptbr-writer-root')!.shadowRoot!;
+  const acceptFirst = () => {
+    (shadow().querySelector('.ptbr-underline-erro') as HTMLElement).click();
+    (shadow().querySelector('.ptbr-card [data-action="accept"]') as HTMLElement).click();
+  };
+
+  it('keeps the other suggestions, shifted, and does not call the API again', async () => {
+    site(true);
+    send.mockImplementation(async () => ({ ok: true, suggestions }) as never);
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    type(el, TEXT);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(shadow().querySelectorAll('.ptbr-underline-erro').length).toBe(3);
+
+    acceptFirst();
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(el.value).toBe('A equipe decidiu que o deploy a nível de equipe vai ser realizado na sexta.');
+    expect(shadow().querySelectorAll('.ptbr-underline-erro').length).toBe(2);
+    expect(shadow().querySelector('.ptbr-badge')?.textContent).toBe('2');
+
+    acceptFirst();
+    acceptFirst();
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(el.value).toBe('A equipe decidiu que o deploy da equipe acontece na sexta.');
+    expect(shadow().querySelectorAll('.ptbr-underline-erro').length).toBe(0);
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  it('typing again after accepting clears and checks everything again', async () => {
+    site(true);
+    send.mockImplementation(async () => ({ ok: true, suggestions }) as never);
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    type(el, TEXT);
+    await vi.advanceTimersByTimeAsync(1000);
+    acceptFirst();
+    type(el, el.value + ' Mais uma frase.');
+    expect(shadow().querySelectorAll('.ptbr-underline-erro').length).toBe(0);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(send).toHaveBeenCalledTimes(2);
+  });
+});
