@@ -205,6 +205,29 @@ The origin of each one comes from [`site/data/origins.tsv`](site/data/origins.ts
 | PTW-12 | Sem alegação de pioneirismo (no priority claim) | Vale style `PriorityClaims` | [@h0ffmann](https://github.com/h0ffmann) |
 | PTW-13 | Fato separado de análise (fact apart from analysis) | ouro-paper | [@h0ffmann](https://github.com/h0ffmann) |
 
+## reading time
+
+Every text the plugin generates carries a line such as `Estimated reading time: ~3 min (612 words, 4 links, 2 code blocks)`,
+computed by [`reading_time.py`](plugins/ptbr-writer/scripts/reading_time.py) (python3, no dependencies), never guessed.
+It is an estimate: the same text always gives the same number, but people read 175 to 300 words per minute.
+
+| Part | How it counts |
+|------|---------------|
+| Prose | words (no code blocks, URLs or Markdown syntax; inline code counts as words) ÷ 238 per minute |
+| Complexity | technical text is slower: ×1.15 if the mean sentence has more than 20 words and ×1.15 if more than 25% of the words have 10 letters or more (1.0 to 1.3) |
+| Code | 10 s per non-blank line of a code block |
+| Links | 5 s per link, to decide whether to follow it; the time to read the target is not counted |
+| Result | rounded up to whole minutes; 60 s or less prints `< 1 min` |
+
+The 238 words per minute rate is silent reading of English non-fiction in the meta-analysis of Brysbaert (2019).
+⚠ The paper gives no Portuguese rate we could read (it only says other languages can be estimated from the number of words
+they need to say what English says); pt-BR uses the same 238, unscaled. The complexity thresholds and the code and link
+times are this project's choices, not the paper's.
+
+```console
+python3 -I plugins/ptbr-writer/scripts/reading_time.py README.md   # --lang en, --json, --self-test
+```
+
 ## roadmap
 
 Source: [`site/data/roadmap.tsv`](site/data/roadmap.tsv). The first column keeps the Portuguese names
@@ -268,6 +291,7 @@ the agent's skills folder.
 - Rhetoric: the epigraph is from Pirsig, *Zen and the Art of Motorcycle Maintenance* (1974), checked
   against two public reproductions, not the printed edition ⚠. Basis: Plato's *Phaedo* and *Phaedrus*.
 - Author level: the skill [orwell-writing](https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing), by @tamdogood (MIT).
+- Reading time: Brysbaert, M. (2019). How many words do we read per minute? A review and meta-analysis of reading rate. *Journal of Memory and Language*, 109, 104047. <https://doi.org/10.1016/j.jml.2019.104047> (238 words per minute, English non-fiction).
 - Figures: [Archify](https://github.com/tt-a1i/archify) (@tt-a1i, MIT), the submodule `vendor/archify` pinned at v3.0.1
   (`2ab3cae`), used only to draw `docs/archify/`; it is not part of the plugin. Look: [h0ffmann/picasso](https://github.com/h0ffmann/picasso).
 - Plugin and routing in the mould of the plugin and the `routing` skill of [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit),
