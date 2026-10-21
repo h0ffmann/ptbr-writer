@@ -4,16 +4,18 @@
 
 # ptbr-writer
 
-<sub><a href="#instalar">instalar</a> · <a href="#usar">usar</a> · <a href="#níveis">níveis</a> · <a href="#regras">regras</a> · <a href="#roadmap">roadmap</a> · <a href="#desenvolvimento">desenvolvimento</a> · <a href="#créditos">créditos</a> · <a href="CHANGELOG.md">versões</a> · <a href="https://h0ffmann.github.io/ptbr-writer/">o site</a></sub>
+<sub><a href="#instalar">instalar</a> · <a href="#usar">usar</a> · <a href="#níveis">níveis</a> · <a href="#regras">regras</a> · <a href="#eli5">ELI5</a> · <a href="#figuras">figuras</a> · <a href="#roadmap">roadmap</a> · <a href="#desenvolvimento">desenvolvimento</a> · <a href="#créditos">créditos</a> · <a href="CHANGELOG.md">versões</a> · <a href="https://h0ffmann.github.io/ptbr-writer/">o site</a></sub>
 
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
-[![release](https://img.shields.io/github/v/release/h0ffmann/ptbr-writer?style=flat-square&label=release)](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.2.0)
+[![versão](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=vers%C3%A3o&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#instalar)
 
 </div>
 
 🇬🇧 [Read in English](https://github.com/h0ffmann/ptbr-writer/blob/main/README.en.md)
+
+Leitura estimada: ~20 min (2102 palavras, 81 links, 7 blocos de código)
 
 ## em um minuto
 
@@ -201,6 +203,46 @@ aplica PTW-1 a PTW-13 e acrescenta CIE-1 a CIE-12.
 | PTW-12 | Sem alegação de pioneirismo | estilo Vale `PriorityClaims` | [@h0ffmann](https://github.com/h0ffmann) |
 | PTW-13 | Fato separado de análise | ouro-paper | [@h0ffmann](https://github.com/h0ffmann) |
 
+## tempo de leitura
+
+Todo texto que o plugin gera leva uma linha como `Leitura estimada: ~3 min (612 palavras, 4 links, 2 blocos de código)`,
+calculada por [`reading_time.py`](plugins/ptbr-writer/scripts/reading_time.py) (python3, sem dependências), nunca de cabeça.
+É uma estimativa: o mesmo texto dá sempre o mesmo número, mas pessoas leem de 175 a 300 palavras por minuto.
+
+| Parte | Como conta |
+|-------|------------|
+| Prosa | palavras (sem blocos de código, URLs e sintaxe Markdown; o código inline conta como palavra) ÷ 238 por minuto |
+| Complexidade | texto técnico é mais lento: ×1,15 se a frase média passa de 20 palavras e ×1,15 se mais de 25% das palavras têm 10 letras ou mais (de 1,0 a 1,3) |
+| Código | 10 s por linha não vazia de bloco de código |
+| Links | 5 s por link, para decidir se o segue; o tempo de ler o destino não entra |
+| Resultado | arredondado para cima, em minutos; até 60 s sai `< 1 min` |
+
+A taxa de 238 palavras por minuto é a leitura silenciosa de não ficção em inglês na meta-análise de Brysbaert (2019).
+⚠ O artigo não traz uma taxa para o português que pudemos ler (diz só que outras línguas se estimam pelo número de palavras
+que precisam para dizer o mesmo que o inglês); o pt-BR usa as mesmas 238, sem escala. Os limiares de complexidade e os
+tempos de código e de link são escolhas deste projeto, não do artigo.
+
+```console
+python3 -I plugins/ptbr-writer/scripts/reading_time.py README.md   # --lang en, --json, --self-test
+```
+
+## ELI5
+
+Três pedidos reais, gerados pelo próprio plugin; o PDF sai do `.md` pelo `to-pdf.sh`. Os números vêm do `claude -p --output-format json` ([`RESULTS.tsv`](docs/eli5/RESULTS.tsv)).
+
+| Prompt | PDF | Tokens | Nível |
+| :-- | :-- | --: | :-- |
+| [Runbook para refazer o deploy do site](docs/eli5/1-runbook-deploy.prompt.md) | [PDF](docs/eli5/ptbr-writer-20261021T0434Z-runbook-deploy-site-estrito.pdf) | 350.529 (entrada 16, saída 8.184, cache 342.329) | estrito |
+| [Comunicado do tempo de leitura](docs/eli5/2-comunicado-tempo-leitura.prompt.md) | [PDF](docs/eli5/ptbr-writer-20261021T0436Z-comunicado-tempo-leitura-leve.pdf) | 184.688 (entrada 10, saída 2.401, cache 182.277) | leve |
+| [Explicar o ptbr-writer a uma criança de 5 anos](docs/eli5/3-explique-ptbr-writer.prompt.md) | [PDF](docs/eli5/ptbr-writer-20261021T0436Z-explicacao-para-criancas-descritivo.pdf) | 232.366 (entrada 12, saída 3.434, cache 228.920) | descritivo |
+
+## figuras
+
+Cada figura é uma página do Archify, publicada no site:
+
+- [O que acontece com um pedido ptbr](https://h0ffmann.github.io/ptbr-writer/figuras/em-um-minuto.html)
+- [De onde vem o .pdf](https://h0ffmann.github.io/ptbr-writer/figuras/pdf-dependencias.html)
+
 ## roadmap
 
 Fonte: [`site/data/roadmap.tsv`](site/data/roadmap.tsv).
@@ -263,6 +305,7 @@ pasta de skills do agente.
 - Retórica: a epígrafe é de Pirsig, *Zen and the Art of Motorcycle Maintenance* (1974), conferida em
   duas reproduções públicas, não na edição impressa ⚠. Base: o *Fédon* e o *Fedro*, de Platão.
 - Nível por autor: a skill [orwell-writing](https://github.com/tamdogood/builder-essential-skills/tree/1be9984/skills/orwell-writing), de @tamdogood (MIT).
+- Tempo de leitura: Brysbaert, M. (2019). How many words do we read per minute? A review and meta-analysis of reading rate. *Journal of Memory and Language*, 109, 104047. <https://doi.org/10.1016/j.jml.2019.104047> (238 palavras por minuto, não ficção em inglês).
 - Figuras: [Archify](https://github.com/tt-a1i/archify) (@tt-a1i, MIT), submódulo `vendor/archify` fixado em v3.0.1
   (`2ab3cae`), só para desenhar `docs/archify/`; não faz parte do plugin. Aparência: [h0ffmann/picasso](https://github.com/h0ffmann/picasso).
 - Plugin e roteamento no molde do plugin e do `routing` de [marola-dev/marola-devkit](https://github.com/marola-dev/marola-devkit),

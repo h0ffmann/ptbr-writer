@@ -181,6 +181,7 @@ plugin-check:
     for f in plugins/ptbr-writer/skills/*/SKILL.md; do test -e "$f" || { echo "plugin-check: $f is a broken link" >&2; exit 1; }; done
     bash skills/ptbr-routing/scripts/session-check.sh --self-test
     bash plugins/ptbr-writer/hooks/ask-levels.sh --self-test
+    python3 -I plugins/ptbr-writer/scripts/reading_time.py --self-test
     echo "plugin-check: ok (v$v)"
 
 # What ships in the plugin changed since the last v* tag: lists the files and exits 1; installs keep the old text until a release.
@@ -255,6 +256,29 @@ release version:
 release-check tag: plugin-check
     test "{{ tag }}" = "v$(python3 -c 'import json; print(json.load(open("plugins/ptbr-writer/.claude-plugin/plugin.json"))["version"])')"
 
+# Write each README's reading time (the plugin's calculator) under its language line.
+reading-time:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for r in "README.md pt-BR" "README.en.md en"; do
+        set -- $r
+        line=$(python3 -I plugins/ptbr-writer/scripts/reading_time.py --lang "$2" "$1")
+        python3 -I - "$1" "$line" <<'PY'
+    import re, sys
+    path, line = sys.argv[1], sys.argv[2]
+    s = open(path, encoding="utf-8").read()
+    pat = re.compile(r"^(Leitura estimada|Estimated reading time):.*$", re.M)
+    if pat.search(s):
+        s = pat.sub(line, s, count=1)
+    else:
+        marker = "\n## "
+        i = s.index(marker)
+        s = s[:i] + "\n" + line + "\n" + s[i:]
+    open(path, "w", encoding="utf-8").write(s)
+    PY
+        echo "$1: $line"
+    done
+
 quality: pins saramago-check plugin-check figure-check
     python3 skills/ptbr-routing/scripts/route.py --self-test
     python3 skills/ptbr-routing/scripts/route.py --check
@@ -265,4 +289,8 @@ quality: pins saramago-check plugin-check figure-check
     python3 -m json.tool .opencode.json >/dev/null
     # The README copies the tables of site/data/ by hand: each repo, roadmap item, rule and planned level must be in it.
     tail -n +2 site/data/awesome.tsv site/data/roadmap.tsv site/data/origins.tsv site/data/planned.tsv | grep -v '^==>' | cut -f1 | grep . | while read -r x; do grep -qF -- "$x" README.md || { echo "quality: README.md lacks $x" >&2; exit 1; }; done
+    # Every Archify figure is indexed in both READMEs, by its published page.
+    for j in docs/archify/*.json; do s=$(basename "$j" .json); for r in README.md README.en.md; do grep -qF "figuras/$s.html" "$r" || { echo "quality: $r does not index the figure $s" >&2; exit 1; }; done; done
+    # Each README carries its own reading time, from the plugin's calculator: just reading-time writes it.
+    for r in "README.md pt-BR" "README.en.md en"; do set -- $r; want=$(python3 -I plugins/ptbr-writer/scripts/reading_time.py --lang "$2" "$1"); grep -qxF "$want" "$1" || { echo "quality: $1 reading time is not \"$want\": run just reading-time" >&2; exit 1; }; done
     echo "quality: ok"
