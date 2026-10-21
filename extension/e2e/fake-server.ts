@@ -9,11 +9,11 @@ const PAGES = join(dirname(fileURLToPath(import.meta.url)), 'pages');
 const SUGGESTION = { original: 'Foi decidido', replacement: 'A equipe decidiu', rule: 'PTW-1', severity: 'erro' };
 
 // One sentence, rewritten (aviso) with an erro inside it: the screen must show only the aviso.
-export const REWRITE_ORIGINAL = 'Foi decidido que o deploy vai ser na sexta.';
+export const TYPED = 'Foi decidido que o deploy vai ser na sexta.';
 export const REWRITE_FIXED = 'O deploy será na sexta, como a equipe decidiu.';
 const REWRITE = [
-  { original: REWRITE_ORIGINAL, replacement: REWRITE_FIXED, rule: 'PTW-17', severity: 'aviso' },
   SUGGESTION,
+  { original: TYPED, replacement: REWRITE_FIXED, rule: 'PTW-17', severity: 'aviso' },
 ];
 
 export interface FakeServer {
