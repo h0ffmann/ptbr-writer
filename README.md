@@ -259,6 +259,7 @@ aplica PTW-1 a PTW-13 e acrescenta CIE-1 a CIE-12.
 | PTW-12 | Sem alegação de pioneirismo | estilo Vale `PriorityClaims` | [@h0ffmann](https://github.com/h0ffmann) |
 | PTW-13 | Fato separado de análise | ouro-paper | [@h0ffmann](https://github.com/h0ffmann) |
 | PTW-14 | Palavras inteiras e por extenso | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
+| PTW-15 | Pontuação | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
 
 ## tempo de leitura
 
