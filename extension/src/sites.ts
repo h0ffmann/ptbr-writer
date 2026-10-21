@@ -57,6 +57,11 @@ export async function setLevel(host: string, level: Level): Promise<void> {
   await saveSettings({ ...s, sites: { ...s.sites, [host]: { ...site, level } } });
 }
 
+export async function setEnabled(enabled: boolean): Promise<void> {
+  const s = await loadSettings();
+  await saveSettings({ ...s, enabled });
+}
+
 /** Saves the chosen provider with its key and model; the other provider's key and model stay. */
 export async function saveProviderFields(f: {
   provider: Settings['provider'];

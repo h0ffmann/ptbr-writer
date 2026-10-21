@@ -1,11 +1,11 @@
 import { normalizeHost } from './hosts';
-import { MODELS, loadSettings } from './settings';
+import { mountProviderFields } from './provider-fields';
+import { loadSettings } from './settings';
 import {
   DEFAULT_SITE_HOSTS,
   LEVELS,
   disableSiteFlow,
   enableSiteFlow,
-  maskKey,
   removeSiteFlow,
   saveProviderFields,
   setLevel,
@@ -28,29 +28,14 @@ export async function render(root: HTMLElement): Promise<void> {
   root.innerHTML = `
     <h1>ptbr-writer</h1>
     <p>${field('<input id="enabled" type="checkbox">', 'Ativado')}</p>
-    <p>${field('Provedor', '<select id="provider"><option value="claude">Claude</option><option value="deepseek">DeepSeek</option></select>')}</p>
-    <p>${field('Chave', '<input id="key" type="password" autocomplete="off">')}</p>
-    <p>${field('Modelo', '<select id="model"></select>')}</p>
+    <div id="provider-fields"></div>
     <p><button id="save" type="button">Salvar</button> <span id="status" role="status"></span></p>
     <h2>Sites</h2>
     <table id="sites"><thead><tr><th>Site</th><th>Nível</th><th>Ativo</th><th></th></tr></thead><tbody></tbody></table>
     <p><input id="new-host" type="text" placeholder="exemplo.com"> <button id="add-site" type="button">Adicionar site</button>
     <span id="site-error" role="alert"></span></p>`;
   el<HTMLInputElement>(root, '#enabled').checked = s.enabled;
-  const provider = el<HTMLSelectElement>(root, '#provider');
-  const key = el<HTMLInputElement>(root, '#key');
-  const model = el<HTMLSelectElement>(root, '#model');
-  // The key and the model list follow the chosen provider; the other provider's key stays stored.
-  const showProvider = (p: ProviderId) => {
-    key.value = maskKey(s.keys[p]);
-    model.replaceChildren(
-      ...MODELS[p].map((m) => Object.assign(document.createElement('option'), { value: m, textContent: m })),
-    );
-    model.value = s.models[p];
-  };
-  provider.value = s.provider;
-  showProvider(s.provider);
-  provider.addEventListener('change', () => showProvider(provider.value as ProviderId));
+  const { provider, model, key } = mountProviderFields(el(root, '#provider-fields'), s);
   const body = el<HTMLTableSectionElement>(root, '#sites tbody');
   for (const [host, cfg] of Object.entries(s.sites)) {
     const row = body.insertRow();
