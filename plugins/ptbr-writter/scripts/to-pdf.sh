@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# to-pdf — Markdown to PDF for the `.pdf` output: pandoc + xelatex, the flags of picasso's
+# to-pdf — Markdown to PDF for the `.pdf` output: pandoc + xelatex, else picasso's Rust to-pdf (Typst); the flags of picasso's
 # labs/ptbr-pdf. Uses pandoc and xelatex from PATH. Without them, it never downloads on its own:
 # it says what the download is and exits 3; with --download (after the person agreed), it runs
 # labs/ptbr-pdf at the pinned picasso revision (`just pins` checks it against forks/picasso).
@@ -8,7 +8,7 @@
 set -euo pipefail
 
 PICASSO_REV=e75838c6683c414d57b240d4dc88f96f39993290
-SIZE="~206 MiB (729 MiB on disk)"  # labs/ptbr-pdf at PICASSO_REV, x86_64-linux: scripts/pdf-bench.sh
+SIZE="~14 MiB (94 MiB on disk)"  # labs/ptbr-pdf at PICASSO_REV, x86_64-linux: scripts/pdf-bench.sh
 download=false
 [ "${1-}" = --download ] && { download=true; shift; }
 in=${1:?usage: to-pdf.sh [--download] texto.md [saida.pdf]}
@@ -22,7 +22,7 @@ elif ! command -v nix >/dev/null; then
   echo "to-pdf: no pandoc+xelatex and no nix; deliver $in, and install pandoc and TeX Live (xelatex) for PDFs" >&2
   exit 1
 elif ! $download; then
-  echo "to-pdf: no pandoc+xelatex here; the PDF needs a one-time download of $SIZE through nix (the to-pdf binary, Typst with fonts embedded), about N seconds on a fast link. Ask the person; if they agree, rerun with --download" >&2
+  echo "to-pdf: no pandoc+xelatex here; the PDF needs a one-time download of $SIZE through nix (the to-pdf binary, Typst with fonts embedded), plus compiling it from source: about 17 minutes on 4 cores, not in cache.nixos.org yet. Ask the person; if they agree, rerun with --download" >&2
   exit 3
 else
   nix --extra-experimental-features 'nix-command flakes' run \
