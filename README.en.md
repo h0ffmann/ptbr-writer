@@ -4,7 +4,7 @@
 
 # ptbr-writer
 
-<sub><a href="#install">install</a> · <a href="#use">use</a> · <a href="#levels">levels</a> · <a href="#rules">rules</a> · <a href="#roadmap">roadmap</a> · <a href="#development">development</a> · <a href="#credits">credits</a> · <a href="CHANGELOG.md">versions</a> · <a href="https://h0ffmann.github.io/ptbr-writer/">the site</a></sub>
+<sub><a href="#install">install</a> · <a href="#use">use</a> · <a href="#levels">levels</a> · <a href="#rules">rules</a> · <a href="#figures">figures</a> · <a href="#roadmap">roadmap</a> · <a href="#development">development</a> · <a href="#credits">credits</a> · <a href="CHANGELOG.md">versions</a> · <a href="https://h0ffmann.github.io/ptbr-writer/">the site</a></sub>
 
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![release](https://img.shields.io/github/v/release/h0ffmann/ptbr-writer?style=flat-square&label=release)](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.2.0)
@@ -227,6 +227,16 @@ times are this project's choices, not the paper's.
 ```console
 python3 -I plugins/ptbr-writer/scripts/reading_time.py README.md   # --lang en, --json, --self-test
 ```
+
+## figures
+
+Each figure is an Archify page, published on the site; the image is in the README and the source in
+`docs/archify/`.
+
+| figure | page | image | source |
+| :----- | :--- | :---- | :----- |
+| what happens to a ptbr request (in [in one minute](#in-one-minute)) | [em-um-minuto.html](https://h0ffmann.github.io/ptbr-writer/figuras/em-um-minuto.html) | [em-um-minuto.png](docs/img/em-um-minuto.png) | [`em-um-minuto.json`](docs/archify/em-um-minuto.json) |
+| where the .pdf comes from (in [use](#use)) | [pdf-dependencias.html](https://h0ffmann.github.io/ptbr-writer/figuras/pdf-dependencias.html) | [pdf-dependencias.png](docs/img/pdf-dependencias.png) | [`pdf-dependencias.json`](docs/archify/pdf-dependencias.json) |
 
 ## roadmap
 
