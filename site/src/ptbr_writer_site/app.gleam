@@ -499,8 +499,12 @@ fn figuras() -> Element(msg) {
           html.text("grafo do código"),
         ]),
         html.text(
-          " (busca, zoom e comunidades; sai do code-graph do h0ffmann/picasso).",
+          " (busca, zoom e comunidades; sai do code-graph do h0ffmann/picasso). os nós que usam o picasso levam ao ",
         ),
+        html.a([attribute.href("grafo/picasso.html")], [
+          html.text("grafo do picasso"),
+        ]),
+        html.text(", no commit que este repositório fixa."),
       ]),
     ],
   )

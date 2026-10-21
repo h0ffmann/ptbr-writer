@@ -78,7 +78,7 @@ fmt:
     just --fmt --unstable
 
 # Build the site into site/dist/ in picasso's gleam-website toolchain: content, tests, prerender.
-site: figure-init
+site: figure-init picasso-init
     nix develop --no-update-lock-file .#site --command just --justfile site/justfile --working-directory site ci
 
 # Build the site and serve it on http://localhost:8000.
@@ -116,6 +116,11 @@ saramago-check:
         grep -q "Saramago.$rule:" <<<"$out" || { echo "saramago-check: Saramago.$rule did not fire" >&2; exit 1; }
     done
     echo "saramago-check: ok"
+
+# The pinned picasso (forks/picasso), whose code graph the site publishes beside this repo's: once per clone.
+picasso-init:
+    git submodule update --init forks/picasso
+    @echo "picasso-init: $(git -C forks/picasso rev-parse --short HEAD)"
 
 # The pinned Archify (vendor/archify, sparse to archify/): once per clone. Not part of the plugin.
 figure-init:
