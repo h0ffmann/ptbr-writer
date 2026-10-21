@@ -140,6 +140,16 @@ fn cover() -> Element(msg) {
           attribute.class("count"),
         ]),
       ]),
+      // Each Archify page of docs/archify/, named by its title, beside the GitHub pill.
+      ..list.map(content.figures, fn(f) {
+        html.a(
+          [
+            attribute.class("ghost figure-pill"),
+            attribute.href("figuras/" <> f.slug <> ".html"),
+          ],
+          [html.text("◇ " <> f.title)],
+        )
+      })
     ]),
     made_with_line("made-with"),
   ])

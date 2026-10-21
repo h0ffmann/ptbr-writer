@@ -1,0 +1,4 @@
+case	prompt	pdf	model	input_tokens	output_tokens	cache_read_input_tokens	cache_creation_input_tokens	total_tokens	total_cost_usd	date	plugin_commit
+1	1-runbook-deploy.prompt.md	ptbr-writer-20261021T0434Z-runbook-deploy-site-estrito.pdf	claude-opus-5-5	16	8184	301876	40453	350529	0.5477	2026-10-21	ca0e859
+2	2-comunicado-tempo-leitura.prompt.md	ptbr-writer-20261021T0436Z-comunicado-tempo-leitura-leve.pdf	claude-opus-5-5	10	2401	155591	26686	184688	0.2927	2026-10-21	ca0e859
+3	3-explique-ptbr-writer.prompt.md	ptbr-writer-20261021T0436Z-explicacao-para-criancas-descritivo.pdf	claude-opus-5-5	12	3434	200269	28651	232366	0.338	2026-10-21	ca0e859
