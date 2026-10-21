@@ -1,4 +1,5 @@
 export type Level = 'estrito' | 'descritivo' | 'leve' | 'científico';
+export type Tone = 'informal' | 'neutro' | 'formal';
 export type ProviderId = 'claude' | 'deepseek';
 export type Severity = 'erro' | 'aviso';
 export interface Suggestion {
@@ -22,6 +23,10 @@ export interface Settings {
   keys: Record<ProviderId, string>;
   models: Record<ProviderId, string>;
   sites: Record<string, SiteConfig>; // key: hostname
+  tone: Tone;
+  rewrite: boolean; // true: errors and rewrites; false: errors only
+  neverFix: string[]; // 1 to 3 words each, at most 200
+  delayMs: 1000 | 2000 | 3000; // wait after the last keystroke
   apiBase?: Partial<Record<ProviderId, string>>; // honored only when __TEST__
 }
 export type CheckError = 'no-key' | 'auth' | 'rate-limit' | 'provider' | 'network';
