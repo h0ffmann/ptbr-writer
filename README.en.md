@@ -111,7 +111,7 @@ Claude Code hook.
 | `/ptbr-writer:ptbr` | rewrites at the requested level, or classifies the text and states the level |
 | `/ptbr-writer:ptbr-writer` | the same, with the full name |
 | `/ptbr-writer:cientifico` | scientific text with sources: paper, proposal, report (CIE rules) |
-| `/ptbr-writer:bipr` | opens or updates the current branch's PR, with the body in pt-BR and its English mirror, from the commits (`--dry-run` only shows it) |
+| `/ptbr-writer:bipr` | opens or updates the current branch's PR, with the body in pt-BR and its English mirror, from the commits (`--dry-run` only shows it; [example and cost](docs/bipr/exemplo-pr-49.md)) |
 
 Or describe the task: "reescreva este runbook em português controlado".
 
