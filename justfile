@@ -262,22 +262,30 @@ reading-time:
     set -euo pipefail
     for r in "README.md pt-BR" "README.en.md en"; do
         set -- $r
-        line=$(python3 -I plugins/ptbr-writer/scripts/reading_time.py --lang "$2" "$1")
-        python3 -I - "$1" "$line" <<'PY'
-    import re, sys
-    path, line = sys.argv[1], sys.argv[2]
-    s = open(path, encoding="utf-8").read()
-    pat = re.compile(r"^(Leitura estimada|Estimated reading time):.*$", re.M)
-    if pat.search(s):
-        s = pat.sub(line, s, count=1)
-    else:
-        marker = "\n## "
-        i = s.index(marker)
-        s = s[:i] + "\n" + line + "\n" + s[i:]
-    open(path, "w", encoding="utf-8").write(s)
-    PY
-        echo "$1: $line"
+        badge=$(just _reading-badge "$1" "$2")
+        alt=$(sed -E 's/^\[!\[([^:]+):.*/\1/' <<<"$badge")
+        sed -i -E '/^(Leitura estimada|Estimated reading time):/d' "$1"
+        if grep -q "^\[!\[$alt:" "$1"; then
+            grep -v "^\[!\[$alt:" "$1" | awk -v b="$badge" '{print} /img.shields.io\/badge\/license/{print b}' > "$1.tmp"
+        else
+            awk -v b="$badge" '{print} /img.shields.io\/badge\/license/{print b}' "$1" > "$1.tmp"
+        fi
+        mv "$1.tmp" "$1"
+        echo "$1: $badge"
     done
+
+# The reading-time badge of one README: the calculator's minutes in a shields.io badge, linked to the section that explains it.
+_reading-badge file lang:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    line=$(python3 -I plugins/ptbr-writer/scripts/reading_time.py --lang "{{ lang }}" "{{ file }}")
+    min=$(sed -E 's/^[^:]+: ([^(]*[^ (]) *\(.*$/\1/' <<<"$line")
+    enc=$(sed -e 's/ /%20/g' -e 's/</%3C/g' <<<"$min")
+    if [ "{{ lang }}" = en ]; then
+        echo "[![estimated reading time: $min](https://img.shields.io/badge/reading%20time-$enc-1682D4?style=flat-square)](#reading-time)"
+    else
+        echo "[![leitura estimada: $min](https://img.shields.io/badge/leitura%20estimada-$enc-1682D4?style=flat-square)](#tempo-de-leitura)"
+    fi
 
 quality: pins saramago-check plugin-check figure-check
     python3 skills/ptbr-routing/scripts/route.py --self-test
@@ -292,5 +300,5 @@ quality: pins saramago-check plugin-check figure-check
     # Every Archify figure is indexed in both READMEs, by its published page.
     for j in docs/archify/*.json; do s=$(basename "$j" .json); for r in README.md README.en.md; do grep -qF "figuras/$s.html" "$r" || { echo "quality: $r does not index the figure $s" >&2; exit 1; }; done; done
     # Each README carries its own reading time, from the plugin's calculator: just reading-time writes it.
-    for r in "README.md pt-BR" "README.en.md en"; do set -- $r; want=$(python3 -I plugins/ptbr-writer/scripts/reading_time.py --lang "$2" "$1"); grep -qxF "$want" "$1" || { echo "quality: $1 reading time is not \"$want\": run just reading-time" >&2; exit 1; }; done
+    for r in "README.md pt-BR" "README.en.md en"; do set -- $r; want=$(just _reading-badge "$1" "$2"); grep -qxF "$want" "$1" || { echo "quality: $1 reading-time badge is not current: run just reading-time" >&2; exit 1; }; done
     echo "quality: ok"
