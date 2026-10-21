@@ -1,3 +1,4 @@
+import { NEVER_FIX_MAX } from './never-fix';
 import type { Level, Tone } from './types';
 
 export interface PromptOptions {
@@ -22,6 +23,14 @@ export function ruleTitles(skill: string): Record<string, string> {
   return titles;
 }
 
+// A lista vem do usuário: vira texto simples, sem quebra de linha nem aspas.
+function cleanNeverFix(list: readonly string[]): string[] {
+  return list
+    .map((e) => e.replace(/[\p{Cc}\s]+/gu, ' ').replace(/["'`]/g, '').trim())
+    .filter((e) => e && e.length <= 60)
+    .slice(0, NEVER_FIX_MAX);
+}
+
 function section(skill: string, heading: string, name: string, file = "SKILL.md"): string {
   const lines = skill.split('\n');
   const start = lines.findIndex((l) => l.trimEnd() === heading);
@@ -32,6 +41,7 @@ function section(skill: string, heading: string, name: string, file = "SKILL.md"
 }
 
 export function buildSystemPrompt(level: Level, skill: string, cientifico: string, opts: PromptOptions): string {
+  const never = cleanNeverFix(opts.neverFix);
   const parts = [
     'Você revisa texto em português do Brasil segundo as regras abaixo. Aponte só trechos que quebram uma regra.',
     section(skill, '## Níveis de rigor', 'Níveis de rigor'),
@@ -52,10 +62,11 @@ export function buildSystemPrompt(level: Level, skill: string, cientifico: strin
       'Texto sem problemas: responda []. Não reescreva nada fora dos trechos apontados.',
       'Severidade: `erro` para as regras PTW-8 e PTW-14 a PTW-16; `aviso` só para a PTW-17.',
       'Um `aviso` cobre a frase inteira e já traz todas as correções dela; nenhum `erro` cai dentro de um `aviso`.',
+      'Num `aviso`, o original é a frase inteira e o replacement é a frase reescrita.',
       'Copie o original letra por letra, sem normalizar espaços nem aspas.',
       TONE_LINES[opts.tone],
-      ...(opts.rewrite ? [] : ['Só erros: não devolva nenhum aviso; não reorganize frases.']),
-      ...(opts.neverFix.length ? [`Palavras da pessoa: nunca troque estas palavras: ${opts.neverFix.join(', ')}.`] : []),
+      ...(opts.rewrite ? [] : ['Só erros: não devolva nenhum aviso, ignore a PTW-17; não reorganize frases.']),
+      ...(never.length ? [`Palavras da pessoa: nunca troque estas palavras: ${never.join(', ')}.`] : []),
     ].join('\n'),
   );
   return parts.join('\n\n');
