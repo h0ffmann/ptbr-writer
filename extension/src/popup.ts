@@ -1,11 +1,14 @@
+import { normalizeHost } from './hosts';
 import { loadSettings } from './settings';
 import { disableSiteFlow, enableSiteFlow } from './sites';
 
+// The host the extension can run on: an https page whose host the options page would accept
+// (no localhost, no IP address).
 export function hostOf(url: string | undefined): string | null {
   if (!url) return null;
   try {
     const u = new URL(url);
-    return u.protocol === 'https:' || u.protocol === 'http:' ? u.hostname : null;
+    return u.protocol === 'https:' ? normalizeHost(u.hostname) : null;
   } catch {
     return null;
   }
@@ -21,7 +24,7 @@ export async function render(root: HTMLElement): Promise<void> {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.url) return line('Site sem acesso.');
   const host = hostOf(tab.url);
-  if (!host) return line('Esta página não é um site http(s).');
+  if (!host) return line('Site não suportado.');
   const s = await loadSettings();
   const site = s.sites[host];
   const on = !!site?.enabled;

@@ -111,6 +111,14 @@ describe('add site', () => {
   });
 });
 
+describe('key fields', () => {
+  it('are password inputs', async () => {
+    await renderOptions(root());
+    expect((document.querySelector('#key-claude') as HTMLInputElement).type).toBe('password');
+    expect((document.querySelector('#key-deepseek') as HTMLInputElement).type).toBe('password');
+  });
+});
+
 describe('popup', () => {
   it('offers Ativar and follows the permission flow', async () => {
     await renderPopup(root());
@@ -120,6 +128,14 @@ describe('popup', () => {
     await flush();
     expect(send).toHaveBeenCalledWith({ type: 'enable-site', host: 'example.com' });
     expect(document.querySelector('#toggle-site')!.textContent).toBe('Desativar neste site');
+  });
+  it('http, localhost and IP pages are not supported', async () => {
+    for (const url of ['http://example.com/', 'https://localhost/', 'https://192.168.0.1/', 'http://127.0.0.1:8080/']) {
+      tabUrl = url;
+      await renderPopup(root());
+      expect(document.querySelector('#toggle-site'), url).toBeNull();
+      expect(root().textContent, url).toContain('Site não suportado.');
+    }
   });
   it('no button on non-http pages or without url', async () => {
     tabUrl = 'chrome://extensions';
