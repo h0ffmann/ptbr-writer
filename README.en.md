@@ -215,7 +215,7 @@ on 2026-10-21, not measured). Only that provider receives the text, and the keys
 `chrome.storage.local`. The spans to change are underlined; resting the mouse on the word, or a
 click on the number in the field's corner, opens a card with **Aceitar** (accept) and **Ignorar**
 (ignore), and nothing changes until you accept. Accepting one suggestion keeps the others; typing
-again checks the text again after the pause. A red underline is spelling, punctuation and agreement; yellow is a reorganized sentence (a **Reescrita** card, "rewrite"), and inside a yellow sentence the red one does not show. In the settings you choose the tone (informal, neutral or formal), how much to fix (errors and rewrite, or errors only), the wait of 1, 2 or 3 s, and the "never fix" list (up to 200 entries of 1 to 3 words; the card has **Sempre ignorar**, "always ignore"). On from the start:
+again checks the text again after the pause. A red underline covers spelling, punctuation, agreement and the other writing rules; yellow is a reorganized sentence (a **Reescrita** card, "rewrite"), and inside a yellow sentence the red one does not show. In the settings you choose the tone (informal, neutral or formal), how much to fix (errors and rewrite, or errors only), the wait of 1, 2 or 3 s, and the "never fix" list (up to 200 entries of 1 to 3 words; the card has **Sempre ignorar**, "always ignore"). On from the start:
 `web.whatsapp.com` (`leve`), `mail.google.com` (`descritivo`) and `github.com` (`descritivo`). Other
 sites stay off until you click **Ativar neste site** (enable on this site) in the popup (https sites
 only), or enable
@@ -264,10 +264,10 @@ The origin of each one comes from [`site/data/origins.tsv`](site/data/origins.ts
 | PTW-11 | Número com unidade e origem (a number with unit and origin) | ouro-paper; Audience and evidence | [@h0ffmann](https://github.com/h0ffmann) |
 | PTW-12 | Sem alegação de pioneirismo (no priority claim) | Vale style `PriorityClaims` | [@h0ffmann](https://github.com/h0ffmann) |
 | PTW-13 | Fato separado de análise (fact apart from analysis) | ouro-paper | [@h0ffmann](https://github.com/h0ffmann) |
-| PTW-14 | Palavras inteiras e por extenso (whole words, spelled out) | pedido do dono do repo | [@robkler](https://github.com/robkler) |
-| PTW-15 | Pontuação (punctuation) | pedido do dono do repo | [@robkler](https://github.com/robkler) |
-| PTW-16 | Maiúsculas e concordância (capitals and agreement) | pedido do dono do repo | [@robkler](https://github.com/robkler) |
-| PTW-17 | Frase reorganizada (rewritten sentence) | pedido do dono do repo | [@robkler](https://github.com/robkler) |
+| PTW-14 | Palavras inteiras e por extenso (whole words, spelled out) | repo owner's request | [@robkler](https://github.com/robkler) |
+| PTW-15 | Pontuação (punctuation) | repo owner's request | [@robkler](https://github.com/robkler) |
+| PTW-16 | Maiúsculas e concordância (capitals and agreement) | repo owner's request | [@robkler](https://github.com/robkler) |
+| PTW-17 | Frase reorganizada (rewritten sentence) | repo owner's request | [@robkler](https://github.com/robkler) |
 
 ## reading time
 
