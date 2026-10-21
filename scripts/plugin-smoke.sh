@@ -8,15 +8,15 @@
 set -euo pipefail
 
 max=${1:-300}
-want="cientifico, ptbr, ptbr-writter"
+want="cientifico, ptbr, ptbr-writer"
 root=$(git rev-parse --show-toplevel)
 cfg=$(mktemp -d); trap 'rm -rf "$cfg"' EXIT
 export CLAUDE_CONFIG_DIR=$cfg
 
 claude plugin validate "$root" >/dev/null
 claude plugin marketplace add "$root" >/dev/null
-claude plugin install ptbr-writter@ptbr-writter >/dev/null
-details=$(claude plugin details ptbr-writter@ptbr-writter)
+claude plugin install ptbr-writer@ptbr-writer >/dev/null
+details=$(claude plugin details ptbr-writer@ptbr-writer)
 
 got=$(sed -n 's/^ *Skills ([0-9]*) *//p' <<<"$details")
 [ "$got" = "$want" ] || { echo "plugin-smoke: skills are \"$got\", want \"$want\"" >&2; exit 1; }

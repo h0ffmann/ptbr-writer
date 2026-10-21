@@ -47,7 +47,7 @@ def route(request: str, rows: list[tuple[str, str, list[str]]]) -> str:
     best = max((n for n, _, _ in rest), default=0)
     top = [(s, lv) for n, s, lv in rest if n == best]
     if not top:
-        return "ptbr-writter · smart-note" if note else "ptbr-writter · sem nível: a skill classifica e declara"
+        return "ptbr-writer · smart-note" if note else "ptbr-writer · sem nível: a skill classifica e declara"
     line = " | ".join(f"{s} · {COMPOSES + ' + ' if note else ''}{lv}" for s, lv in top)
     return line + (" (empate: escolha um e declare)" if len(top) > 1 else "")
 
@@ -64,20 +64,20 @@ def check() -> list[str]:
     errors = [f"routes.tsv: no row for level {lv}" for lv in want if lv not in have]
     errors += [f"routes.tsv: {lv} is not a level in SKILL.md" for lv in have if lv not in want]
     errors += [f"routes.tsv: {lv} appears {have.count(lv)} times" for lv in set(have) if have.count(lv) > 1]
-    skills = {"ptbr-writter"} | {p.parent.name for p in ROOT.glob("skills/*/SKILL.md")}
+    skills = {"ptbr-writer"} | {p.parent.name for p in ROOT.glob("skills/*/SKILL.md")}
     errors += [f"routes.tsv: no skill {s}" for s, _, _ in rows if s not in skills]
     return errors
 
 
 def self_test() -> None:
     rows = routes((HERE / "routes.tsv").read_text())
-    assert route("reescreva este runbook de incidente", rows) == "ptbr-writter · estrito"
+    assert route("reescreva este runbook de incidente", rows) == "ptbr-writer · estrito"
     assert route("revise o RELATORIO e as citações", rows) == "cientifico · científico"
-    assert route("transforme em notas do Obsidian este comunicado", rows) == "ptbr-writter · smart-note + leve"
-    assert route("guarde no meu segundo cérebro", rows) == "ptbr-writter · smart-note"
-    assert route("melhore isto", rows).startswith("ptbr-writter · sem nível")
+    assert route("transforme em notas do Obsidian este comunicado", rows) == "ptbr-writer · smart-note + leve"
+    assert route("guarde no meu segundo cérebro", rows) == "ptbr-writer · smart-note"
+    assert route("melhore isto", rows).startswith("ptbr-writer · sem nível")
     assert route("o comunicado sobre o runbook", rows).endswith("(empate: escolha um e declare)")
-    assert route("um postmortem", rows).startswith("ptbr-writter · sem nível")  # "post" is a word, not a prefix
+    assert route("um postmortem", rows).startswith("ptbr-writer · sem nível")  # "post" is a word, not a prefix
     assert levels("## Níveis de rigor\n\n- `a`: x.\n- `b`: y.\n\n## Regras\n- `c`: z.\n") == ["a", "b"]
     print("route self-test: ok")
 

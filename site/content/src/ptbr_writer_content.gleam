@@ -1,5 +1,5 @@
 //// `gleam run` in site/content: reads SKILL.md, the justfile and site/data/*.tsv and writes
-//// ../src/ptbr_writter_site/content.gleam, the only place the site takes its facts from. Nothing in
+//// ../src/ptbr_writer_site/content.gleam, the only place the site takes its facts from. Nothing in
 //// site/src is typed by hand: a rule, a level, a step or a recipe that the page shows is read here.
 //// The pattern is h0ffmann/ww3-gpu's `site/content`.
 
@@ -50,16 +50,16 @@ pub type Planned {
 /// The statuses a roadmap row may have, in the order of the work.
 pub const statuses = ["feito", "em andamento", "planejado"]
 
-@external(javascript, "./ptbr_writter_content_ffi.mjs", "read")
+@external(javascript, "./ptbr_writer_content_ffi.mjs", "read")
 fn read(path: String) -> String
 
-@external(javascript, "./ptbr_writter_content_ffi.mjs", "write")
+@external(javascript, "./ptbr_writer_content_ffi.mjs", "write")
 fn write(path: String, text: String) -> Nil
 
-@external(javascript, "./ptbr_writter_content_ffi.mjs", "revision")
+@external(javascript, "./ptbr_writer_content_ffi.mjs", "revision")
 fn revision() -> String
 
-@external(javascript, "./ptbr_writter_content_ffi.mjs", "exit")
+@external(javascript, "./ptbr_writer_content_ffi.mjs", "exit")
 fn exit(code: Int) -> Nil
 
 // ---- reading SKILL.md --------------------------------------------------------------------------
@@ -615,7 +615,7 @@ pub fn main() -> Nil {
   let roadmap = read("../data/roadmap.tsv")
   let origin_rows = read("../data/origins.tsv")
   let planned_rows = read("../data/planned.tsv")
-  let plugin = read(root <> "plugins/ptbr-writter/.claude-plugin/plugin.json")
+  let plugin = read(root <> "plugins/ptbr-writer/.claude-plugin/plugin.json")
   case
     list.flatten([
       case install(plugin) {
@@ -630,7 +630,7 @@ pub fn main() -> Nil {
   {
     [] ->
       write(
-        "../src/ptbr_writter_site/content.gleam",
+        "../src/ptbr_writer_site/content.gleam",
         module(
           skill,
           justfile,

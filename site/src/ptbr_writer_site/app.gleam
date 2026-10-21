@@ -8,7 +8,7 @@ import gleam/string
 import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
-import ptbr_writter_site/content.{
+import ptbr_writer_site/content.{
   type Level, type Link, type Origin, type Planned, type Recipe, type Rule,
   type Step,
 }
@@ -376,7 +376,7 @@ fn limits() -> Element(msg) {
 fn awesome() -> Element(msg) {
   section(
     "awesome",
-    "awesome-ptbr-writter",
+    "awesome-ptbr-writer",
     "outros projetos para quem escreve texto técnico em português. o primeiro é o PTC original, de onde este fork vem; os outros foram achados numa lista curada, que vai ao lado.",
     [html.ul([attribute.class("awesome")], list.map(content.awesome, link))],
   )

@@ -3,7 +3,7 @@
 import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
-import ptbr_writter_site/content
+import ptbr_writer_site/content
 
 pub fn document(body: Element(msg)) -> Element(msg) {
   let meta = fn(name, value) {
