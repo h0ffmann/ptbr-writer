@@ -6,3 +6,4 @@ roteamento	feito	route escolhe a skill e o nível antes de carregar uma skill, p
 plugin	feito	plugin do Claude Code: instalado com um comando, na versão da release (v0.2.0); o OpenCode lê o SKILL.md direto	plugins/ptbr-writer/.claude-plugin/plugin.json
 distribuição	feito	uma versão para código e plugin: a tag vX.Y.Z vira release (release.yml) e outros repositórios fixam o marketplace nela; v0.2.0 é a versão oficial	CHANGELOG.md
 retórica	planejado	skill de retórica a partir do Fédon e do Fedro, de Platão, e do Phaedrus de Robert M. Pirsig; só o esqueleto existe, sem regras	skills/retorica/SKILL.md
+opencode	em andamento	skills e plugin do ask-levels para o OpenCode, instalados por tag com scripts/install-opencode.sh; testado no OpenCode 1.19.0 (skills e instrução), a ferramenta question não foi medida ⚠; o script entra na próxima release ⚠	scripts/install-opencode.sh

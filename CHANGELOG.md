@@ -3,6 +3,13 @@
 Uma versão só: a tag `vX.Y.Z`, o `version` de `plugins/ptbr-writer/.claude-plugin/plugin.json` e o
 cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, depois do merge, cria a tag; `release.yml` publica a release.
 
+## Unreleased
+
+- OpenCode: `scripts/install-opencode.sh vX.Y.Z` baixa a tag e instala as skills `ptbr-writer`, `ptbr`
+  e `cientifico` como arquivos em `~/.config/opencode/skills/` (ou `./.opencode/` com `--project`),
+  mais o plugin `ask-levels` (`opencode/ptbr-writer.js`), que roda o mesmo binário `ptbr` do hook do
+  Claude Code. `scripts/opencode-smoke.sh` roda em `just plugin-check`.
+
 ## v0.2.0 — 2026-10-21
 
 - O projeto agora se chama **ptbr-writer** (antes `ptbr-writter`): o repositório
