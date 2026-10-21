@@ -85,7 +85,7 @@ site: figure-init
 site-serve: site
     nix develop --no-update-lock-file .#site --command nix run nixpkgs#caddy -- file-server --root site/dist --listen :8000
 
-# Check that flake.lock pins gleam-website to the forks/picasso submodule's revision.
+# Check that every picasso pin (flake.lock's gleam-website and code-graph, to-pdf.sh, tools.lock) is the forks/picasso submodule's revision.
 pins:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -94,6 +94,10 @@ pins:
     [ "$lock" = "$sub" ] || { echo "pins: flake.lock has picasso $lock, forks/picasso is $sub" >&2; exit 1; }
     pdf="$(sed -n 's/^PICASSO_REV=//p' plugins/ptbr-writer/scripts/to-pdf.sh)"
     [ "$pdf" = "$sub" ] || { echo "pins: to-pdf.sh has picasso $pdf, forks/picasso is $sub" >&2; exit 1; }
+    graph="$(jq -r '.nodes["code-graph"].locked.rev' flake.lock)"
+    [ "$graph" = "$sub" ] || { echo "pins: flake.lock has code-graph $graph, forks/picasso is $sub" >&2; exit 1; }
+    tools="$(sed -n 's/^rev=//p' plugins/ptbr-writer/bin/tools.lock)"
+    [ "$tools" = "$sub" ] || { echo "pins: tools.lock has picasso $tools, forks/picasso is $sub" >&2; exit 1; }
     echo "pins: picasso $sub"
     just tools-check
 

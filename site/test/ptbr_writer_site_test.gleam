@@ -188,6 +188,7 @@ pub fn figure_pills_test() {
     )
   })
   assert content.figures != []
+  assert string.contains(actions, "href=\"grafo/graph.html\"")
 }
 
 // Every PDF of docs/eli5/RESULTS.tsv is linked from the ELI5 section, with its prompt and tokens.
