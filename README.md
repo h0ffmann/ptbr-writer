@@ -97,12 +97,29 @@ repositório, o `ref`). O que muda em cada versão está no [`CHANGELOG.md`](CHA
 
 Ou descreva a tarefa: "reescreva este runbook em português controlado".
 
-A partir da v0.2.0, `ptbr` no pedido ("ptbr: reescreva este texto"), sem nível, faz o Claude
-perguntar os níveis e os formatos, os dois em múltipla escolha: `.txt`, `.md`, `.pdf` e `notes`
-(smart-note). Sai uma versão por nível em cada formato, e o texto do `.txt` e do `.md` aparece sempre no console, não só o arquivo.
+A partir da v0.2.0, um pedido que começa com `ptbr` ("ptbr: reescreva este texto", `/ptbr`)
+usa o `ptbr-writter.toml`. Citar ptbr-writter no meio de uma frase não dispara nada. Na primeira
+vez, sem esse arquivo, o Claude pergunta uma vez só, em múltipla escolha:
 
-Uma terceira pergunta escolhe a pasta: a raiz da sessão (o padrão, em geral a raiz do
-repositório), `docs/` ou outra, digitada. A pasta é criada se faltar. O nome dos arquivos é um só:
+- **níveis:** um texto por nível;
+- **formatos:** `.txt`, `.md`, `.pdf` e `notes` (smart-note);
+- **pasta:** a raiz da sessão (o padrão), `docs/` ou outra, digitada.
+
+e grava as respostas em `./ptbr-writter.toml`. Daí em diante não pergunta mais: edite o arquivo,
+ou escreva `ptbr reconfigurar`.
+
+```toml
+levels = ["estrito"]     # vazio: a skill classifica e declara o nível
+formats = ["md", "pdf"]  # txt, md, pdf, notes; vazio: só a resposta
+folder = "docs"          # relativa à raiz da sessão, sem ".."
+print = ["txt", "md"]    # o que aparece inteiro no console, além do arquivo
+```
+
+Cada camada sobrescreve a anterior: os padrões do plugin
+([`ptbr-writter.default.toml`](plugins/ptbr-writter/ptbr-writter.default.toml)),
+`~/.config/ptbr-writter/ptbr-writter.toml`, `./ptbr-writter.toml` e, por último, o pedido
+(`ptbr leve: ...` usa `leve`). Um valor desconhecido ou uma pasta fora da raiz é ignorado, com
+aviso. O nome dos arquivos é um só:
 
 ```text
 ptbr-writter-<AAAAMMDDThhmmZ>-<objetivo>-<nível>.<ext>

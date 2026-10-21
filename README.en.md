@@ -99,12 +99,29 @@ repository, the `ref`). What changes in each version is in [`CHANGELOG.md`](CHAN
 
 Or describe the task: "reescreva este runbook em português controlado".
 
-From v0.2.0, `ptbr` in a request ("ptbr: reescreva este texto") with no level makes Claude ask
-for the levels and the formats, both multiple choice: `.txt`, `.md`, `.pdf` and `notes`
-(smart-note). You get one version per level in each format, and the text of the `.txt` and `.md` always shows in the console, not only the file.
+From v0.2.0, a request that starts with `ptbr` ("ptbr: reescreva este texto", `/ptbr`) uses
+`ptbr-writter.toml`. Naming ptbr-writter inside a sentence triggers nothing. The first time, with no
+such file, Claude asks once, multiple choice:
 
-A third question picks the folder: the session root (the default, usually the repository root),
-`docs/`, or another one, typed in. The folder is created if missing. Files share one name pattern:
+- **levels:** one text per level;
+- **formats:** `.txt`, `.md`, `.pdf` and `notes` (smart-note);
+- **folder:** the session root (the default), `docs/`, or another one, typed in.
+
+and writes the answers to `./ptbr-writter.toml`. From then on it does not ask: edit the file, or
+write `ptbr reconfigurar`.
+
+```toml
+levels = ["estrito"]     # empty: the skill classifies and states the level
+formats = ["md", "pdf"]  # txt, md, pdf, notes; empty: only the answer
+folder = "docs"          # relative to the session root, no ".."
+print = ["txt", "md"]    # shown in full in the console, besides the file
+```
+
+Each layer overrides the one before: the plugin's defaults
+([`ptbr-writter.default.toml`](plugins/ptbr-writter/ptbr-writter.default.toml)),
+`~/.config/ptbr-writter/ptbr-writter.toml`, `./ptbr-writter.toml` and, last, the request
+(`ptbr leve: ...` uses `leve`). An unknown value or a folder outside the root is ignored, with a
+warning. Files share one name pattern:
 
 ```text
 ptbr-writter-<YYYYMMDDThhmmZ>-<goal>-<level>.<ext>
