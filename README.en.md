@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=version&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#license)
-[![estimated reading time: ~24 min](https://img.shields.io/badge/reading%20time-~25%20min-1682D4?style=flat-square)](#reading-time)
+[![estimated reading time: ~25 min](https://img.shields.io/badge/reading%20time-~25%20min-1682D4?style=flat-square)](#reading-time)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 
 </div>
