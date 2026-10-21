@@ -1,14 +1,14 @@
 import { addNeverFix } from '../never-fix';
 import { ruleTitles } from '../rules';
 import { levelFor, loadSettings, saveSettings } from '../settings';
-import { SKILL } from '../skills';
+import { CIENTIFICO, SKILL } from '../skills';
 import type { CheckError, CheckRequest, CheckResult, Level, Located } from '../types';
 import { acceptSuggestion } from './apply';
 import { forget, renderBadge, renderSuggestions, repositionAll } from './overlay';
 import { textModel } from './text';
 import { createWatcher } from './watcher';
 
-const TITLES = ruleTitles(SKILL);
+const TITLES = { ...ruleTitles(SKILL), ...ruleTitles(CIENTIFICO) };
 const TEXT_INPUTS = ['text', 'search', 'email', 'url'];
 
 interface FieldState {
