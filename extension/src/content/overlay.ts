@@ -85,10 +85,57 @@ interface Drawn {
   onIgnore: (l: Located) => void;
   layer: HTMLElement;
   badge?: HTMLElement;
+  // Where each underlined span is on screen (client coordinates), for the hover test.
+  hits: { rect: DOMRect; l: Located }[];
 }
 
 const drawn = new Map<HTMLElement, Drawn>();
-let card: { el: HTMLElement; node: HTMLElement } | null = null;
+// `hover`: opened by resting the mouse on a word, so it closes when the mouse leaves. A card opened
+// by a click (underline strip or badge) stays until Escape or a click outside.
+let card: { el: HTMLElement; node: HTMLElement; l: Located; hover: boolean } | null = null;
+
+const HOVER_MS = 200;
+const LEAVE_MS = 300;
+let openTimer: ReturnType<typeof setTimeout> | undefined;
+let closeTimer: ReturnType<typeof setTimeout> | undefined;
+
+function hitAt(x: number, y: number): { el: HTMLElement; d: Drawn; l: Located } | null {
+  for (const [el, d] of drawn)
+    for (const h of d.hits)
+      if (x >= h.rect.left && x <= h.rect.right && y >= h.rect.top && y <= h.rect.bottom) return { el, d, l: h.l };
+  return null;
+}
+
+// The words stay clickable for the editor (no pointer events on them), so hover is found by
+// comparing the mouse position with the drawn rects.
+function onMouseMove(e: Event) {
+  const { clientX: x, clientY: y } = e as MouseEvent;
+  // A card whose node left the page (the site rebuilt the overlay host) no longer counts.
+  if (card && !card.node.isConnected) card = null;
+  if (card && e.composedPath().includes(card.node)) {
+    clearTimeout(closeTimer);
+    return;
+  }
+  const hit = hitAt(x, y);
+  clearTimeout(openTimer);
+  if (hit && card?.l === hit.l) {
+    clearTimeout(closeTimer);
+    return;
+  }
+  if (hit) {
+    openTimer = setTimeout(() => {
+      if (card && !card.hover) return;
+      openCard(hit.el, hit.l, hit.d, true);
+    }, HOVER_MS);
+    return;
+  }
+  if (card?.hover) {
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(() => {
+      if (card?.hover) closeCard();
+    }, LEAVE_MS);
+  }
+}
 
 export function overlayRoot(doc: Document = document): ShadowRoot {
   let host = doc.getElementById(HOST_ID);
@@ -103,6 +150,7 @@ export function overlayRoot(doc: Document = document): ShadowRoot {
     (doc.documentElement ?? doc.body).appendChild(host);
     doc.addEventListener('mousedown', closeOnOutside, true);
     doc.addEventListener('keydown', closeOnEscape, true);
+    doc.addEventListener('mousemove', onMouseMove, { capture: true, passive: true });
   }
   return host.shadowRoot!;
 }
@@ -114,6 +162,7 @@ function closeOnEscape(e: Event) {
   if (card && (e as KeyboardEvent).key === 'Escape') closeCard();
 }
 function closeCard() {
+  clearTimeout(closeTimer);
   card?.node.remove();
   card = null;
 }
@@ -125,7 +174,7 @@ function entry(el: HTMLElement): Drawn {
     const layer = el.ownerDocument.createElement('div');
     layer.className = 'ptbr-layer';
     root.appendChild(layer);
-    d = { located: [], offset: 0, onAccept: () => {}, onIgnore: () => {}, layer, badge: d?.badge };
+    d = { located: [], offset: 0, onAccept: () => {}, onIgnore: () => {}, layer, badge: d?.badge, hits: [] };
     drawn.set(el, d);
   }
   return d;
@@ -199,6 +248,7 @@ export function repositionAll(): void {
 function draw(el: HTMLElement, d: Drawn) {
   const doc = el.ownerDocument;
   d.layer.replaceChildren();
+  d.hits = [];
   const clip = el.getBoundingClientRect();
   const rectsOf = rectSource(el);
   for (const l of d.located) {
@@ -207,6 +257,7 @@ function draw(el: HTMLElement, d: Drawn) {
     u.title = l.rule;
     for (const r of rectsOf(l.start + d.offset, l.end + d.offset)) {
       if (!visible(r, clip)) continue;
+      d.hits.push({ rect: r, l });
       const seg = doc.createElement('div');
       seg.className = 'ptbr-seg';
       place(seg, r, doc);
@@ -229,7 +280,7 @@ function draw(el: HTMLElement, d: Drawn) {
   }
 }
 
-function openCard(el: HTMLElement, l: Located, d: Drawn) {
+function openCard(el: HTMLElement, l: Located, d: Drawn, hover = false) {
   closeCard();
   const doc = el.ownerDocument;
   const node = doc.createElement('div');
@@ -264,7 +315,7 @@ function openCard(el: HTMLElement, l: Located, d: Drawn) {
   node.append(rule, change, actions);
   node.addEventListener('mousedown', (e) => e.preventDefault());
   overlayRoot(doc).appendChild(node);
-  card = { el, node };
+  card = { el, node, l, hover };
   node.dataset.start = String(l.start + d.offset);
   node.dataset.end = String(l.end + d.offset);
   placeCard(node, el);
