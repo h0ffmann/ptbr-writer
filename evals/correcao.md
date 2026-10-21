@@ -33,7 +33,7 @@ Entrada (`neutro`):
 
 > O sistema que o time que trabalha com dados mantém falha quando o cache, que foi criado ontem, e que ninguém limpou, enche, o que causa lentidão.
 
-Esperado: uma frase reorganizada, no mesmo sentido e sem informação nova, por exemplo `O sistema do time de dados fica lento quando o cache, criado ontem e nunca limpo, enche.` Já leva as correções das PTW-8 e PTW-14 a 16.
+Esperado: uma frase reorganizada, no mesmo sentido e sem informação nova, por exemplo `Quando o cache criado ontem, que ninguém limpou, enche, o sistema mantido pelo time de dados falha e fica lento.` Mantém todos os fatos da entrada: a falha e a lentidão. Já leva as correções das PTW-8 e PTW-14 a 16.
 
 ## 5. PTW-17: frase já clara
 
