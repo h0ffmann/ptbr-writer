@@ -20,7 +20,7 @@ build: content
     for src in ../docs/archify/*.json; do slug="$(basename "$src" .json)"; ARCHIFY_UPDATE_CHECK_DISABLED=1 node ../vendor/archify/archify/bin/archify.mjs render "$(node -p "require('$PWD/$src').diagram_type")" "$src" "dist/figuras/$slug.html" --quality showcase; cp "../docs/img/$slug.png" dist/figuras/; done
     # The code graphs (picasso's code-graph: tree-sitter, no model), self-contained pages: picasso at the
     # pinned forks/picasso, then this repository, whose nodes that use picasso link into picasso's page.
-    code-graph extract ../forks/picasso --out ../build/grafo-picasso --title picasso
+    code-graph extract ../forks/picasso --out ../build/grafo-picasso --title picasso --backlink ptbr-writer=graph.html
     code-graph extract .. --out ../build/grafo --title ptbr-writer --exclude site/dist --exclude build --link picasso=../build/grafo-picasso/graph.json@picasso.html
     mkdir -p dist/grafo
     cp ../build/grafo/graph.html dist/grafo/
@@ -37,6 +37,8 @@ ci: content
     just build
     for id in instalar uso niveis regras saida smart-note limites receitas figuras eli5 awesome roadmap; do grep -q "id=\"$id\"" dist/index.html || { echo "site: no #$id in index.html" >&2; exit 1; }; done
     test -s dist/grafo/graph.html && test -s dist/grafo/picasso.html || { echo "site: no grafo/graph.html or grafo/picasso.html" >&2; exit 1; }
+    # Each graph page hops to the other: "↗ picasso" on ours, "← ptbr-writer" on picasso.html.
+    grep -qF '<a class="hop" href="picasso.html">' dist/grafo/graph.html && grep -qF '<a class="hop back" href="graph.html">' dist/grafo/picasso.html || { echo "site: no hop link between the two graph pages" >&2; exit 1; }
     # Every picasso lab this repo pins is a node of its graph that links into picasso's page.
     for lab in gleam-website code-graph ptbr-pdf ptbr-tools; do jq -e --arg l "$lab" 'any(.nodes[]; .external == "picasso" and (.href | test("labs_" + ($l | gsub("-"; "_")))))' ../build/grafo/graph.json >/dev/null || { echo "site: no link to picasso labs/$lab in the code graph" >&2; exit 1; }; done
     for f in ../docs/archify/*.json; do test -s "dist/figuras/$(basename "$f" .json).html" || { echo "site: no page for $f" >&2; exit 1; }; done
