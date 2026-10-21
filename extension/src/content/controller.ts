@@ -2,6 +2,7 @@ import { levelFor, loadSettings } from '../settings';
 import type { CheckError, CheckRequest, CheckResult, Level, Located } from '../types';
 import { acceptSuggestion } from './apply';
 import { forget, renderBadge, renderSuggestions, repositionAll } from './overlay';
+import { textModel } from './text';
 import { createWatcher } from './watcher';
 
 const TEXT_INPUTS = ['text', 'search', 'email', 'url'];
@@ -42,9 +43,23 @@ export async function startContent(): Promise<() => void> {
       f.located = f.located.filter((x) => x !== l);
       render(el);
     };
-    // On success the editor's input event clears the field; the watcher checks again after the debounce.
+    // The accepted edit is the extension's own: the other suggestions stay, shifted by the change in
+    // length, and the API is not called again until the user types.
     const accept = (l: Located) => {
-      if (!acceptSuggestion(el, l, f.offset)) drop(l);
+      const start = l.start + f.offset;
+      const end = l.end + f.offset;
+      const before = textModel(el).text;
+      watcher?.expectEdit(el, before.slice(0, start) + l.replacement + before.slice(end));
+      if (!acceptSuggestion(el, l, f.offset)) {
+        watcher?.expectEdit(el, null);
+        drop(l);
+        return;
+      }
+      const delta = l.replacement.length - (l.end - l.start);
+      f.located = f.located
+        .filter((x) => x !== l)
+        .map((x) => (x.start >= l.end ? { ...x, start: x.start + delta, end: x.end + delta } : x));
+      render(el);
     };
     renderSuggestions(el, f.located, f.offset, accept, drop);
     renderBadge(el, f.state, f.located.length);

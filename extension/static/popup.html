@@ -1,6 +1,21 @@
 <!doctype html>
 <html lang="pt-BR">
 <head><meta charset="utf-8"><title>ptbr-writer</title>
-<style>body{font:14px system-ui,sans-serif;margin:16px;min-width:260px}label{display:block}input[type=text]{width:20em}td,th{padding:2px 8px;text-align:left}#site-error{color:#b00020}</style></head>
+<style>
+:root { color-scheme: light dark; --line: #d0d0d0; --muted: #5f5f5f; --accent: #146c2e; }
+@media (prefers-color-scheme: dark) { :root { --line: #4a4a4a; --muted: #a8a8a8; --accent: #3fa35f; } }
+body { font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; margin: 0; width: 300px; }
+#app { padding: 12px; }
+section { padding: 10px 0; border-bottom: 1px solid var(--line); }
+section:first-child { padding-top: 0; font-weight: 600; }
+p { margin: 0 0 6px; }
+section:first-child label { display: flex; align-items: center; gap: 6px; }
+label { display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 8px; margin: 6px 0; }
+select, input[type=password] { width: 100%; box-sizing: border-box; font: inherit; padding: 3px 4px; }
+button { font: inherit; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: inherit; cursor: pointer; }
+#save-key { display: block; margin: 6px 0 0 auto; }
+#toggle-site { margin-top: 4px; }
+#open-options { display: block; width: 100%; margin-top: 10px; border-color: var(--accent); color: var(--accent); }
+</style></head>
 <body><div id="app"></div><script src="popup.js" type="module"></script></body>
 </html>

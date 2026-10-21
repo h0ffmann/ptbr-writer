@@ -139,3 +139,16 @@ test('desligar o site numa aba aberta para as chamadas', async () => {
   expect(server.calls.length).toBe(before);
   await expect(page.locator('.ptbr-underline-erro')).toHaveCount(0);
 });
+
+test('passar o mouse na palavra abre o cartão', async () => {
+  await launch('claude');
+  const page = await open('127.0.0.1', 'textarea.html');
+  await page.locator('#field').click();
+  await page.keyboard.type(TYPED);
+  const seg = page.locator('.ptbr-underline-erro .ptbr-seg').first();
+  await expect(seg).toHaveCount(1, { timeout: UI_TIMEOUT });
+  const box = (await seg.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.locator('.ptbr-card [data-action=accept]').click();
+  await expect(page.locator('#field')).toHaveValue(FIXED);
+});
