@@ -20,7 +20,7 @@ export async function handleCheck(
   inflight.set(req.key, controller);
 
   try {
-    const system = buildSystemPrompt(req.level, SKILL, CIENTIFICO);
+    const system = buildSystemPrompt(req.level, SKILL, CIENTIFICO, { tone: settings.tone, rewrite: settings.rewrite, neverFix: settings.neverFix });
     const { url, init } = buildRequest(provider, settings, system, req.text);
     let res: Response;
     try {
