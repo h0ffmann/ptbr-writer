@@ -120,8 +120,9 @@ pede para mudar. Instale do código-fonte:
 1. `just ext-build`
 2. Abra `chrome://extensions` e ligue o **Modo do desenvolvedor**.
 3. Em **Carregar sem compactação**, escolha `extension/dist/`.
-4. No popup da extensão, clique em **Configurações**, escolha o provider (Claude ou DeepSeek) e cole a
-   chave. Recarregue as abas que já estavam abertas.
+4. No popup da extensão, escolha o provider (Claude ou DeepSeek) e o modelo, cole a chave e clique em
+   **Salvar**. Recarregue as abas que já estavam abertas. **Todas as configurações** abre a página
+   com a lista de sites.
 
 ## usar
 
@@ -206,8 +207,9 @@ commit fixado em `forks/picasso` coincidem, `just pins` confere.
 **Extensão do Chrome.** Depois de uma pausa de 1 s na digitação, o texto do campo vai ao provider
 escolhido (Claude, modelo padrão `claude-haiku-5-5`; ou DeepSeek, `deepseek-flash` ⚠ lido na
 documentação da DeepSeek em 2026-10-21, não medido). Só ele recebe o texto, e as chaves ficam só em
-`chrome.storage.local`. Os trechos a mudar aparecem sublinhados; clicar no sublinhado, ou no número
-no canto do campo, abre um cartão com **Aceitar** e **Ignorar**, e nada muda sem você aceitar. Ligados de início: `web.whatsapp.com`
+`chrome.storage.local`. Os trechos a mudar aparecem sublinhados; parar o mouse na palavra, ou clicar no número
+no canto do campo, abre um cartão com **Aceitar** e **Ignorar**, e nada muda sem você aceitar.
+Aceitar uma sugestão mantém as outras; voltar a digitar confere o texto de novo depois da pausa. Ligados de início: `web.whatsapp.com`
 (`leve`), `mail.google.com` (`descritivo`) e `github.com` (`descritivo`). Os outros sites ficam
 desligados até você clicar em **Ativar neste site** no popup (só em sites https), ou liberar nas
 opções; os níveis são

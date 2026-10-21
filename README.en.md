@@ -122,8 +122,9 @@ what the level asks to change. Install it from source:
 1. `just ext-build`
 2. Open `chrome://extensions` and turn on **Developer mode**.
 3. Under **Load unpacked**, choose `extension/dist/`.
-4. In the extension's popup, click **Configurações** (settings), choose the provider (Claude or
-   DeepSeek) and paste the key. Reload the tabs that were already open.
+4. In the extension's popup, choose the provider (Claude or DeepSeek) and the model, paste the key and
+   click **Salvar** (save). Reload the tabs that were already open. **Todas as configurações** (all
+   settings) opens the page with the list of sites.
 
 ## use
 
@@ -211,8 +212,10 @@ the commit pinned in `forks/picasso` agree, `just pins` checks.
 **Chrome extension.** After a 1 s pause in typing, the field's text goes to the chosen provider
 (Claude, default model `claude-haiku-5-5`; or DeepSeek, `deepseek-flash` ⚠ read from DeepSeek's docs
 on 2026-10-21, not measured). Only that provider receives the text, and the keys stay only in
-`chrome.storage.local`. The spans to change are underlined; a click on the underline, or on the
-number in the field's corner, opens a card with **Aceitar** (accept) and **Ignorar** (ignore), and nothing changes until you accept. On from the start:
+`chrome.storage.local`. The spans to change are underlined; resting the mouse on the word, or a
+click on the number in the field's corner, opens a card with **Aceitar** (accept) and **Ignorar**
+(ignore), and nothing changes until you accept. Accepting one suggestion keeps the others; typing
+again checks the text again after the pause. On from the start:
 `web.whatsapp.com` (`leve`), `mail.google.com` (`descritivo`) and `github.com` (`descritivo`). Other
 sites stay off until you click **Ativar neste site** (enable on this site) in the popup (https sites
 only), or enable
