@@ -1,4 +1,4 @@
-rev=45fb3409446263f259d56e4decefb23e48e9090d
+rev=b919f9ecbbf1d2edbe083ab72ffc7e5b23e69423
 lab=labs/ptbr-tools
 # sha256  size  path
 35f848fe44dabd967998b71a60632b91651fa97573a1a7113f619bfcc3023f2a  570112  plugins/ptbr-writer/bin/linux-x86_64/ptbr
