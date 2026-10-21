@@ -209,7 +209,7 @@ escolhido (Claude, modelo padrão `claude-haiku-5-5`; ou DeepSeek, `deepseek-fla
 documentação da DeepSeek em 2026-10-21, não medido). Só ele recebe o texto, e as chaves ficam só em
 `chrome.storage.local`. Os trechos a mudar aparecem sublinhados; parar o mouse na palavra, ou clicar no número
 no canto do campo, abre um cartão com **Aceitar** e **Ignorar**, e nada muda sem você aceitar.
-Aceitar uma sugestão mantém as outras; voltar a digitar confere o texto de novo depois da pausa. Ligados de início: `web.whatsapp.com`
+Aceitar uma sugestão mantém as outras; voltar a digitar confere o texto de novo depois da pausa. O sublinhado vermelho é ortografia, pontuação e concordância; o amarelo é uma frase reorganizada (cartão **Reescrita**), e numa frase amarela o vermelho de dentro não aparece. Nas configurações você escolhe o tom (informal, neutro ou formal), o quanto corrigir (erros e reescrita, ou só erros), a espera de 1, 2 ou 3 s e a lista "nunca corrigir" (até 200 entradas de 1 a 3 palavras; o cartão tem **Sempre ignorar**). Ligados de início: `web.whatsapp.com`
 (`leve`), `mail.google.com` (`descritivo`) e `github.com` (`descritivo`). Os outros sites ficam
 desligados até você clicar em **Ativar neste site** no popup (só em sites https), ou liberar nas
 opções; os níveis são
