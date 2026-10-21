@@ -49,7 +49,7 @@ Closes #N
 - **Inglês:** frases curtas e voz ativa, um termo por conceito, no espírito do ASD-STE100.
 - Código, caminhos, comandos, hashes e números ficam iguais nas duas metades; não traduza identificadores.
 - `Closes #N` e `Fixes #N` aparecem uma vez, antes do `---`.
-- Se o repositório pede uma linha final no corpo do PR (AGENTS.md, CLAUDE.md ou o modelo de PR), ela vem uma vez, no fim.
+- A última linha do corpo é o conteúdo de `footer.md`, nesta pasta, copiado sem mudança. Ele substitui qualquer linha "Generated with" do agente; outra linha que o repositório exige (AGENTS.md, CLAUDE.md ou o modelo de PR) vem logo antes dele.
 
 ## 4. Escreva o título
 

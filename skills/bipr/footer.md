@@ -1,0 +1,1 @@
+<img src="https://raw.githubusercontent.com/h0ffmann/ptbr-writer/main/site/static/favicon.svg" width="16" height="16" alt="ptbr-writer"> Generated with [h0ffmann/ptbr-writer](https://github.com/h0ffmann/ptbr-writer) [`bipr`](https://github.com/h0ffmann/ptbr-writer/blob/main/skills/bipr/SKILL.md) skill
