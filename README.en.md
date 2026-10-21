@@ -126,6 +126,11 @@ what the level asks to change. Install it from source:
    click **Salvar** (save). Reload the tabs that were already open. **Todas as configurações** (all
    settings) opens the page with the list of sites.
 
+In Firefox (128 or newer), `just ext-build-firefox` writes `extension/dist-firefox/`: in
+`about:debugging#/runtime/this-firefox`, **Load Temporary Add-on…** and choose that folder's
+`manifest.json`; in `about:addons`, on the extension's **Permissions** tab, allow the sites and
+the APIs. It is gone when Firefox closes. ⚠ Not yet tested in a real Firefox.
+
 ## use
 
 | Command | Does |
