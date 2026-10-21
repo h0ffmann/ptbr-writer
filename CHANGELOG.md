@@ -5,6 +5,9 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- A extensão ganha o provider **Ollama + Qwen (local)**, sem chave: `just ext-ollama` serve o
+  `qwen3.6:27b` (ou outro modelo) com `OLLAMA_ORIGINS` para as origens de extensão; a permissão
+  `http://127.0.0.1:11434/*` é opcional no manifesto e pedida no clique que escolhe o Ollama.
 - A extensão também sai para o Firefox (128+): `just ext-build-firefox` gera `extension/dist-firefox/`,
   com `background.scripts` no lugar do service worker e o id `ptbr-writer@h0ffmann`.
 - O site ganha o grafo do código TypeScript da extensão do Chrome (`grafo/extensao.html`, gerado

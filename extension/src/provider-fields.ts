@@ -1,3 +1,4 @@
+import { OLLAMA_ORIGINS } from './providers';
 import { MODELS } from './settings';
 import { maskKey } from './sites';
 import type { ProviderId, Settings } from './types';
@@ -11,6 +12,7 @@ export interface ProviderFields {
 const PROVIDERS: [ProviderId, string][] = [
   ['claude', 'Claude'],
   ['deepseek', 'DeepSeek'],
+  ['ollama', 'Ollama + Qwen (local)'],
 ];
 
 function option(value: string, text: string): HTMLOptionElement {
@@ -46,11 +48,20 @@ export function mountProviderFields(
     key.value = maskKey(s.keys[p]);
     model.replaceChildren(...MODELS[p].map((m) => option(m, m)));
     model.value = s.models[p];
+    // Ollama runs on this machine and takes no key.
+    key.disabled = p === 'ollama';
+    key.placeholder = p === 'ollama' ? 'sem chave: just ext-ollama' : '';
   };
   provider.value = s.provider;
   show(s.provider);
-  provider.addEventListener('change', () => {
-    s.provider = provider.value as ProviderId;
+  provider.addEventListener('change', async () => {
+    const p = provider.value as ProviderId;
+    // Asked in the click that picks Ollama: the browser shows its prompt only during a user gesture.
+    if (p === 'ollama' && !(await chrome.permissions.request(OLLAMA_ORIGINS))) {
+      provider.value = s.provider;
+      return;
+    }
+    s.provider = p;
     show(s.provider);
     onChange(fields);
   });

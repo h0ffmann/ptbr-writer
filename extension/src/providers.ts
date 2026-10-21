@@ -3,10 +3,16 @@ import type { CheckError, ProviderId, Settings } from './types';
 const ENDPOINTS: Record<ProviderId, string> = {
   claude: 'https://api.anthropic.com/v1/messages',
   deepseek: 'https://api.deepseek.com/chat/completions',
+  // Ollama's own chat API, not /v1: only it takes think: false, and a thinking model would spend
+  // max_tokens on its reasoning.
+  ollama: 'http://127.0.0.1:11434/api/chat',
 };
+// The host permission Ollama needs: optional in the manifest, asked when the user picks it.
+export const OLLAMA_ORIGINS = { origins: ['http://127.0.0.1:11434/*'] };
 const PATHS: Record<ProviderId, string> = {
   claude: '/v1/messages',
   deepseek: '/chat/completions',
+  ollama: '/api/chat',
 };
 
 function urlFor(p: ProviderId, s: Settings): string {
@@ -21,6 +27,25 @@ export function buildRequest(
   user: string,
 ): { url: string; init: RequestInit } {
   const url = urlFor(p, s);
+  if (p === 'ollama') {
+    return {
+      url,
+      init: {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          model: s.models.ollama,
+          stream: false,
+          think: false,
+          options: { temperature: 0, num_predict: 1024 },
+          messages: [
+            { role: 'system', content: system },
+            { role: 'user', content: user },
+          ],
+        }),
+      },
+    };
+  }
   if (p === 'claude') {
     return {
       url,
@@ -66,9 +91,11 @@ export function buildRequest(
 export function readText(p: ProviderId, json: unknown): string {
   const j = json as {
     content?: unknown;
+    message?: { content?: unknown };
     choices?: Array<{ message?: { content?: unknown } }>;
   } | null;
   if (!j || typeof j !== 'object') return '';
+  if (p === 'ollama') return typeof j.message?.content === 'string' ? j.message.content : '';
   if (p === 'claude') {
     if (!Array.isArray(j.content)) return '';
     return j.content
@@ -82,13 +109,16 @@ export function readText(p: ProviderId, json: unknown): string {
 
 // True when the reply was cut at max_tokens: its JSON is incomplete, so "no suggestions" would be a lie.
 export function isTruncated(p: ProviderId, json: unknown): boolean {
-  const j = json as { stop_reason?: unknown; choices?: Array<{ finish_reason?: unknown }> } | null;
+  const j = json as { stop_reason?: unknown; done_reason?: unknown; choices?: Array<{ finish_reason?: unknown }> } | null;
   if (!j || typeof j !== 'object') return false;
   if (p === 'claude') return j.stop_reason === 'max_tokens';
+  if (p === 'ollama') return j.done_reason === 'length';
   return Array.isArray(j.choices) && j.choices[0]?.finish_reason === 'length';
 }
 
-export function classifyError(status: number | null): CheckError {
+// Ollama answers 403 to an extension origin it was not started to accept (OLLAMA_ORIGINS).
+export function classifyError(status: number | null, p?: ProviderId): CheckError {
+  if (p === 'ollama' && (status === null || status === 403)) return 'local';
   if (status === null) return 'network';
   if (status === 401 || status === 403) return 'auth';
   if (status === 429) return 'rate-limit';

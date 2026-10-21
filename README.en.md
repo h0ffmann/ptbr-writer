@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=version&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#license)
-[![estimated reading time: ~24 min](https://img.shields.io/badge/reading%20time-~24%20min-1682D4?style=flat-square)](#reading-time)
+[![estimated reading time: ~25 min](https://img.shields.io/badge/reading%20time-~25%20min-1682D4?style=flat-square)](#reading-time)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 
 </div>
@@ -130,6 +130,14 @@ In Firefox (128 or newer), `just ext-build-firefox` writes `extension/dist-firef
 `about:debugging#/runtime/this-firefox`, **Load Temporary Add-on…** and choose that folder's
 `manifest.json`; in `about:addons`, on the extension's **Permissions** tab, allow the sites and
 the APIs. It is gone when Firefox closes. ⚠ Not yet tested in a real Firefox.
+
+No key and no cloud: `just ext-ollama` serves Qwen through Ollama at `127.0.0.1:11434` (`qwen3.6:27b`,
+the model of `just opencode-qwen`; `just ext-ollama qwen3:8b` for a smaller GPU). In the popup,
+choose **Ollama + Qwen (local)**: in that click the browser asks for the permission to
+`http://127.0.0.1:11434/*`, and the text never leaves the machine. Ollama refuses (403) an
+extension's origin unless started with `OLLAMA_ORIGINS=chrome-extension://*,moz-extension://*`;
+the recipe starts it so and, when an Ollama without it already runs (the systemd service, say),
+says how to allow it. ⚠ Not yet tested with the real Qwen in the extension.
 
 ## use
 

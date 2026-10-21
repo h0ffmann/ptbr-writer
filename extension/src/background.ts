@@ -13,7 +13,7 @@ export async function handleCheck(
 ): Promise<CheckResult> {
   const { settings } = deps;
   const provider = settings.provider;
-  if (!settings.keys[provider]) return { ok: false, error: 'no-key' };
+  if (provider !== 'ollama' && !settings.keys[provider]) return { ok: false, error: 'no-key' };
 
   inflight.get(req.key)?.abort();
   const controller = new AbortController();
@@ -28,10 +28,10 @@ export async function handleCheck(
     } catch {
       return controller.signal.aborted
         ? { ok: true, suggestions: [] }
-        : { ok: false, error: 'network' };
+        : { ok: false, error: classifyError(null, provider) };
     }
     if (controller.signal.aborted) return { ok: true, suggestions: [] };
-    if (!res.ok) return { ok: false, error: classifyError(res.status) };
+    if (!res.ok) return { ok: false, error: classifyError(res.status, provider) };
     let json: unknown;
     try {
       json = await res.json();

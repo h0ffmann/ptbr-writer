@@ -5,7 +5,7 @@ import type { Settings } from '../src/types';
 
 const base: Settings = {
   ...DEFAULT_SETTINGS,
-  keys: { claude: 'sk-test', deepseek: 'sk-test' },
+  keys: { claude: 'sk-test', deepseek: 'sk-test', ollama: '' },
 };
 
 describe('buildRequest', () => {
@@ -41,6 +41,25 @@ describe('buildRequest', () => {
     expect(body.max_tokens).toBe(1024);
     expect(body.messages[0]).toEqual({ role: 'system', content: 'SYS' });
     expect(body.messages[1]).toEqual({ role: 'user', content: 'USER' });
+  });
+
+  it('ollama: local chat API, no key, thinking off, reply and truncation', () => {
+    const { url, init } = buildRequest('ollama', base, 'SYS', 'USER');
+    expect(url).toBe('http://127.0.0.1:11434/api/chat');
+    expect(init.headers).toEqual({ 'content-type': 'application/json' });
+    expect(JSON.parse(init.body as string)).toEqual({
+      model: 'qwen3.6:27b',
+      stream: false,
+      think: false,
+      options: { temperature: 0, num_predict: 1024 },
+      messages: [
+        { role: 'system', content: 'SYS' },
+        { role: 'user', content: 'USER' },
+      ],
+    });
+    expect(readText('ollama', { message: { content: '[]' }, done_reason: 'stop' })).toBe('[]');
+    expect(isTruncated('ollama', { done_reason: 'length' })).toBe(true);
+    expect(isTruncated('ollama', { done_reason: 'stop' })).toBe(false);
   });
 
   it('apiBase overrides the url (test builds only)', () => {
@@ -97,5 +116,11 @@ describe('classifyError', () => {
     expect(classifyError(429)).toBe('rate-limit');
     expect(classifyError(500)).toBe('provider');
     expect(classifyError(null)).toBe('network');
+  });
+  it('Ollama: down or refusing the extension origin is local', () => {
+    expect(classifyError(null, 'ollama')).toBe('local');
+    expect(classifyError(403, 'ollama')).toBe('local');
+    expect(classifyError(500, 'ollama')).toBe('provider');
+    expect(classifyError(403, 'claude')).toBe('auth');
   });
 });
