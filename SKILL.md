@@ -93,6 +93,10 @@ Separe e junte palavras (`bomd ia` vira `bom dia`). Troque abreviação de inter
 
 Vírgula depois de vocativo e de saudação. Ponto final no fim da frase. `?` em pergunta. Vírgula antes de `mas`. Nunca vírgula entre sujeito e verbo.
 
+### PTW-16: Maiúsculas e concordância
+
+Maiúscula no início da frase e em nome próprio. Concordância verbal e nominal (`os relatórios estão prontos`).
+
 ## Limites
 
 A skill não muda tese, autoria nem conclusões: quem decide é o humano. Ela não busca fontes; marca o que não foi checado.
