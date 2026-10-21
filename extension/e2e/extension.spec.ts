@@ -76,7 +76,7 @@ async function open(host: string, page: string): Promise<Page> {
 async function accept(page: Page) {
   const underline = page.locator('.ptbr-underline-erro');
   await expect(underline).toHaveCount(1, { timeout: 5_000 });
-  await underline.locator('.ptbr-seg').first().click();
+  await underline.locator('.ptbr-hit').first().click();
   await page.locator('.ptbr-card [data-action=accept]').click();
 }
 

@@ -126,3 +126,26 @@ describe('renderBadge', () => {
     expect(overlayRoot().querySelectorAll('.ptbr-badge').length).toBe(1);
   });
 });
+
+describe('hit strip', () => {
+  it('only a 4 px strip at the bottom of a segment takes the mouse', () => {
+    const el = editable();
+    vi.spyOn(el, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, 0, 400, 100));
+    vi.spyOn(Range.prototype, 'getClientRects').mockReturnValue([new DOMRect(10, 10, 80, 18)] as never);
+    const onAccept = vi.fn();
+    renderSuggestions(el, [erro], 0, onAccept, vi.fn());
+    const seg = overlayRoot().querySelector('.ptbr-seg') as HTMLElement;
+    expect(seg).toBeTruthy();
+    expect(seg.style.pointerEvents).toBe('none');
+    const hit = seg.querySelector('.ptbr-hit') as HTMLElement;
+    expect(hit.style.pointerEvents).toBe('auto');
+    expect(hit.style.height).toBe('4px');
+    expect(hit.style.bottom).toBe('0px');
+    const down = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
+    hit.dispatchEvent(down);
+    expect(down.defaultPrevented).toBe(true);
+    hit.click();
+    expect(overlayRoot().querySelector('.ptbr-card')).not.toBeNull();
+    vi.restoreAllMocks();
+  });
+});

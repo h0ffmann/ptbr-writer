@@ -7,8 +7,9 @@ const HOST_ID = 'ptbr-writer-root';
 const STYLE = `
 :host { all: initial; }
 .ptbr-layer, .ptbr-mirror { position: absolute; top: 0; left: 0; }
-.ptbr-underline { pointer-events: auto; cursor: pointer; }
+.ptbr-underline { pointer-events: none; }
 .ptbr-seg { position: absolute; box-sizing: border-box; border-bottom: 2px solid; }
+.ptbr-hit { cursor: pointer; }
 .ptbr-underline-erro .ptbr-seg { border-color: #d93025; }
 .ptbr-underline-aviso .ptbr-seg { border-color: #e8a400; }
 .ptbr-underline:hover .ptbr-seg { background: rgba(232, 164, 0, 0.15); }
@@ -204,6 +205,12 @@ function draw(el: HTMLElement, d: Drawn) {
       place(seg, r, doc);
       seg.style.width = `${r.width}px`;
       seg.style.height = `${r.height}px`;
+      // Only a thin strip at the bottom takes the mouse: the word itself stays clickable for the editor.
+      seg.style.pointerEvents = 'none';
+      const hit = doc.createElement('div');
+      hit.className = 'ptbr-hit';
+      Object.assign(hit.style, { position: 'absolute', left: '0px', right: '0px', bottom: '0px', height: '4px', pointerEvents: 'auto' });
+      seg.appendChild(hit);
       u.appendChild(seg);
     }
     u.addEventListener('mousedown', (e) => e.preventDefault());
