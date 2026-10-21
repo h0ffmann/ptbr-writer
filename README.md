@@ -4,7 +4,7 @@
 
 # ptbr-writer
 
-<sub><a href="#instalar">instalar</a> · <a href="#usar">usar</a> · <a href="#níveis">níveis</a> · <a href="#regras">regras</a> · <a href="#figuras">figuras</a> · <a href="#roadmap">roadmap</a> · <a href="#desenvolvimento">desenvolvimento</a> · <a href="#créditos">créditos</a> · <a href="CHANGELOG.md">versões</a> · <a href="https://h0ffmann.github.io/ptbr-writer/">o site</a></sub>
+<sub><a href="#instalar">instalar</a> · <a href="#usar">usar</a> · <a href="#níveis">níveis</a> · <a href="#regras">regras</a> · <a href="#eli5">ELI5</a> · <a href="#figuras">figuras</a> · <a href="#roadmap">roadmap</a> · <a href="#desenvolvimento">desenvolvimento</a> · <a href="#créditos">créditos</a> · <a href="CHANGELOG.md">versões</a> · <a href="https://h0ffmann.github.io/ptbr-writer/">o site</a></sub>
 
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![versão](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=vers%C3%A3o&style=flat-square)](CHANGELOG.md)
@@ -15,7 +15,7 @@
 
 🇬🇧 [Read in English](https://github.com/h0ffmann/ptbr-writer/blob/main/README.en.md)
 
-Leitura estimada: ~19 min (2010 palavras, 74 links, 7 blocos de código)
+Leitura estimada: ~20 min (2102 palavras, 81 links, 7 blocos de código)
 
 ## em um minuto
 
@@ -225,6 +225,16 @@ tempos de código e de link são escolhas deste projeto, não do artigo.
 ```console
 python3 -I plugins/ptbr-writer/scripts/reading_time.py README.md   # --lang en, --json, --self-test
 ```
+
+## ELI5
+
+Três pedidos reais, gerados pelo próprio plugin; o PDF sai do `.md` pelo `to-pdf.sh`. Os números vêm do `claude -p --output-format json` ([`RESULTS.tsv`](docs/eli5/RESULTS.tsv)).
+
+| Prompt | PDF | Tokens | Nível |
+| :-- | :-- | --: | :-- |
+| [Runbook para refazer o deploy do site](docs/eli5/1-runbook-deploy.prompt.md) | [PDF](docs/eli5/ptbr-writer-20261021T0434Z-runbook-deploy-site-estrito.pdf) | 350.529 (entrada 16, saída 8.184, cache 342.329) | estrito |
+| [Comunicado do tempo de leitura](docs/eli5/2-comunicado-tempo-leitura.prompt.md) | [PDF](docs/eli5/ptbr-writer-20261021T0436Z-comunicado-tempo-leitura-leve.pdf) | 184.688 (entrada 10, saída 2.401, cache 182.277) | leve |
+| [Explicar o ptbr-writer a uma criança de 5 anos](docs/eli5/3-explique-ptbr-writer.prompt.md) | [PDF](docs/eli5/ptbr-writer-20261021T0436Z-explicacao-para-criancas-descritivo.pdf) | 232.366 (entrada 12, saída 3.434, cache 228.920) | descritivo |
 
 ## figuras
 
