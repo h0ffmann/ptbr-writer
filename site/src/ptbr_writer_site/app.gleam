@@ -152,6 +152,11 @@ fn cover() -> Element(msg) {
         "grafo do código do picasso, no commit que este repositório fixa",
         "Grafo do picasso",
       ),
+      grafo_pill(
+        "grafo/extensao.html",
+        "grafo do código TypeScript da extensão do Chrome (extension/)",
+        "Grafo da extensão",
+      ),
       html.a(
         [
           attribute.class("ghost figure-pill"),
