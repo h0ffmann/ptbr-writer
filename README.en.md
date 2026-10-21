@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=version&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#license)
-[![estimated reading time: ~20 min](https://img.shields.io/badge/reading%20time-~20%20min-1682D4?style=flat-square)](#reading-time)
+[![estimated reading time: ~21 min](https://img.shields.io/badge/reading%20time-~21%20min-1682D4?style=flat-square)](#reading-time)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 
 </div>
@@ -141,7 +141,7 @@ binary ([run](https://github.com/h0ffmann/ptbr-writer/actions/runs/39537436728))
 
 The time depends on the network. From the second run on, Nix reuses the store.
 
-![Where the .pdf comes from: to-pdf.sh uses pandoc and xelatex if present; otherwise it downloads, through Nix, picasso (commit 4bc03e5, after v0.2.0), whose labs/ptbr-pdf compiles the to-pdf 0.1.0 crate, with pulldown-cmark 0.13.4, typst 0.15.1 and typst-as-lib 0.17.0 and 6 embedded fonts.](docs/img/pdf-dependencias.png)
+![Where the .pdf comes from: to-pdf.sh uses pandoc and xelatex if present; otherwise it downloads, through Nix, picasso at the commit to-pdf.sh pins (PICASSO_REV), whose labs/ptbr-pdf compiles the to-pdf 0.1.0 crate, with pulldown-cmark 0.13.4, typst 0.15.1 and typst-as-lib 0.17.0 and 6 embedded fonts.](docs/img/pdf-dependencias.png)
 
 <details open>
 <summary>How to read this figure</summary>
@@ -248,7 +248,9 @@ Each figure is an Archify page, published on the site:
 
 And the code graph of this repository, built on each site build by the `code-graph` of
 [h0ffmann/picasso](https://github.com/h0ffmann/picasso) (tree-sitter, no model):
-[Code graph](https://h0ffmann.github.io/ptbr-writer/grafo/graph.html).
+[Code graph](https://h0ffmann.github.io/ptbr-writer/grafo/graph.html). The nodes that use picasso
+lead into [picasso's graph](https://h0ffmann.github.io/ptbr-writer/grafo/picasso.html), built from the
+`forks/picasso` submodule at the same commit as the other pins.
 
 ## roadmap
 

@@ -24,7 +24,7 @@
       {
         devShells.site = pkgs.mkShell {
           inputsFrom = [ gleam-website.devShells.${system}.default ];
-          packages = [ code-graph.packages.${system}.default ];
+          packages = [ code-graph.packages.${system}.default pkgs.jq ];
         };
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [

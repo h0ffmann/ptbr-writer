@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![versão](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=vers%C3%A3o&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
-[![leitura estimada: ~20 min](https://img.shields.io/badge/leitura%20estimada-~20%20min-1682D4?style=flat-square)](#tempo-de-leitura)
+[![leitura estimada: ~21 min](https://img.shields.io/badge/leitura%20estimada-~21%20min-1682D4?style=flat-square)](#tempo-de-leitura)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#instalar)
 
 </div>
@@ -137,7 +137,7 @@ ele, o Claude pergunta antes de baixar, pelo Nix, o
 
 O tempo depende da rede. Da segunda vez em diante, o Nix reusa o store.
 
-![De onde vem o .pdf: o to-pdf.sh usa pandoc e xelatex se houver; senão baixa pelo Nix o picasso (commit 4bc03e5, depois do v0.2.0), cujo labs/ptbr-pdf compila o crate to-pdf 0.1.0, com pulldown-cmark 0.13.4, typst 0.15.1 e typst-as-lib 0.17.0 e 6 fontes embutidas.](docs/img/pdf-dependencias.png)
+![De onde vem o .pdf: o to-pdf.sh usa pandoc e xelatex se houver; senão baixa pelo Nix o picasso no commit que o to-pdf.sh fixa (PICASSO_REV), cujo labs/ptbr-pdf compila o crate to-pdf 0.1.0, com pulldown-cmark 0.13.4, typst 0.15.1 e typst-as-lib 0.17.0 e 6 fontes embutidas.](docs/img/pdf-dependencias.png)
 
 <details open>
 <summary>Como ler esta figura</summary>
@@ -244,7 +244,9 @@ Cada figura é uma página do Archify, publicada no site:
 
 E o grafo do código deste repositório, gerado a cada build do site pelo `code-graph` do
 [h0ffmann/picasso](https://github.com/h0ffmann/picasso) (tree-sitter, sem modelo):
-[Grafo do código](https://h0ffmann.github.io/ptbr-writer/grafo/graph.html).
+[Grafo do código](https://h0ffmann.github.io/ptbr-writer/grafo/graph.html). Os nós que usam o picasso
+levam ao [grafo do picasso](https://h0ffmann.github.io/ptbr-writer/grafo/picasso.html), gerado do
+submódulo `forks/picasso` no mesmo commit dos outros pins.
 
 ## roadmap
 
