@@ -1,0 +1,49 @@
+# extension — on each pull request and push to main that touches the Chrome extension or the files
+# its build reads (the two skills it embeds and the plugin version it stamps), run the unit tests
+# and the end-to-end test: a headless Chromium with extension/dist-test loaded, typing into a page
+# and accepting a suggestion from a local fake server for each provider. No test calls a real API.
+# No nix: Node comes from actions/setup-node and Chromium from Playwright.
+name: extension
+
+on:
+  pull_request:
+    paths:
+      - extension/**
+      - SKILL.md
+      - skills/cientifico/SKILL.md
+      - plugins/ptbr-writer/.claude-plugin/plugin.json
+      - .github/workflows/extension.yml
+  push:
+    branches: [main]
+    paths:
+      - extension/**
+      - SKILL.md
+      - skills/cientifico/SKILL.md
+      - plugins/ptbr-writer/.claude-plugin/plugin.json
+      - .github/workflows/extension.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: extension
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # ⚠ The dev shell's `nodejs` (nixpkgs at flake.lock) was not checked offline; 22 is the LTS
+          # the extension was developed on (v22.22.3).
+          node-version: 22
+          cache: npm
+          cache-dependency-path: extension/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx vitest run
+      - run: node build.mjs --test
+      - run: npx playwright test

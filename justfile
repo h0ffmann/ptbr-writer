@@ -311,7 +311,7 @@ _reading-badge file lang:
         echo "[![leitura estimada: $min](https://img.shields.io/badge/leitura%20estimada-$enc-1682D4?style=flat-square)](#tempo-de-leitura)"
     fi
 
-quality: pins saramago-check plugin-check figure-check
+quality: pins saramago-check plugin-check figure-check ext-test
     bash skills/ptbr-routing/bin/run.sh --self-test
     bash skills/ptbr-routing/bin/run.sh --check
     just --list >/dev/null
@@ -330,3 +330,15 @@ quality: pins saramago-check plugin-check figure-check
 # Create or update the GitHub labels from the tables of ISSUE_LABELS.md (needs `gh` logged in).
 labels:
     grep -E '^\| `[^`]+` \| `#[0-9A-Fa-f]{6}` \|' ISSUE_LABELS.md | while IFS='|' read -r _ n c d _; do n=${n//\`/}; c=${c//\`/}; n=${n// /}; c=${c// /}; d=${d# }; d=${d% }; gh label create "$n" --color "${c#\#}" --description "$d" --force; done
+
+# Chrome extension: build into extension/dist.
+ext-build:
+    cd extension && npm ci && node build.mjs
+
+# Chrome extension: type check (tsconfig has noEmit) and unit tests.
+ext-test: ext-build
+    cd extension && npx tsc -p . && npx vitest run
+
+# Chrome extension: end-to-end tests (Playwright) against extension/dist-test.
+ext-e2e:
+    cd extension && npx playwright install chromium && node build.mjs --test && npx playwright test
