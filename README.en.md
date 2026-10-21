@@ -266,6 +266,7 @@ The origin of each one comes from [`site/data/origins.tsv`](site/data/origins.ts
 | PTW-13 | Fato separado de análise (fact apart from analysis) | ouro-paper | [@h0ffmann](https://github.com/h0ffmann) |
 | PTW-14 | Palavras inteiras e por extenso (whole words, spelled out) | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
 | PTW-15 | Pontuação (punctuation) | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
+| PTW-16 | Maiúsculas e concordância (capitals and agreement) | pedido do dono do repo | [\@robkler](https://github.com/robkler) |
 
 ## reading time
 
