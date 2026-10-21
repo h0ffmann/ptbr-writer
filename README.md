@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![versão](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=vers%C3%A3o&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
-[![leitura estimada: ~25 min](https://img.shields.io/badge/leitura%20estimada-~25%20min-1682D4?style=flat-square)](#tempo-de-leitura)
+[![leitura estimada: ~26 min](https://img.shields.io/badge/leitura%20estimada-~26%20min-1682D4?style=flat-square)](#tempo-de-leitura)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#instalar)
 
 </div>
@@ -134,6 +134,8 @@ Para o Claude Code testar no Firefox, o `.mcp.json` do repo registra o MCP do Fi
 `scripts/firefox-mcp.sh`, num perfil descartável). Na próxima sessão, aprove o servidor `firefox` e
 peça: "instale `extension/dist-firefox` com `install_extension` e abra o WhatsApp Web". No Ubuntu, o
 script usa o binário de dentro do snap, porque o geckodriver não abre o `/usr/bin/firefox`.
+O experimento de 2026-10-21, com a workstation e os passos para reproduzir, está em
+[`docs/EXTENSION_FIREFOX.md`](docs/EXTENSION_FIREFOX.md).
 
 Sem chave e sem nuvem: `just ext-ollama` serve o Qwen pelo Ollama em `127.0.0.1:11434` (`qwen3.6:27b`,
 o mesmo modelo do `just opencode-qwen`; `just ext-ollama qwen3:8b` para uma GPU menor). No popup,

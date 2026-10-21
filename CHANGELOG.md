@@ -5,6 +5,9 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- `docs/EXTENSION_FIREFOX.md` registra o experimento da extensão no Firefox em 2026-10-21: a
+  workstation, o build, o MCP do Firefox, as origens do Ollama, o que não foi testado e os passos
+  para reproduzir.
 - `.mcp.json` registra o MCP do Firefox da Mozilla (`@mozilla/firefox-devtools-mcp` 0.10.4, por
   `scripts/firefox-mcp.sh`): o Claude Code abre um Firefox e instala `extension/dist-firefox` com
   `install_extension`.
