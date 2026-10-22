@@ -91,16 +91,21 @@ palavras por minuto [2]. Essa taxa é a do inglês; o pt-BR usa a mesma, sem esc
 # Portabilidade
 
 As regras ficam num arquivo, `SKILL.md`, com 807 palavras (`wc -w`), e a skill `cientifico` tem
-1 087. Um agente que lê skills carrega esses arquivos sem adaptação. O ptbr-writer chega por três
-caminhos:
+1 087. Um agente que lê skills carrega esses arquivos sem adaptação. O ptbr-writer atende dois
+públicos, por caminhos diferentes.
+
+**Quem programa** usa o ptbr-writer no terminal e no repositório, por um agente de programação:
 
 - **Claude Code:** um plugin, instalado com um comando e fixado por tag. Um repositório fixa a
   versão no próprio `.claude/settings.json`, e todos que o abrem usam a mesma.
 - **OpenCode:** um script copia as skills como arquivos e instala um plugin que faz o que o hook do
   Claude Code faz. Ele foi testado no OpenCode 1.19.0: as skills carregam e a instrução chega ao
   modelo. Que o modelo responda com a ferramenta `question` não foi medido ⚠.
-- **Navegador:** uma extensão para Chrome e Firefox 128+ sublinha no campo de texto o que o nível
-  pede para mudar. Nada muda sem o clique em **Aceitar**.
+
+**Quem não programa** usa a extensão do Chrome (e do Firefox 128+), no campo onde já escreve:
+WhatsApp Web, Gmail e GitHub vêm ligados de início. A extensão sublinha o que o nível pede para
+mudar, e nada muda sem o clique em **Aceitar**. Hoje ela ainda é instalada a partir do código: o
+roadmap a registra como em andamento, ainda fora da Chrome Web Store.
 
 O que roda na máquina é um binário Rust estático, `ptbr`, com 570 112 bytes em `linux-x86_64`, e
 um par para `linux-aarch64`. O `tools.lock` fixa o commit do picasso que o compila e o sha256 de
