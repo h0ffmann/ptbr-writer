@@ -9,10 +9,11 @@ authors:
   - family-names: Hoffmann
     given-names: Matheus
     orcid: "https://orcid.org/0009-0009-1056-7661"
-    affiliation: "Escola Politécnica, Universidade Federal do Rio de Janeiro"
+    affiliation: "@h0ffmann"
   - family-names: "Soares da Silva Junior"
     given-names: "Rob Kler"
     orcid: "https://orcid.org/0009-0003-3102-4996"
+    affiliation: "@robkler"
 repository-code: "https://github.com/h0ffmann/ptbr-writer"
 url: "https://h0ffmann.github.io/ptbr-writer/"
 license: MPL-2.0
@@ -25,4 +26,36 @@ references:
     repository-code: "https://github.com/kayquer/portugues-tecnico-controlado"
     commit: cfdffad0ed98cdebfb7f591481889090a4f4e65b
     license: MIT
-    notes: "The seed of ptbr-writer's agentic idea: a Claude Code skill with the first 8 rules."
+    notes: "The seed of ptbr-writer's agentic idea: a Claude Code skill with the 8 rules ptbr-writer adapts."
+  - type: software
+    title: "Ollama"
+    authors:
+      - name: Ollama
+    repository-code: "https://github.com/ollama/ollama"
+    commit: efabf6bc450454dc856c1f799aac7ea865e3a4cf
+    license: MIT
+    notes: "Open-source foundation: serves the local model that writes the replacement in the extension."
+  - type: software
+    title: "Ollaya"
+    authors:
+      - name: ollaya-dev
+    repository-code: "https://github.com/ollaya-dev/ollaya"
+    commit: 39619accce0f5836dbeb60d2b14f5a056c2459ce
+    license: Apache-2.0
+    notes: "Open-source foundation: serves the decision models of the extension."
+  - type: software
+    title: "OpenCode: the open source coding agent"
+    authors:
+      - name: Anomaly
+    repository-code: "https://github.com/anomalyco/opencode"
+    commit: c93aaae37157d785f76a8e9a9243a6560e286468
+    license: MIT
+    notes: "Open-source foundation: the open coding agent where the skills run outside Claude Code."
+  - type: software
+    title: "Open Code Review"
+    authors:
+      - name: Alibaba
+    repository-code: "https://github.com/alibaba/open-code-review"
+    commit: 375f64cd6f67a48a135da83cfcf59c52669a09cb
+    license: Apache-2.0
+    notes: "Open-source foundation: the code review tool the project will use with a local model; not integrated yet."
