@@ -31,6 +31,7 @@ const stars =
 pub fn view() -> Element(msg) {
   html.main([], [
     cover(),
+    whitepaper(),
     usage(),
     levels(),
     rules(),
@@ -119,6 +120,7 @@ fn cover() -> Element(msg) {
     install(),
     html.nav([attribute.class("jump")], [
       html.a([attribute.href("#instalar")], [html.text("instalar")]),
+      html.a([attribute.href("#whitepaper")], [html.text("whitepaper")]),
       html.a([attribute.href("#uso")], [html.text("uso")]),
       html.a([attribute.href("#niveis")], [html.text("níveis")]),
       html.a([attribute.href("#regras")], [html.text("regras")]),
@@ -173,12 +175,8 @@ fn cover() -> Element(msg) {
           html.text("/bipr"),
         ],
       ),
-      // The whitepaper, one pill per language; `just site` copies WHITEPAPER.pdf and WHITEPAPER.en.pdf.
-      pdf_pill(
-        "whitepaper/WHITEPAPER.pdf",
-        "o whitepaper do ptbr-writer, em português do Brasil",
-        "Whitepaper (pt-BR)",
-      ),
+      // The English whitepaper; the pt-BR one is embedded in its own section (whitepaper()).
+      // `just site` copies WHITEPAPER.pdf and WHITEPAPER.en.pdf.
       pdf_pill(
         "whitepaper/WHITEPAPER.en.pdf",
         "the ptbr-writer whitepaper, in English",
@@ -567,6 +565,43 @@ fn limits() -> Element(msg) {
 
 /// docs/eli5/: PDFs the plugin generated inside this repository, each with its prompt and its tokens
 /// (docs/eli5/RESULTS.tsv); the PDFs are copied to eli5/ by `just site`.
+/// The whitepaper in pt-BR, embedded as closed-source's site embeds its paper: the PDF in a frame,
+/// loaded lazily, with links to open or download it where the frame does not show (some phones).
+/// The English edition is the pill on the cover.
+fn whitepaper() -> Element(msg) {
+  let pdf = "whitepaper/WHITEPAPER.pdf"
+  section(
+    "whitepaper",
+    "whitepaper",
+    "o artigo, em português: a tese, os três pilares, o que se mediu e o que não se mediu.",
+    [
+      html.iframe([
+        attribute.class("preview"),
+        attribute.src(pdf),
+        attribute.title("o whitepaper do ptbr-writer, em português (PDF)"),
+        attribute.attribute("loading", "lazy"),
+      ]),
+      html.p([attribute.class("sub")], [
+        html.text("a prévia não aparece em todo celular. "),
+        html.a([attribute.href(pdf)], [html.text("abra o PDF")]),
+        html.text(" ou "),
+        html.a(
+          [
+            attribute.href(pdf),
+            attribute.download("ptbr-writer-whitepaper.pdf"),
+          ],
+          [html.text("baixe o PDF")],
+        ),
+        html.text(". em inglês: "),
+        html.a([attribute.href("whitepaper/WHITEPAPER.en.pdf")], [
+          html.text("Whitepaper (EN)"),
+        ]),
+        html.text("."),
+      ]),
+    ],
+  )
+}
+
 fn eli5() -> Element(msg) {
   section(
     "eli5",
