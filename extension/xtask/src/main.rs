@@ -80,6 +80,33 @@ fn build(test: bool, firefox: bool) -> Result<(), String> {
     run(Command::new("wasm-opt").arg("-Oz").args(features).arg(&bg).arg("-o").arg(&bg))?;
     println!("ptbr_ext_bg.wasm: {before} bytes, {} after wasm-opt", size(&bg)?);
 
+    // The content script runs under the host page's CSP, which governs wasm compilation in its
+    // isolated world too (github.com: `script-src github.githubassets.com`, no 'wasm-unsafe-eval',
+    // and `WebAssembly.instantiate` throws "disallowed by embedder"): it gets the same module as
+    // JavaScript, through binaryen's wasm2js. The worker and the pages, under the extension's own
+    // CSP, run the wasm.
+    run(Command::new("wasm-bindgen")
+        .args(["--target", "bundler", "--out-name", "ptbr_ext_js", "--no-typescript", "--out-dir"])
+        .arg(&out)
+        .arg(&wasm))?;
+    let js_wasm = out.join("ptbr_ext_js_bg.wasm");
+    // wasm2js mislowers the i64 forms of these three extensions; wasm-opt lowers them to MVP first.
+    run(Command::new("wasm-opt")
+        .args(features)
+        .args(["--signext-lowering", "--llvm-nontrapping-fptoint-lowering", "--llvm-memory-copy-fill-lowering", "-Oz"])
+        .arg(&js_wasm)
+        .arg("-o")
+        .arg(&js_wasm))?;
+    let js = out.join("ptbr_ext_js_bg.wasm.js");
+    run(Command::new("wasm2js").args(features).arg("-O3").arg(&js_wasm).arg("-o").arg(&js))?;
+    fs::remove_file(&js_wasm).map_err(|e| e.to_string())?;
+    let entry = out.join("ptbr_ext_js.js");
+    let glue = fs::read_to_string(&entry)
+        .map_err(|e| e.to_string())?
+        .replace("./ptbr_ext_js_bg.wasm\"", "./ptbr_ext_js_bg.wasm.js\"");
+    fs::write(&entry, glue).map_err(|e| e.to_string())?;
+    println!("ptbr_ext_js_bg.wasm.js: {} bytes (the content script, wasm2js)", size(&js)?);
+
     copy_dir(&root.join("static"), &out)?;
     copy_dir(&root.join("loaders"), &out)?;
     let manifest = manifest(&root, test, firefox)?;
@@ -109,6 +136,14 @@ fn manifest(root: &Path, test: bool, firefox: bool) -> Result<Value, String> {
     let local: Vec<Value> = if test { vec!["http://127.0.0.1/*".into(), "http://localhost/*".into()] } else { vec![] };
     let mut host_permissions = vec![json!("https://api.anthropic.com/*"), json!("https://api.deepseek.com/*")];
     host_permissions.extend(local.iter().cloned());
+    let mut permissions = vec!["storage", "scripting", "activeTab"];
+    if test {
+        // Headless Chromium shows no permission prompt, so the e2e suite can only walk the granted
+        // path: the site it adds is granted here (permissions.request resolves at once), and `tabs`
+        // lets the popup, opened as a tab, read the active tab's URL as activeTab does on a click.
+        host_permissions.push(json!("https://exemplo.test/*"));
+        permissions.push("tabs");
+    }
     let mut matches =
         vec![json!("https://web.whatsapp.com/*"), json!("https://mail.google.com/*"), json!("https://github.com/*")];
     matches.extend(local.iter().cloned());
@@ -119,19 +154,19 @@ fn manifest(root: &Path, test: bool, firefox: bool) -> Result<Value, String> {
         "name": "ptbr-writer",
         "version": plugin["version"],
         "description": plugin["description"],
-        "permissions": ["storage", "scripting", "activeTab"],
+        "permissions": permissions,
         "host_permissions": host_permissions,
         "optional_host_permissions": ["http://127.0.0.1:11434/*", "http://127.0.0.1:11435/*", "<all_urls>"],
         "background": { "service_worker": "background.js", "type": "module" },
         "options_page": "options.html",
         "action": { "default_popup": "popup.html" },
-        // The extension pages run wasm; the content script loads the glue and the wasm through
-        // chrome.runtime.getURL, so they must be web accessible on every https site, as the user
-        // enables sites beyond the default three (background: registerContentScripts). The dynamic
-        // URL (Chrome only; Firefox has no such key) keeps a page from fingerprinting the extension by
-        // its static id; the e2e suite runs the import through it.
+        // The extension pages run wasm; the content script loads its JavaScript build through
+        // chrome.runtime.getURL, so it must be web accessible on every https site, as the user
+        // enables sites beyond the default three (background: registerContentScripts). Not
+        // `use_dynamic_url`: the entry would load through the per-session id, but its own imports
+        // resolve to the static id and are denied (seen in the e2e suite).
         "content_security_policy": { "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'" },
-        "web_accessible_resources": [{ "resources": ["ptbr_ext.js", "ptbr_ext_bg.wasm"], "matches": accessible, "use_dynamic_url": !firefox }],
+        "web_accessible_resources": [{ "resources": ["ptbr_ext_js.js", "ptbr_ext_js_bg.js", "ptbr_ext_js_bg.wasm.js"], "matches": accessible}],
         "content_scripts": [{ "matches": matches, "js": ["content.js"], "css": ["content.css"] }],
     });
     // Firefox runs no background service worker: an event page (scripts) and an add-on id instead.

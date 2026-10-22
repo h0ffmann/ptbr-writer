@@ -60,7 +60,7 @@ mod browser {
     use super::*;
     use crate::chrome::permissions_request;
     use crate::dom::{Build, create, el, on, option, spawn};
-    use crate::providers::{local_models, local_origin, local_pull};
+    use crate::providers::{local_base_for, local_models, local_origin, local_pull};
     use crate::sites::{mask_key, set_ollaya_style};
     use crate::types::Settings;
     use std::cell::RefCell;
@@ -107,10 +107,10 @@ mod browser {
 
         async fn refresh(&self) {
             let p = self.fields.chosen();
-            if !p.is_local() {
+            let Some(base) = local_base_for(p, &self.fields.settings.borrow()) else {
                 return;
-            }
-            let got = local_models(p).await;
+            };
+            let got = local_models(&base).await;
             // A switch while the list was loading: this list belongs to the other server.
             if self.fields.chosen() != p {
                 return;
@@ -120,7 +120,8 @@ mod browser {
         }
 
         fn show(self: &Rc<Self>, p: ProviderId) {
-            self.style_row.set_hidden(p != ProviderId::Ollama);
+            // Not `hidden`: the pages' `label { display: grid }` would win over it.
+            let _ = self.style_row.style().set_property("display", if p == ProviderId::Ollama { "" } else { "none" });
             self.fields.key.set_value(&mask_key(&self.fields.settings.borrow().keys[p]));
             // The other server's models are not this one's.
             self.installed.borrow_mut().clear();
@@ -238,7 +239,8 @@ mod browser {
                     let model = m.fields.model.value();
                     m.status.set_text_content(Some(&format!("baixando {model}…")));
                     let p = m.fields.chosen();
-                    let ok = local_pull(p, &model).await;
+                    let base = local_base_for(p, &m.fields.settings.borrow()).expect("a local provider");
+                    let ok = local_pull(&base, &model).await;
                     if ok {
                         m.refresh().await;
                     }

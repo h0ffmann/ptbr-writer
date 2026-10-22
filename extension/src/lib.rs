@@ -61,10 +61,11 @@ mod entry {
         crate::background::sync_sites_now().await;
     }
 
+    /// Resolves once the script listens to the page; the e2e suite waits for it before typing.
     #[wasm_bindgen]
-    pub fn start_content() {
+    pub async fn start_content() {
         install_panic_hook();
-        crate::content::controller::start();
+        crate::content::controller::start().await;
     }
 
     #[wasm_bindgen]
