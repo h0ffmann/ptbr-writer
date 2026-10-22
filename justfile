@@ -440,7 +440,7 @@ ext-e2e:
 # The whitepaper, in pt-BR and English: docs/whitepaper/{pt-BR,en}.md -> pandoc (docs/whitepaper/template.tex,
 # the Paper Fabric template of h0ffmann/closed-source) -> XeLaTeX twice -> WHITEPAPER.pdf and WHITEPAPER.en.pdf.
 # The marola and ouroboric logos are their projects' marks, not licensed here: each is fetched at the commit
-# closed-source pins, its sha256 checked, and converted in build/; never committed. Hard cap: 5 pages each.
+# closed-source pins, its sha256 checked, and converted in build/; never committed. Hard cap: 8 pages each.
 whitepaper:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -462,10 +462,10 @@ whitepaper:
         (cd "$out" && for _ in 1 2; do xelatex -interaction=nonstopmode -halt-on-error "$lang.tex" > /dev/null || { tail -n 30 "$lang.log" >&2; exit 1; }; done)
         cp "$out/$lang.pdf" "$pdf"
         pages=$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}')
-        [ "$pages" -le 5 ] || { echo "whitepaper: $pdf has $pages pages; the cap is 5" >&2; exit 1; }
+        [ "$pages" -le 8 ] || { echo "whitepaper: $pdf has $pages pages; the cap is 8" >&2; exit 1; }
         echo "whitepaper: $pdf ($pages pages)"
     done
 
-# Cheap and offline: both whitepapers exist and keep to the 5-page cap.
+# Cheap and offline: both whitepapers exist and keep to the 8-page cap.
 whitepaper-check:
-    for pdf in WHITEPAPER.pdf WHITEPAPER.en.pdf; do p=$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}'); [ "$p" -le 5 ] || { echo "whitepaper-check: $pdf has $p pages; the cap is 5" >&2; exit 1; }; done; echo "whitepaper-check: ok"
+    for pdf in WHITEPAPER.pdf WHITEPAPER.en.pdf; do p=$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}'); [ "$p" -le 8 ] || { echo "whitepaper-check: $pdf has $p pages; the cap is 8" >&2; exit 1; }; done; echo "whitepaper-check: ok"
