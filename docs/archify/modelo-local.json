@@ -38,7 +38,7 @@
       "lane": "popup",
       "col": 0,
       "type": "external",
-      "label": "Ollama + Qwen",
+      "label": "Ollama",
       "sublabel": "você escolhe o provider",
       "width": 150
     },

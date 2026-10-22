@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![versão](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=vers%C3%A3o&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
-[![leitura estimada: ~29 min](https://img.shields.io/badge/leitura%20estimada-~29%20min-1682D4?style=flat-square)](#tempo-de-leitura)
+[![leitura estimada: ~30 min](https://img.shields.io/badge/leitura%20estimada-~30%20min-1682D4?style=flat-square)](#tempo-de-leitura)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#instalar)
 [![extensão de navegador (Chrome): dev local (WIP)](https://img.shields.io/badge/extens%C3%A3o%20de%20navegador-dev%20local%20(WIP)-1682D4?style=flat-square&logo=googlechrome&logoColor=white)](#chrome)
 [![extensão de navegador (Firefox): dev local (WIP)](https://img.shields.io/badge/extens%C3%A3o%20de%20navegador-dev%20local%20(WIP)-1682D4?style=flat-square&logo=firefoxbrowser&logoColor=white)](docs/EXTENSION_FIREFOX.md)
@@ -144,7 +144,7 @@ O experimento de 2026-10-21, com a workstation e os passos para reproduzir, est�
 
 Sem chave e sem nuvem: `just ext-ollama` serve o Qwen pelo Ollama em `127.0.0.1:11434` (`qwen3.6:27b`,
 o mesmo modelo do `just opencode-qwen`; `just ext-ollama qwen3:8b` para uma GPU menor). No popup,
-escolha **Ollama + Qwen (local)**: o navegador pede, nesse clique, a permissão para
+escolha **Ollama (local)**: o navegador pede, nesse clique, a permissão para
 `http://127.0.0.1:11434/*`, e o texto não sai da máquina. A lista de modelos sugere o `qwen3.6:27b` e
 oferece `qwen3:14b`, `qwen3:8b`, `qwen3:4b` e os modelos já instalados no Ollama; um modelo ainda não
 instalado aparece com `(baixar)`, e o botão **Baixar** o baixa pelo Ollama (deixe o popup aberto; o
@@ -152,6 +152,24 @@ Ollama retoma um download interrompido). O Ollama recusa (403) a origem de uma
 extensão se não subir com `OLLAMA_ORIGINS=chrome-extension://*,moz-extension://*`; a receita sobe
 assim e, se já houver um Ollama sem isso (o serviço do systemd, por exemplo), diz como liberar.
 ⚠ Ainda não testado com o Qwen de verdade na extensão.
+
+Apontar que uma frase quebra uma regra é uma decisão, e um modelo de decisão a toma sem gerar texto.
+`just ext-ollaya` serve o [Ollaya](https://github.com/ollaya-dev/ollaya) em `127.0.0.1:11435` com o
+`decima`; no popup, escolha **Ollaya (local, só aponta)**, que pede a permissão para
+`http://127.0.0.1:11435/*` no clique. Para cada frase do campo (até 32), a extensão pergunta ao
+`/api/decide` qual regra a frase quebra, com `nenhuma` e as regras do nível (PTW e, no `científico`,
+CIE) como respostas. Uma regra com 50% ou mais vira um sublinhado com a regra e a probabilidade no
+cartão. O Ollaya não escreve a frase corrigida, então o cartão só tem **Ignorar**. A lista de modelos,
+o **Baixar** e o `OLLAYA_ORIGINS` funcionam como no Ollama. A escolha do `decima` e dos outros
+modelos sugeridos está em [`docs/SURVEY_DECISION_MODEL.md`](docs/SURVEY_DECISION_MODEL.md).
+⚠ Não medido: a latência e o acerto em pt-BR, e o limiar de 50% não foi ajustado
+([#61](https://github.com/h0ffmann/ptbr-writer/issues/61)).
+
+Ollaya e Ollama também andam juntos, como chaves independentes. Com **Ollama (local)** escolhido,
+marque **Ollaya escolhe o estilo**: antes de cada revisão, o Ollaya lê o campo e escolhe o estilo da
+conversa (`conciso`, `socrático` ou `amigável`), e o Ollama escreve as trocas nesse estilo, com
+**Aceitar**. O cartão diz o estilo escolhido. Se o Ollaya estiver fora do ar, o Ollama revisa
+sozinho, como sem a chave. ⚠ Não medido: se o estilo escolhido melhora a revisão.
 
 ## usar
 
@@ -252,7 +270,7 @@ testados com o editor de verdade.
 <a id="extensao-figuras"></a>
 **Fluxo da extensão de navegador.**
 
-![Fluxo da extensão de navegador: no Chrome ou no Firefox, um campo com 3 palavras e 1 s parado pede revisão; a extensão junta as regras do nível do site e chama o provider escolhido, que é um de três modos: chave de API (Claude ou DeepSeek), Ollama + Qwen nesta máquina, ou Ollaya, ainda planejado; as sugestões voltam como sublinhados, e Aceitar troca o trecho no campo.](docs/img/extensao-fluxo.png)
+![Fluxo da extensão de navegador: no Chrome ou no Firefox, um campo com 3 palavras e 1 s parado pede revisão; a extensão junta as regras do nível do site e chama o provider escolhido, que é um de três modos: chave de API (Claude ou DeepSeek), Ollama com um LLM nesta máquina, ou Ollaya, que decide e só aponta, e que, com a chave ligada, escolhe o estilo em que o Ollama escreve; as sugestões voltam como sublinhados, e Aceitar troca o trecho no campo.](docs/img/extensao-fluxo.png)
 
 <details open>
 <summary>Como ler esta figura</summary>
@@ -261,8 +279,9 @@ testados com o editor de verdade.
 que você escolhe; as sugestões voltam como sublinhados, e só o seu clique em **Aceitar** muda o texto.
 
 **Como ler.** Da esquerda para a direita, de cima para baixo. A faixa de cima é a página; a do meio é a
-extensão; a de baixo são os três modos, "quem gera o texto", e a extensão usa um por vez. A seta
-tracejada vai ao modo planejado (Ollaya), que ainda não existe. Caixa com borda laranja é onde você
+extensão; a de baixo são os três modos, "quem revisa o texto", e a extensão usa um por vez. O Ollaya só
+aponta: o cartão das sugestões dele não tem **Aceitar**. A seta tracejada é a chave **Ollaya escolhe o
+estilo**: o Ollaya escolhe o estilo, e o Ollama escreve. Caixa com borda laranja é onde você
 entra ou o que você recebe.
 
 **Fora da figura.** O botão **Ignorar**, os sites ligados de início, o limite de 4000 caracteres, a
@@ -271,7 +290,7 @@ permissão de cada site e o selo de erro no campo. O modo local tem a figura seg
 **Evidência.** As 3 palavras e 1 s: `extension/src/content/watcher.ts` (`MIN_WORDS`, `delayMs`). O nível
 do site e as regras: `extension/src/background.ts` (`levelFor`, `buildSystemPrompt`). Os providers:
 `extension/src/providers.ts` e `extension/src/provider-fields.ts`. **Aceitar**:
-`extension/src/content/overlay.ts`. O Ollaya: issue
+`extension/src/content/overlay.ts`. O Ollaya: `extension/src/decisions.ts` e a issue
 [#61](https://github.com/h0ffmann/ptbr-writer/issues/61). Fonte da figura:
 [`docs/archify/extensao-fluxo.json`](docs/archify/extensao-fluxo.json).
 
@@ -284,7 +303,7 @@ do site e as regras: `extension/src/background.ts` (`levelFor`, `buildSystemProm
 > ([#63](https://github.com/h0ffmann/ptbr-writer/issues/63)). Prefira baixar o modelo antes, com
 > `just ext-ollama`.
 
-![Fluxo do modelo local: você escolhe Ollama + Qwen no popup; o navegador pede a permissão para 127.0.0.1:11434 nesse clique; concedida, a extensão lê em /api/tags os modelos já baixados e os junta aos sugeridos, do LLM qwen3.6:27b ao SLM qwen3:4b; um modelo já baixado vai a /api/chat, cujas sugestões viram sublinhados na página; um modelo não baixado passa pelo Baixar (/api/pull, muito experimental, #63), que relê a lista; se o Ollama está fora do ar ou responde 403, o campo mostra o selo Ollama inacessível.](docs/img/modelo-local.png)
+![Fluxo do modelo local: você escolhe Ollama no popup; o navegador pede a permissão para 127.0.0.1:11434 nesse clique; concedida, a extensão lê em /api/tags os modelos já baixados e os junta aos sugeridos, do LLM qwen3.6:27b ao SLM qwen3:4b; um modelo já baixado vai a /api/chat, cujas sugestões viram sublinhados na página; um modelo não baixado passa pelo Baixar (/api/pull, muito experimental, #63), que relê a lista; se o Ollama está fora do ar ou responde 403, o campo mostra o selo Ollama inacessível.](docs/img/modelo-local.png)
 
 <details open>
 <summary>Como ler esta figura</summary>
@@ -301,7 +320,7 @@ experimental. "LLM" é o modelo grande (`qwen3.6:27b`, 18 GB) e "SLM" é o peque
 que o Ollama precisa para aceitar a extensão e a receita `just ext-ollama`; os dois estão em
 [`docs/EXTENSION_FIREFOX.md`](docs/EXTENSION_FIREFOX.md).
 
-**Evidência.** `extension/src/providers.ts` (`ollamaModels`, `ollamaPull`, `buildRequest`,
+**Evidência.** `extension/src/providers.ts` (`localModels`, `localPull`, `buildRequest`,
 `classifyError`), `extension/src/provider-fields.ts` (a lista e o **Baixar**) e
 `extension/src/settings.ts` (os modelos sugeridos). Os tamanhos vêm de
 [`docs/EXTENSION_FIREFOX.md`](docs/EXTENSION_FIREFOX.md). ⚠ Nenhuma revisão com um Qwen 3 foi medida.

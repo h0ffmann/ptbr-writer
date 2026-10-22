@@ -15,7 +15,7 @@ describe('build', () => {
     expect(m.manifest_version).toBe(3);
     expect(m.permissions).toEqual(['storage', 'scripting', 'activeTab']);
     expect(m.host_permissions).toEqual(['https://api.anthropic.com/*', 'https://api.deepseek.com/*']);
-    expect(m.optional_host_permissions).toEqual(['http://127.0.0.1:11434/*', '<all_urls>']);
+    expect(m.optional_host_permissions).toEqual(['http://127.0.0.1:11434/*', 'http://127.0.0.1:11435/*', '<all_urls>']);
     expect(m.content_scripts[0].matches).toEqual([
       'https://web.whatsapp.com/*',
       'https://mail.google.com/*',
