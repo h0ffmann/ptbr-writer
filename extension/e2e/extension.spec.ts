@@ -167,3 +167,18 @@ test('frase reorganizada mostra só o amarelo', async () => {
   await page.locator('.ptbr-card [data-action=accept]').click();
   await expect(page.locator('#field')).toHaveValue(REWRITE_FIXED);
 });
+
+test('editor Lexical (como o do WhatsApp) aceita a correção e não chama a API de novo', async () => {
+  await launch('claude');
+  const page = await open('127.0.0.1', 'lexical.html');
+  await page.locator('#editor').click();
+  await page.keyboard.type(TYPED);
+  await accept(page);
+  const lexicalText = () => page.evaluate(() => (window as unknown as { lexicalText: () => string }).lexicalText());
+  await expect.poll(lexicalText).toBe(FIXED);
+  await expect(page.locator('#editor')).toHaveText(FIXED);
+  const calls = server.calls.length;
+  await page.waitForTimeout(2_500);
+  expect(await lexicalText()).toBe(FIXED);
+  expect(server.calls.length).toBe(calls);
+});
