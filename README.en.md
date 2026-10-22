@@ -132,7 +132,7 @@ related projects and the figures:
 - [Local model flow](https://h0ffmann.github.io/ptbr-writer/figuras/modelo-local.html)
 - [Where the .pdf comes from](https://h0ffmann.github.io/ptbr-writer/figuras/pdf-dependencias.html)
 
-The whitepaper, in 4 pages, is in [`WHITEPAPER.en.pdf`](WHITEPAPER.en.pdf) and, in Portuguese, in
+The whitepaper, in 8 pages, is in [`WHITEPAPER.en.pdf`](WHITEPAPER.en.pdf) and, in Portuguese, in
 [`WHITEPAPER.pdf`](WHITEPAPER.pdf).
 
 ## reading time
