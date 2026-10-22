@@ -19,8 +19,10 @@ decisão" entra como tese do artigo ou como escolha de projeto.
 ## Resumo
 
 O ptbr-writer reescreve texto técnico em português brasileiro para uma leitura única: sujeito
-explícito, uma proposição por frase e termos consistentes. Ele adapta as 8 regras do Português
-Técnico Controlado (PTC), de kayquer, e acrescenta 5, num total de 13 regras, PTW-1 a PTW-13 (v).
+explícito, uma proposição por frase e termos consistentes. A semente é o Português Técnico
+Controlado (PTC), de kayquer: uma skill do Claude Code com regras de linguagem controlada em
+português para um leitor que pode ser um modelo (v). O ptbr-writer adapta as 8 regras do PTC e
+acrescenta 5, num total de 13 regras, PTW-1 a PTW-13 (v).
 Cada pedido passa por um de 5 níveis de rigor, de `estrito` a `smart-note` (v). Para texto com
 fontes, a skill `cientifico` acrescenta 12 regras, CIE-1 a CIE-12 (v). As mesmas regras chegam por
 três caminhos: um plugin do Claude Code, um instalador para o OpenCode e uma extensão de navegador
@@ -39,8 +41,10 @@ programação; modelos de decisão; reprodutibilidade.
 ## Abstract
 
 ptbr-writer rewrites technical text in Brazilian Portuguese for a single reading: explicit
-subject, one proposition per sentence and consistent terms. It adapts the 8 rules of Português
-Técnico Controlado (PTC), by kayquer, and adds 5, for 13 rules in total, PTW-1 to PTW-13 (v). Each
+subject, one proposition per sentence and consistent terms. Its seed is Português Técnico
+Controlado (PTC), by kayquer: a Claude Code skill with controlled-language rules in Portuguese for
+a reader that may be a model (v). ptbr-writer adapts the 8 rules of PTC and adds 5, for 13 rules in
+total, PTW-1 to PTW-13 (v). Each
 request goes through one of 5 levels of rigor, from `estrito` to `smart-note` (v). For text with
 sources, the `cientifico` skill adds 12 rules, CIE-1 to CIE-12 (v). The same rules reach the writer
 by three paths: a Claude Code plugin, an installer for OpenCode and a browser extension for Chrome
@@ -60,7 +64,8 @@ decision models; reproducibility.
 
 | Afirmação | Fonte |
 | :-- | :-- |
-| 8 regras do PTC | `site/data/awesome.tsv`, linha do PTC ("o original: 8 regras") |
+| o PTC é uma skill do Claude Code, para um leitor que pode ser um modelo | descrição e README de [kayquer/portugues-tecnico-controlado](https://github.com/kayquer/portugues-tecnico-controlado/tree/cfdffad0ed98cdebfb7f591481889090a4f4e65b) no commit `cfdffad`, lidos em 2026-10-22 ("Skill do Claude Code"; "Um modelo que consome uma instrução também não") |
+| 8 regras do PTC | a mesma descrição ("com 8 regras próprias") e `site/data/awesome.tsv` |
 | 13 regras PTW | `SKILL.md`: 13 cabeçalhos `### PTW-` |
 | 5 níveis | `SKILL.md`, seção "Níveis de rigor": 5 itens |
 | 12 regras CIE | `skills/cientifico/SKILL.md`: 12 cabeçalhos `### CIE-` |
@@ -79,5 +84,6 @@ decision models; reproducibility.
 
 ## Procurado e não citado (CIE-3)
 
-Nenhuma fonte externa foi buscada para este abstract: ele só descreve o repositório. O artigo
-completo vai citar o PTC, o Brysbaert (2019), o ASD-STE100 e o Ollaya, cada um lido antes.
+A única fonte externa lida para este abstract é o repositório do PTC, no commit `cfdffad`. O
+registro no Zenodo o cita com a relação `isDerivedFrom`. O artigo completo vai citar também o
+Brysbaert (2019), o ASD-STE100 e o Ollaya, cada um lido antes.

@@ -1,7 +1,7 @@
 {
   "title": "ptbr-writer: português técnico controlado para pessoas e agentes",
   "upload_type": "publication",
-  "description": "<p>ptbr-writer rewrites technical text in Brazilian Portuguese for a single reading: explicit subject, one proposition per sentence and consistent terms. It adapts the 8 rules of Português Técnico Controlado (PTC), by kayquer, and adds 5, for 13 rules in total, PTW-1 to PTW-13. Each request goes through one of 5 levels of rigor, from estrito to smart-note. For text with sources, the cientifico skill adds 12 rules, CIE-1 to CIE-12. The same rules reach the writer by three paths: a Claude Code plugin, an installer for OpenCode and a browser extension for Chrome and Firefox. The extension treats a review as a decision: besides models that generate text (Claude, DeepSeek or a local model through Ollama), it accepts a local decision model, served by Ollaya, which says which rule each sentence breaks, with a probability, and generates no text. The runtime tools are static Rust binaries pinned by sha256, and each claim that was not checked carries a warning mark. No measure of accuracy is reported: the regression cases are written and were not run, and the latency and accuracy of the local models on pt-BR were not measured.</p>",
+  "description": "<p>ptbr-writer rewrites technical text in Brazilian Portuguese for a single reading: explicit subject, one proposition per sentence and consistent terms. Its seed is Português Técnico Controlado (PTC), by kayquer: a Claude Code skill with controlled-language rules in Portuguese for a reader that may be a model. ptbr-writer adapts the 8 rules of PTC and adds 5, for 13 rules in total, PTW-1 to PTW-13. Each request goes through one of 5 levels of rigor, from estrito to smart-note. For text with sources, the cientifico skill adds 12 rules, CIE-1 to CIE-12. The same rules reach the writer by three paths: a Claude Code plugin, an installer for OpenCode and a browser extension for Chrome and Firefox. The extension treats a review as a decision: besides models that generate text (Claude, DeepSeek or a local model through Ollama), it accepts a local decision model, served by Ollaya, which says which rule each sentence breaks, with a probability, and generates no text. The runtime tools are static Rust binaries pinned by sha256, and each claim that was not checked carries a warning mark. No measure of accuracy is reported: the regression cases are written and were not run, and the latency and accuracy of the local models on pt-BR were not measured.</p>",
   "creators": [
     {
       "name": "Hoffmann, Matheus",
@@ -25,5 +25,13 @@
     "reproducibility"
   ],
   "version": "v0.3.0",
-  "publication_type": "preprint"
+  "publication_type": "preprint",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/kayquer/portugues-tecnico-controlado/tree/cfdffad0ed98cdebfb7f591481889090a4f4e65b",
+      "relation": "isDerivedFrom",
+      "scheme": "url",
+      "resource_type": "software"
+    }
+  ]
 }
