@@ -16,6 +16,7 @@ Instructions for AI agents working on `ptbr-writer`.
 
 - **No secrets in code.** Placeholders only; use `.env.example` if needed.
 - **One feature, one PR.** Keep commits small and focused.
+- **Edit Markdown and code by exact replacement, not by regex.** A `perl`/`sed` substitution with `|` as its delimiter turns `\|` into an alternation that matches the first line break: it put two roadmap rows at the top of the README (#72, #74) and broke a TypeScript file. `just md-tables` (in `just quality`) fails on any table row outside a table.
 - **Commit trailers.** Use `Tested:` and `Co-Authored-By: Claude <noreply@anthropic.com>`.
 - **An author level respects the author's rights.** A level that imitates a writer (`machado-writer`, `saramago-writer`) never copies a passage; it cites the author as `REUSE.md` says, and `machado-writer` always cites Machado de Assis. Check that a new author's work is in the public domain before adding one, and write its rule in `REUSE.md`.
 - **No credits in a skill's body.** A skill file (`SKILL.md`, `skills/*/SKILL.md`) holds instructions only: no credits, sources, links, commit pins, author names or history. They are loaded into other people's context. Credits go to `README.md` and `site/data/origins.tsv`.
