@@ -1,4 +1,6 @@
 <div align="center">
+| [extensão do Chrome](extension/build.mjs) | in progress | underlines in a field what the level asks to change; local dev, not yet in the Chrome Web Store; also runs on Firefox 128+ |
+| [FOSS (Ollama, Ollaya)](extension/src/providers.ts) | in progress | open-source local providers, no key and no cloud: Ollama writes the replacement and Ollaya points out the rule or picks the style; latency and accuracy on pt-BR not measured ⚠ |
 
 <img alt="A writing quill in a single line: original drawing" src="site/static/favicon.svg" width="120"/>
 
