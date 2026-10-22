@@ -267,12 +267,13 @@ const ollama_icon = "https://ollama.com/public/ollama.png"
 const ollaya_icon = "https://ollaya.dev/favicon.svg"
 
 // Archify's mark at the revision vendor/archify pins.
-// Zenodo's mark, from Zenodo's own site, and its redirect to this repository's newest DOI: the
-// number is h0ffmann/ptbr-writer's GitHub repository id (`gh api repos/h0ffmann/ptbr-writer`).
+// Zenodo's mark, from Zenodo's own site, and the concept DOI of ptbr-writer, which always resolves
+// to the newest version (v0.3.0 was 10.5281/zenodo.23554532; CITATION.cff has both). The page shows
+// the mark, never the number.
 const zenodo_icon =
   "https://about.zenodo.org/static/img/logos/zenodo-gradient-round.svg"
 
-const zenodo_latest = "https://zenodo.org/badge/latestdoi/1427289123"
+const zenodo_latest = "https://doi.org/10.5281/zenodo.23554531"
 
 const archify_icon =
   "https://raw.githubusercontent.com/tt-a1i/archify/2ab3cae/docs/assets/archify-mark.svg"
