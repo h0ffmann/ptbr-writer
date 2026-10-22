@@ -55,14 +55,13 @@ thread_local! {
     static CONTENT: RefCell<Option<Content>> = const { RefCell::new(None) };
 }
 
-/// Starts the content script; its failure to read the settings goes to the console.
-pub fn start() {
-    spawn_local(async {
-        match Content::start().await {
-            Ok(c) => CONTENT.with(|s| *s.borrow_mut() = Some(c)),
-            Err(e) => web_sys::console::error_1(&e),
-        }
-    });
+/// Starts the content script; done once it listens to the page. Its failure to read the settings
+/// goes to the console.
+pub async fn start() {
+    match Content::start().await {
+        Ok(c) => CONTENT.with(|s| *s.borrow_mut() = Some(c)),
+        Err(e) => web_sys::console::error_1(&e),
+    }
 }
 
 /// The running content script; dropping it stops it and removes its listeners.

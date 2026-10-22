@@ -35,6 +35,12 @@ pub fn local_origin(p: ProviderId) -> Option<String> {
     local_base(p).map(|b| format!("{b}/*"))
 }
 
+/// Where a local server's /api/tags and /api/pull are; `apiBase` in a test build only.
+pub fn local_base_for(p: ProviderId, s: &Settings) -> Option<String> {
+    let base = if cfg!(feature = "test-build") { s.api_base.get(&p).map(|b| b.trim_end_matches('/')) } else { None };
+    base.map(String::from).or_else(|| local_base(p).map(String::from))
+}
+
 fn path(p: ProviderId) -> &'static str {
     match p {
         ProviderId::Claude => "/v1/messages",
@@ -289,11 +295,8 @@ mod browser {
         serde_json::from_str(&res.body).map_err(|_| Failed)
     }
 
-    /// The models a local server has; none when it is down, refuses the extension or `p` is not local.
-    pub async fn local_models(p: ProviderId) -> Vec<String> {
-        let Some(base) = local_base(p) else {
-            return vec![];
-        };
+    /// The models a local server at `base` has; none when it is down or refuses the extension.
+    pub async fn local_models(base: &str) -> Vec<String> {
         let Ok(j) = local_json(&format!("{base}/api/tags"), None).await else {
             return vec![];
         };
@@ -306,10 +309,7 @@ mod browser {
     }
 
     /// Downloads a model into the server; both resume a pull cut short, so an interrupted one can be asked again.
-    pub async fn local_pull(p: ProviderId, model: &str) -> bool {
-        let Some(base) = local_base(p) else {
-            return false;
-        };
+    pub async fn local_pull(base: &str, model: &str) -> bool {
         match local_json(&format!("{base}/api/pull"), Some(&json!({ "model": model, "stream": false }))).await {
             Ok(j) => j.get("status").and_then(Value::as_str) == Some("success"),
             Err(Failed) => false,
@@ -410,6 +410,9 @@ mod tests {
         s.api_base.insert(ProviderId::Deepseek, "http://127.0.0.1:8/".into());
         assert_eq!(build_request(ProviderId::Claude, &s, "a", "b").url, "http://127.0.0.1:9/v1/messages");
         assert_eq!(build_request(ProviderId::Deepseek, &s, "a", "b").url, "http://127.0.0.1:8/chat/completions");
+        s.api_base.insert(ProviderId::Ollama, "http://127.0.0.1:7/".into());
+        assert_eq!(local_base_for(ProviderId::Ollama, &s).as_deref(), Some("http://127.0.0.1:7"));
+        assert_eq!(local_base_for(ProviderId::Ollaya, &s).as_deref(), Some("http://127.0.0.1:11435"));
     }
 
     #[cfg(not(feature = "test-build"))]
@@ -418,6 +421,9 @@ mod tests {
         let mut s = base();
         s.api_base.insert(ProviderId::Claude, "http://127.0.0.1:9".into());
         assert_eq!(build_request(ProviderId::Claude, &s, "a", "b").url, "https://api.anthropic.com/v1/messages");
+        s.api_base.insert(ProviderId::Ollama, "http://127.0.0.1:7".into());
+        assert_eq!(local_base_for(ProviderId::Ollama, &s).as_deref(), Some("http://127.0.0.1:11434"));
+        assert_eq!(local_base_for(ProviderId::Claude, &s), None);
     }
 
     #[test]

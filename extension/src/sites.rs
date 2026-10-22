@@ -69,7 +69,8 @@ mod browser {
         if is_default {
             return Ok(());
         }
-        chrome::permissions_remove(&origin(host)).await?;
+        // A permission the manifest requires cannot be removed; the site is off all the same.
+        let _ = chrome::permissions_remove(&origin(host)).await;
         notify(Message::DisableSite { host: host.into() }).await
     }
 
@@ -80,7 +81,7 @@ mod browser {
         let mut s = load_settings().await?;
         s.sites.remove(host);
         save_settings(&s).await?;
-        chrome::permissions_remove(&origin(host)).await?;
+        let _ = chrome::permissions_remove(&origin(host)).await;
         notify(Message::DisableSite { host: host.into() }).await
     }
 
