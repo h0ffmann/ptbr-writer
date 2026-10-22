@@ -35,7 +35,10 @@
             curl
             lsof
             vale # the Saramago prose linter (lint/saramago)
-            nodejs # runs vendor/archify (`just figure`); Chrome comes from the host
+            # node 24.22.1, the October 2026 security release (#83), from nodejs.org until nixpkgs
+            # ships it: runs vendor/archify (`just figure`) and the extension's build and tests.
+            # `just node-check` fails below it. Chrome comes from the host.
+            (pkgs.callPackage ./nix/nodejs-bin.nix { })
             librsvg # rsvg-convert: the whitepaper's logos, SVG to PDF (`just whitepaper`)
             poppler-utils # pdfinfo: the whitepaper's 5-page cap; pandoc and XeLaTeX come from the host
             iproute2

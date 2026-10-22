@@ -5,6 +5,11 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- Node 24.22.1, a release de segurança de 2026-10-21 (#83), no dev shell e no CI. O nixpkgs ainda está na
+  24.21.0, afetada, então o `nix/nodejs-bin.nix` usa o binário oficial do nodejs.org, fixado pelo sha256.
+  O `just node-check`, no `just quality`, falha abaixo das versões corrigidas. O `cve.yml` roda o
+  OSV-Scanner nos locks, o `node-check` e o `is-my-node-vulnerable` na `main`, em cada PR e toda segunda.
+  O shell do site recebe a mesma correção pelo picasso (h0ffmann/picasso#143).
 - O site embute o whitepaper em pt-BR numa seção própria (`#whitepaper`), como o site do closed-source
   embute o artigo dele: o PDF num quadro, carregado sob demanda, com links para abrir e baixar onde o
   quadro não aparece. A pílula do pt-BR sai da capa; a do inglês fica.
