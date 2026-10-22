@@ -42,6 +42,13 @@
             librsvg # rsvg-convert: the whitepaper's logos, SVG to PDF (`just whitepaper`)
             poppler-utils # pdfinfo: the whitepaper's 5-page cap; pandoc and XeLaTeX come from the host
             iproute2
+            rustc # the extension (extension/Cargo.toml), Rust to wasm32-unknown-unknown
+            cargo # `cargo test`, `cargo xtask build` (extension)
+            clippy # `cargo clippy` (extension)
+            rustfmt # `cargo fmt` (extension)
+            lld # the wasm linker rustc calls
+            wasm-bindgen-cli # the JS glue of the extension's wasm; its version is pinned in extension/Cargo.toml
+            binaryen # wasm-opt: shrinks the extension's wasm (`cargo xtask build`)
           ];
 
           shellHook = ''

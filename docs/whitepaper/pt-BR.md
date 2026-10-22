@@ -198,9 +198,9 @@ O modelo de decisão padrão vem de uma pesquisa no próprio repositório
 | `pplx-decider` | GPU, 10,6 GB | 5 533,6 ms | 0,016 | não declarado ⚠ |
 
 O `decima` é o padrão porque é o candidato de CPU com a ficha em português e o menor erro de
-calibração. Nenhum desses números foi medido em pt-BR nem nas regras PTW ⚠. A extensão tem 169
-testes unitários (Vitest, em 22 de outubro de 2026) e testes de ponta a ponta no Chromium, com um
-servidor falso e nenhuma API real.
+calibração. Nenhum desses números foi medido em pt-BR nem nas regras PTW ⚠. A extensão, Rust
+compilado para WebAssembly, tem 113 testes unitários (`cargo test`, em 22 de outubro de 2026) e 32
+testes de ponta a ponta no Chromium, com um servidor falso e nenhuma API real.
 
 # Um harness que melhora a si mesmo
 

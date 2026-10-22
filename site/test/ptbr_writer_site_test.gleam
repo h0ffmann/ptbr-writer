@@ -101,11 +101,11 @@ pub fn level_states_test() {
   assert string.contains(page, "blob/main/REUSE.md")
 }
 
-// Made with the repository's languages, Rust as planned, and the agents and local model servers,
-// each with its owner's icon, as on h0ffmann/closed-source. TypeScript is left out for now.
+// Made with the repository's languages (Rust is the extension's), and the agents and local model
+// servers, each with its owner's icon, as on h0ffmann/closed-source. No TypeScript is left.
 pub fn made_with_test() {
   let page = prerender.render()
-  assert string.contains(page, "planejado, ")
+  assert !string.contains(page, "planejado, ")
   assert string.contains(page, "https://www.rust-lang.org")
   assert string.contains(page, "https://resources.whatwg.org/logo.svg")
   assert !string.contains(page, "typescriptlang.org")

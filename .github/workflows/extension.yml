@@ -1,8 +1,10 @@
-# extension — on each pull request and push to main that touches the Chrome extension or the files
-# its build reads (the two skills it embeds and the plugin version it stamps), run the unit tests
-# and the end-to-end test: a headless Chromium with extension/dist-test loaded, typing into a page
-# and accepting a suggestion from a local fake server for each provider. No test calls a real API.
-# No nix: Node comes from actions/setup-node and Chromium from Playwright.
+# extension — on each pull request and push to main that touches the browser extension or the files
+# its build reads (the two skills it embeds, the plugin version it stamps, the flake that pins its
+# toolchain), run the Rust gates (fmt, clippy on the host and on wasm32, unit tests), build the test
+# extension and run the end-to-end suite: a headless Chromium with extension/dist-test loaded,
+# typing into a page and accepting a suggestion from a local fake server. No test calls a real API.
+# Everything runs inside the flake's dev shell (rustc, wasm-bindgen, binaryen, node), so the versions
+# are the ones flake.lock pins; Chromium and its system libraries come from Playwright.
 name: extension
 
 on:
@@ -12,6 +14,8 @@ on:
       - SKILL.md
       - skills/cientifico/SKILL.md
       - plugins/ptbr-writer/.claude-plugin/plugin.json
+      - flake.nix
+      - flake.lock
       - .github/workflows/extension.yml
   push:
     branches: [main]
@@ -20,6 +24,8 @@ on:
       - SKILL.md
       - skills/cientifico/SKILL.md
       - plugins/ptbr-writer/.claude-plugin/plugin.json
+      - flake.nix
+      - flake.lock
       - .github/workflows/extension.yml
   workflow_dispatch:
 
@@ -29,21 +35,28 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: extension
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: cachix/install-nix-action@448cde739abec1eaf0646249e3d25bb8d9bc7702 # v31.11.2
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          # The node of the dev shell (nix/nodejs-bin.nix), the October 2026 security release (#83).
-          # A bare `22` gave 22.23.3, below the 22.23.4 fix; the CVE workflow fails below 24.22.1.
-          node-version: 24.22.1
-          cache: npm
-          cache-dependency-path: extension/package-lock.json
-      - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - run: npx vitest run
-      - run: node build.mjs --test
-      - run: npx playwright test
+          path: |
+            ~/.cargo/registry
+            extension/target
+          key: extension-cargo-${{ runner.os }}-${{ hashFiles('extension/Cargo.lock', 'flake.lock') }}
+          restore-keys: extension-cargo-${{ runner.os }}-
+      - run: nix develop .. -c cargo fmt --all -- --check
+      - run: nix develop .. -c cargo clippy --all-targets -- -D warnings
+      - run: nix develop .. -c cargo clippy --target wasm32-unknown-unknown -- -D warnings
+      - run: nix develop .. -c cargo clippy --target wasm32-unknown-unknown --features test-build -- -D warnings
+      - run: nix develop .. -c cargo test
+      - run: nix develop .. -c cargo test --features test-build
+      - run: nix develop .. -c cargo xtask build --test
+      - run: nix develop .. -c npm ci
+      # --with-deps installs Chromium's system libraries with apt (sudo), outside nix.
+      - run: nix develop .. -c npx playwright install --with-deps chromium
+      - run: nix develop .. -c npx playwright test

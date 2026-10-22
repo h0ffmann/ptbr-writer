@@ -156,7 +156,7 @@ fn cover() -> Element(msg) {
       ),
       grafo_pill(
         "grafo/extensao.html",
-        "grafo do código TypeScript da extensão de navegador, Chrome e Firefox (extension/)",
+        "grafo do código Rust da extensão de navegador, Chrome e Firefox (extension/)",
         "Grafo da extensão",
       ),
       html.a(
@@ -336,20 +336,19 @@ fn grafo_pill(href: String, title: String, name: String) -> Element(msg) {
   )
 }
 
-/// "feito com" the languages of this repository, each with its owner's mark, then Rust, planned, then
-/// "com" the agents and the local model servers it runs on. On the cover and again in the footer.
+/// "feito com" the languages of this repository, each with its owner's mark, then "com" the agents
+/// and the local model servers it runs on. On the cover and again in the footer.
 pub fn made_with_line(class: String) -> Element(msg) {
   html.p([attribute.class(class)], [
     html.text("feito com "),
     made_with("Gleam", gleam_icon, "https://gleam.run"),
+    made_with("Rust", rust_icon, "https://www.rust-lang.org"),
     made_with("Just", just_icon, "https://just.systems"),
     made_with("Shell", shell_icon, "https://www.gnu.org/software/bash/"),
     made_with("Nix", nix_icon, "https://nixos.org"),
     made_with("CSS", css_icon, "https://www.w3.org/Style/CSS/"),
     made_with("JavaScript", javascript_icon, "https://tc39.es"),
     made_with("HTML", html_icon, "https://html.spec.whatwg.org"),
-    html.text(" e, planejado, "),
-    made_with("Rust", rust_icon, "https://www.rust-lang.org"),
     html.text("; com "),
     made_with("Claude Code", claude_code_icon, "https://claude.com/claude-code"),
     made_with("OpenCode", opencode_icon, "https://opencode.ai"),
