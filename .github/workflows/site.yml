@@ -23,10 +23,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4 # the footer names the commit the page was read from
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0; the footer names the commit the page was read from
         with:
+          persist-credentials: false
           fetch-depth: 0 # release-due compares with the last v* tag
-      - uses: cachix/install-nix-action@v31
+      - uses: cachix/install-nix-action@448cde739abec1eaf0646249e3d25bb8d9bc7702 # v31.11.2
       - name: just quality (justfile, flake, pins)
         run: nix develop --no-update-lock-file --command just quality
       - name: just site (content, Gleam tests, prerender)
@@ -34,7 +35,7 @@ jobs:
       - name: release due (a warning, never a failure)
         if: github.ref == 'refs/heads/main'
         run: nix develop --no-update-lock-file --command just release-due || echo "::warning title=release due::o plugin mudou desde a última tag e quem o instalou não vê a mudança; rode just release X.Y.Z"
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
         if: github.event_name != 'pull_request'
         with:
           path: site/dist
@@ -51,4 +52,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
