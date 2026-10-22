@@ -77,6 +77,8 @@ const BADGE_LABEL: Record<CheckError, string> = {
   'rate-limit': 'limite atingido',
   provider: 'erro do provider',
   network: 'erro do provider',
+  local: 'Ollama inacessível',
+  'local-ollaya': 'Ollaya inacessível',
   reload: 'recarregue a página',
 };
 
@@ -293,8 +295,10 @@ function openCard(el: HTMLElement, l: Located, d: Drawn, hover = false) {
   node.setAttribute('role', 'dialog');
   const rule = doc.createElement('p');
   rule.className = 'ptbr-rule';
-  const title = d.titles[l.rule];
-  const rewritten = l.severity === 'aviso' && l.rule === 'PTW-17';
+  // A local provider adds to the code (`PTW-3 (83%)`, `PTW-3 · estilo conciso`): the title is the code's.
+  const code = /^[A-Z]+-\d+/.exec(l.rule)?.[0] ?? l.rule;
+  const title = d.titles[code];
+  const rewritten = l.severity === 'aviso' && l.rule === 'PTW-17' && !l.detectOnly;
   rule.textContent = rewritten ? 'Reescrita' : title ? `${l.rule} · ${title}` : l.rule;
   const change = doc.createElement('p');
   change.className = 'ptbr-change';
@@ -302,7 +306,10 @@ function openCard(el: HTMLElement, l: Located, d: Drawn, hover = false) {
   s.textContent = l.original;
   const strong = doc.createElement('strong');
   strong.textContent = l.replacement;
-  change.append(s, ' → ', strong);
+  // A detection (Ollaya) has no replacement: the card names the rule and the sentence, with only Ignorar.
+  const detect = l.detectOnly === true;
+  if (detect) change.append(l.original);
+  else change.append(s, ' → ', strong);
   const actions = doc.createElement('div');
   actions.className = 'ptbr-actions';
   const button = (action: string, label: string, run: () => void) => {
@@ -318,8 +325,10 @@ function openCard(el: HTMLElement, l: Located, d: Drawn, hover = false) {
     });
     return b;
   };
-  actions.append(button('accept', 'Aceitar', () => d.onAccept(l)), button('ignore', 'Ignorar', () => d.onIgnore(l)));
-  if (d.onNeverFix && l.original.trim().split(/\s+/).length <= NEVER_FIX_MAX_WORDS) {
+  if (!detect) actions.append(button('accept', 'Aceitar', () => d.onAccept(l)));
+  actions.append(button('ignore', 'Ignorar', () => d.onIgnore(l)));
+  // A detection changes nothing, so the never-fix list has nothing to keep there.
+  if (!detect && d.onNeverFix && l.original.trim().split(/\s+/).length <= NEVER_FIX_MAX_WORDS) {
     const never = d.onNeverFix;
     actions.append(button('never', 'Sempre ignorar', () => never(l)));
   }

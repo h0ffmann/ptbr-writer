@@ -101,9 +101,18 @@ pub fn level_states_test() {
   assert string.contains(page, "blob/main/REUSE.md")
 }
 
-// Made with Gleam and Claude Code, each with its owner's icon, as on h0ffmann/closed-source.
+// Made with the repository's languages, Rust as planned, and the agents and local model servers,
+// each with its owner's icon, as on h0ffmann/closed-source. TypeScript is left out for now.
 pub fn made_with_test() {
   let page = prerender.render()
+  assert string.contains(page, "planejado, ")
+  assert string.contains(page, "https://www.rust-lang.org")
+  assert string.contains(page, "https://resources.whatwg.org/logo.svg")
+  assert !string.contains(page, "typescriptlang.org")
+  assert string.contains(page, "https://opencode.ai")
+  assert string.contains(page, "alibaba/open-code-review")
+  assert string.contains(page, "https://ollama.com")
+  assert string.contains(page, "ollaya-dev/ollaya")
   assert string.contains(page, "gleam-lang/branding")
   assert string.contains(page, "favicons/claude-code")
   assert string.contains(page, "https://gleam.run")
@@ -218,4 +227,30 @@ pub fn bipr_page_test() {
   assert string.contains(html, "skills/bipr/SKILL.md")
   assert string.contains(html, "install_current.sh")
   assert string.contains(html, "href=\"index.html\"")
+}
+
+// The whitepaper, one PDF pill per language, with the site's own PDF icon.
+pub fn whitepaper_pills_test() {
+  let page = prerender.render()
+  // The pt-BR edition is embedded in its own section, as closed-source does; English keeps a pill.
+  assert string.contains(page, "id=\"whitepaper\"")
+  assert string.contains(page, "<iframe class=\"preview\"")
+  assert string.contains(page, "src=\"whitepaper/WHITEPAPER.pdf\"")
+  assert string.contains(page, "whitepaper/WHITEPAPER.en.pdf")
+  assert string.contains(page, "Whitepaper (EN)")
+  assert !string.contains(page, "Whitepaper (pt-BR)")
+  assert string.contains(page, "pdf.svg")
+}
+
+// A discreet link to the Zenodo record: Zenodo's mark and the concept DOI (always the newest
+// version) as the link's target; the number is never shown as text.
+pub fn zenodo_pill_test() {
+  let page = prerender.render()
+  assert string.contains(
+    page,
+    "href=\"https://doi.org/10.5281/zenodo.23554531\"",
+  )
+  assert string.contains(page, "zenodo-gradient-round.svg")
+  assert !string.contains(page, ">10.5281/")
+  assert !string.contains(page, "zenodo.23554531<")
 }

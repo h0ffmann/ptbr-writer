@@ -1,4 +1,4 @@
-import { MODELS, loadSettings, saveSettings } from './settings';
+import { MODELS, isLocal, loadSettings, saveSettings } from './settings';
 import type { Level, Settings } from './types';
 
 export const DEFAULT_SITE_HOSTS: ReadonlySet<string> = new Set(['web.whatsapp.com', 'mail.google.com', 'github.com']);
@@ -57,6 +57,11 @@ export async function setLevel(host: string, level: Level): Promise<void> {
   await saveSettings({ ...s, sites: { ...s.sites, [host]: { ...site, level } } });
 }
 
+export async function setOllayaStyle(ollayaStyle: boolean): Promise<void> {
+  const s = await loadSettings();
+  await saveSettings({ ...s, ollayaStyle });
+}
+
 export async function setEnabled(enabled: boolean): Promise<void> {
   const s = await loadSettings();
   await saveSettings({ ...s, enabled });
@@ -76,7 +81,7 @@ export async function saveProviderFields(f: {
     enabled: f.enabled,
     provider: p,
     keys: { ...s.keys, [p]: resolveKey(s.keys[p], f.key) },
-    models: { ...s.models, [p]: MODELS[p].includes(f.model) ? f.model : s.models[p] },
+    models: { ...s.models, [p]: isLocal(p) || MODELS[p].includes(f.model) ? f.model || s.models[p] : s.models[p] },
   });
 }
 

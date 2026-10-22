@@ -15,6 +15,7 @@ build/
 extension/node_modules/
 extension/dist/
 extension/dist-test/
+extension/dist-firefox/
 extension/test-results/
 extension/playwright-report/
 extension/e2e/pages/lexical.js

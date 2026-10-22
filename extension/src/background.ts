@@ -1,9 +1,10 @@
-import { buildRequest, classifyError, isTruncated, readText } from './providers';
+import { readDecision, readStyle } from './decisions';
+import { buildRequest, classifyError, decideRequests, isTruncated, readText, styleRequest } from './providers';
 import { buildSystemPrompt } from './rules';
-import { DEFAULT_SETTINGS, levelFor, loadSettings } from './settings';
+import { DEFAULT_SETTINGS, isLocal, levelFor, loadSettings } from './settings';
 import { CIENTIFICO, SKILL } from './skills';
 import { filterSuggestions, parseSuggestions } from './suggestions';
-import type { CheckRequest, CheckResult, Settings } from './types';
+import type { CheckError, CheckRequest, CheckResult, Settings, Style, Suggestion } from './types';
 
 const inflight = new Map<string, AbortController>();
 
@@ -13,14 +14,22 @@ export async function handleCheck(
 ): Promise<CheckResult> {
   const { settings } = deps;
   const provider = settings.provider;
-  if (!settings.keys[provider]) return { ok: false, error: 'no-key' };
+  if (!isLocal(provider) && !settings.keys[provider]) return { ok: false, error: 'no-key' };
 
   inflight.get(req.key)?.abort();
   const controller = new AbortController();
   inflight.set(req.key, controller);
 
   try {
-    const system = buildSystemPrompt(req.level, SKILL, CIENTIFICO, { tone: settings.tone, rewrite: settings.rewrite, neverFix: settings.neverFix });
+    if (provider === 'ollaya') return await checkDecisions(req, deps, controller.signal);
+    const style = provider === 'ollama' && settings.ollayaStyle ? await pickStyle(req.text, deps, controller.signal) : null;
+    if (controller.signal.aborted) return { ok: true, suggestions: [] };
+    const system = buildSystemPrompt(req.level, SKILL, CIENTIFICO, {
+      tone: settings.tone,
+      rewrite: settings.rewrite,
+      neverFix: settings.neverFix,
+      style,
+    });
     const { url, init } = buildRequest(provider, settings, system, req.text);
     let res: Response;
     try {
@@ -28,10 +37,10 @@ export async function handleCheck(
     } catch {
       return controller.signal.aborted
         ? { ok: true, suggestions: [] }
-        : { ok: false, error: 'network' };
+        : { ok: false, error: classifyError(null, provider) };
     }
     if (controller.signal.aborted) return { ok: true, suggestions: [] };
-    if (!res.ok) return { ok: false, error: classifyError(res.status) };
+    if (!res.ok) return { ok: false, error: classifyError(res.status, provider) };
     let json: unknown;
     try {
       json = await res.json();
@@ -42,13 +51,61 @@ export async function handleCheck(
     }
     if (controller.signal.aborted) return { ok: true, suggestions: [] };
     if (isTruncated(provider, json)) return { ok: false, error: 'provider' };
-    return {
-      ok: true,
-      suggestions: filterSuggestions(req.text, parseSuggestions(readText(provider, json)), settings),
-    };
+    const suggestions = filterSuggestions(req.text, parseSuggestions(readText(provider, json)), settings);
+    // The card says which style Ollaya chose, so the rewrite's tone has a visible reason.
+    return { ok: true, suggestions: style ? suggestions.map((s) => ({ ...s, rule: `${s.rule} · estilo ${style}` })) : suggestions };
   } finally {
     if (inflight.get(req.key) === controller) inflight.delete(req.key);
   }
+}
+
+// Ollaya + Ollama: Ollaya picks the style of the rewrite. A feature flag, so any failure (Ollaya down,
+// a 403, an odd reply) gives null and Ollama writes as it does alone.
+async function pickStyle(
+  text: string,
+  deps: { fetch: typeof fetch; settings: Settings },
+  signal: AbortSignal,
+): Promise<Style | null> {
+  const { url, init } = styleRequest(deps.settings, text);
+  try {
+    const res = await deps.fetch(url, { ...init, signal });
+    return res.ok ? readStyle(await res.json()) : null;
+  } catch {
+    return null;
+  }
+}
+
+// Ollaya: one /api/decide per sentence, in parallel. Any failure fails the check, as one failed
+// reply does for the other providers: a sentence left unread is not "no problems".
+async function checkDecisions(
+  req: CheckRequest,
+  deps: { fetch: typeof fetch; settings: Settings },
+  signal: AbortSignal,
+): Promise<CheckResult> {
+  const results = await Promise.all(
+    decideRequests(deps.settings, req.level, req.text).map(
+      async ({ ask, url, init }): Promise<{ error: CheckError } | { found: Suggestion | null }> => {
+        let res: Response;
+        try {
+          res = await deps.fetch(url, { ...init, signal });
+        } catch {
+          return { error: classifyError(null, 'ollaya') };
+        }
+        if (!res.ok) return { error: classifyError(res.status, 'ollaya') };
+        try {
+          const json: unknown = await res.json();
+          return isTruncated('ollaya', json) ? { error: 'provider' } : { found: readDecision(json, ask) };
+        } catch {
+          return { error: 'provider' };
+        }
+      },
+    ),
+  );
+  if (signal.aborted) return { ok: true, suggestions: [] };
+  const failed = results.find((r) => 'error' in r);
+  if (failed && 'error' in failed) return { ok: false, error: failed.error };
+  const found = results.flatMap((r) => ('found' in r && r.found ? [r.found] : []));
+  return { ok: true, suggestions: filterSuggestions(req.text, found, deps.settings) };
 }
 
 // The part of chrome.runtime.MessageSender the gate reads.

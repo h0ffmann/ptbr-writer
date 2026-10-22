@@ -1,10 +1,11 @@
 import { NEVER_FIX_MAX } from './never-fix';
-import type { Level, Tone } from './types';
+import type { Level, Style, Tone } from './types';
 
 export interface PromptOptions {
   tone: Tone;
   rewrite: boolean;
   neverFix: readonly string[];
+  style?: Style | null; // the style Ollaya picked for Ollama, if any
 }
 
 const TONE_LINES: Record<Tone, string> = {
@@ -33,7 +34,14 @@ function cleanNeverFix(list: readonly string[]): string[] {
     .slice(0, NEVER_FIX_MAX);
 }
 
-function section(skill: string, heading: string, name: string, file = "SKILL.md"): string {
+// The conversation styles Ollaya chooses from (decisions.ts) and Ollama writes in.
+export const STYLES: Record<Style, string> = {
+  conciso: 'curto e direto: só o necessário, sem rodeio',
+  socrático: 'conduz por perguntas e deixa o leitor chegar à conclusão',
+  amigável: 'caloroso e próximo, sem perder a precisão',
+};
+
+export function section(skill: string, heading: string, name: string, file = "SKILL.md"): string {
   const lines = skill.split('\n');
   const start = lines.findIndex((l) => l.trimEnd() === heading);
   if (start < 0) throw new Error(`${file}: seção ${name} não encontrada`);
@@ -44,6 +52,7 @@ function section(skill: string, heading: string, name: string, file = "SKILL.md"
 
 export function buildSystemPrompt(level: Level, skill: string, cientifico: string, opts: PromptOptions): string {
   const never = cleanNeverFix(opts.neverFix);
+  const style = opts.style;
   const parts = [
     'Você revisa texto em português do Brasil segundo as regras abaixo. Aponte só trechos que quebram uma regra.',
     section(skill, '## Níveis de rigor', 'Níveis de rigor'),
@@ -52,6 +61,7 @@ export function buildSystemPrompt(level: Level, skill: string, cientifico: strin
   if (level === 'científico') parts.push(section(cientifico, "## Regras", "Regras", "cientifico/SKILL.md"));
   parts.push(
     `Nível pedido: \`${level}\`. Aplique as regras com o rigor desse nível.`,
+    ...(style ? [`Estilo da reescrita: \`${style}\` (${STYLES[style]}). Escreva cada replacement nesse estilo.`] : []),
     [
       'Este formato substitui qualquer outro formato de saída citado nas regras acima.',
       'Formato da resposta: responda só com um array JSON, sem texto fora dele. Cada item é um objeto',
