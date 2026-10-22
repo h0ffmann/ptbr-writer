@@ -101,9 +101,16 @@ pub fn level_states_test() {
   assert string.contains(page, "blob/main/REUSE.md")
 }
 
-// Made with Gleam and Claude Code, each with its owner's icon, as on h0ffmann/closed-source.
+// Made with the repository's languages (TypeScript last, "infelizmente") and the agents and local
+// model servers, each with its owner's icon when it has one, as on h0ffmann/closed-source.
 pub fn made_with_test() {
   let page = prerender.render()
+  assert string.contains(page, "infelizmente")
+  assert string.contains(page, "https://www.typescriptlang.org")
+  assert string.contains(page, "https://opencode.ai")
+  assert string.contains(page, "alibaba/open-code-review")
+  assert string.contains(page, "https://ollama.com")
+  assert string.contains(page, "ollaya-dev/ollaya")
   assert string.contains(page, "gleam-lang/branding")
   assert string.contains(page, "favicons/claude-code")
   assert string.contains(page, "https://gleam.run")

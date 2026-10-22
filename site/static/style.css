@@ -96,7 +96,7 @@ code { font-size: 0.85em; background: var(--sheet); border: 1px solid var(--rule
 .figure-pill { font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; }
 .figure-pill img { width: 20px; height: 18px; }
 .count { height: 20px; }
-/* made with Gleam and Claude Code: the owners' icons, on the cover and in the footer */
+/* made with: the languages, the agents and the local servers, with the owners' icons, on the cover and in the footer */
 .made-with { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 0.95rem; color: var(--muted); margin: 0.6em 0 0; }
 .made-with a { display: inline-flex; align-items: center; gap: 6px; padding: 0.25em 0.75em; border: 1px solid var(--rule); border-radius: 999px; background: var(--sheet); color: var(--ink); text-decoration: none; }
 .made-with a:hover { border-color: var(--pen); }
