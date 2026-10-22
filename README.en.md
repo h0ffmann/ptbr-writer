@@ -13,6 +13,8 @@
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 [![browser extension (Chrome): local dev (WIP)](https://img.shields.io/badge/browser%20extension-local%20dev%20(WIP)-1682D4?style=flat-square&logo=googlechrome&logoColor=white)](#chrome)
 [![browser extension (Firefox): local dev (WIP)](https://img.shields.io/badge/browser%20extension-local%20dev%20(WIP)-1682D4?style=flat-square&logo=firefoxbrowser&logoColor=white)](docs/EXTENSION_FIREFOX.md)
+[![local model: Ollama](https://img.shields.io/badge/local%20model-Ollama-1682D4?style=flat-square&logo=ollama&logoColor=white)](#ollama)
+[![decision model: Ollaya](https://img.shields.io/badge/decision%20model-Ollaya-1682D4?style=flat-square&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0iIzE3MTcxNyIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEuNiAxLjQpIHNjYWxlKC45KSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIuMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNNiA1LjUgMTAuNSA5LjVRMTYgNy41IDIxLjUgOS41TDI2IDUuNVYxOVEyNiAyNy41IDE2IDI3LjVUNiAxOVoiLz48Y2lyY2xlIGN4PSIxMS41IiBjeT0iMTUuNSIgcj0iMy4yNSIvPjxjaXJjbGUgY3g9IjIwLjUiIGN5PSIxNS41IiByPSIzLjI1Ii8+PGNpcmNsZSBjeD0iMTEuNSIgY3k9IjE1LjUiIHI9IjEuMiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIi8+PGNpcmNsZSBjeD0iMjAuNSIgY3k9IjE1LjUiIHI9IjEuMiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIi8+PHBhdGggZD0iTTE0Ljc1IDIxIDE2IDIzbDEuMjUtMiIvPjwvZz48L3N2Zz4K)](#ollaya)
 
 </div>
 
@@ -143,6 +145,8 @@ the script uses the binary inside the snap, because geckodriver cannot start `/u
 The experiment of 2026-10-21, with the workstation and the steps to reproduce it, is in
 [`docs/EXTENSION_FIREFOX.md`](docs/EXTENSION_FIREFOX.md) (pt-BR).
 
+<a id="ollama"></a>
+
 No key and no cloud: `just ext-ollama` serves Qwen through Ollama at `127.0.0.1:11434` (`qwen3.6:27b`,
 the model of `just opencode-qwen`; `just ext-ollama qwen3:8b` for a smaller GPU). In the popup,
 choose **Ollama (local)**: in that click the browser asks for the permission to
@@ -153,6 +157,8 @@ not yet installed shows `(baixar)`, and the **Baixar** (download) button downloa
 extension's origin unless started with `OLLAMA_ORIGINS=chrome-extension://*,moz-extension://*`;
 the recipe starts it so and, when an Ollama without it already runs (the systemd service, say),
 says how to allow it. ⚠ Not yet tested with the real Qwen in the extension.
+
+<a id="ollaya"></a>
 
 Pointing out that a sentence breaks a rule is a decision, and a decision model makes it without
 generating text. `just ext-ollaya` serves [Ollaya](https://github.com/ollaya-dev/ollaya) at

@@ -5,6 +5,8 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- Os READMEs ganham os selos **modelo local: Ollama** e **modelo de decisão: Ollaya**, com o ícone de
+  cada um; cada selo leva ao parágrafo do provider (`#ollama`, `#ollaya`).
 - A extensão ganha o provider **Ollaya (local, só aponta)** (#61): um modelo de decisão do
   [Ollaya](https://github.com/ollaya-dev/ollaya) diz, frase a frase, qual regra do nível a frase
   quebra; a regra vira um sublinhado sem troca, e o cartão só tem **Ignorar**. A fiação é a do Ollama:
