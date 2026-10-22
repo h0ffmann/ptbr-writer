@@ -1,5 +1,16 @@
-import { SUGGESTION } from './fake-server';
+import { type FakeServer, SUGGESTION } from './fake-server';
+import type { Page } from '@playwright/test';
 import { accept, expect, FIXED, SETTLE, test, TYPED, typeAndWait, UI_TIMEOUT } from './helpers';
+
+// The content script applies a settings change asynchronously (storage event, then a read), so a key
+// typed right after setSettings can go unseen: type again until the change has taken, one key per
+// wait longer than the 1 s debounce, so a seen key never gets a second request.
+async function typeUntilChecked(page: Page, server: FakeServer) {
+  await expect(async () => {
+    await page.keyboard.type(' ');
+    await expect.poll(() => server.calls.length, { timeout: 3_000 }).toBeGreaterThan(0);
+  }).toPass({ timeout: UI_TIMEOUT });
+}
 
 // The content script: what it reads from a field (text model), when it sends (watcher) and what
 // it does with the settings and an accepted suggestion (controller).
@@ -100,7 +111,7 @@ test.describe('controller', () => {
     await page.waitForTimeout(SETTLE);
     expect(server.calls).toEqual([]);
     await ext.setSettings({ sites: { '127.0.0.1': { enabled: true, level: 'descritivo' } } });
-    await page.keyboard.type(' ');
+    await typeUntilChecked(page, server);
     await expect(page.locator('.ptbr-underline')).toHaveCount(1, { timeout: UI_TIMEOUT });
     expect(server.calls.length).toBe(1);
   });
@@ -113,9 +124,10 @@ test.describe('controller', () => {
     await page.waitForTimeout(SETTLE);
     expect(server.calls).toEqual([]);
     await ext.setSettings({ enabled: true });
-    await page.keyboard.type(' ');
+    await typeUntilChecked(page, server);
     await expect(page.locator('.ptbr-underline')).toHaveCount(1, { timeout: UI_TIMEOUT });
     await ext.setSettings({ enabled: false });
+    await page.waitForTimeout(SETTLE);
     await page.keyboard.type(' ');
     await page.waitForTimeout(SETTLE);
     expect(server.calls.length).toBe(1);
