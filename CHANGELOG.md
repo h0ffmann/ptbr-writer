@@ -5,6 +5,15 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- A licença passa de MIT para **MPL-2.0** (`LICENSE`, os selos e a seção de licença dos READMEs, o
+  `plugin.json`, o `site/gleam.toml` e o rodapé do site). A v0.2.0 e as versões anteriores continuam
+  MIT, e o que vem de terceiros mantém a licença de cada um.
+- O "feito com" do site mostra o ícone do dono de cada linguagem (Just, Shell, CSS, JavaScript e
+  HTML ganham o seu), tira o TypeScript por enquanto e acrescenta o Rust como planejado.
+- Os dois READMEs passam de ~31 para ~8 min de leitura, e o `just quality` falha acima de 10 min. As
+  tabelas de regras, roadmap, awesome e níveis planejados ficam só no site, que as gera de
+  `site/data/`; o detalhe de instalação, configuração, extensão, tempo de leitura e os commits dos
+  créditos vai para a seção *Reference* do `AGENTS.md`.
 - O roadmap ganha a **extensão do Chrome** e o **FOSS (Ollama, Ollaya)**, os dois em andamento.
 - Os READMEs ganham os selos **modelo local: Ollama** e **modelo de decisão: Ollaya**, com o ícone de
   cada um; cada selo leva ao parágrafo do provider (`#ollama`, `#ollaya`).
