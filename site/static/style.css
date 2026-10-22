@@ -95,6 +95,8 @@ code { font-size: 0.85em; background: var(--sheet); border: 1px solid var(--rule
 /* the Archify pages, named and marked with Archify's icon, beside the GitHub pill */
 .figure-pill { font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; }
 .figure-pill img { width: 20px; height: 18px; }
+/* a mark that is a name (Zenodo's, 220 by 80) keeps its proportion */
+.figure-pill img.wordmark { width: 55px; height: 20px; }
 .count { height: 20px; }
 /* made with: the languages, the agents and the local servers, with the owners' icons, on the cover and in the footer */
 .made-with { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 0.95rem; color: var(--muted); margin: 0.6em 0 0; }

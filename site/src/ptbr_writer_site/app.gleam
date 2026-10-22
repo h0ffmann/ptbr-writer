@@ -184,6 +184,26 @@ fn cover() -> Element(msg) {
         "the ptbr-writer whitepaper, in English",
         "Whitepaper (EN)",
       ),
+      // The Zenodo record, without the DOI's number: Zenodo resolves the repository's latest DOI.
+      html.a(
+        [
+          attribute.class("ghost figure-pill"),
+          attribute.href(zenodo_latest),
+          attribute.title(
+            "o registro no Zenodo, com o DOI da versão mais recente",
+          ),
+        ],
+        [
+          // Zenodo's mark is its name, 220 by 80: it is the pill's label, at its own proportion.
+          html.img([
+            attribute.src(zenodo_icon),
+            attribute.class("wordmark"),
+            attribute.alt("Zenodo"),
+            attribute.width(55),
+            attribute.height(20),
+          ]),
+        ],
+      ),
       // Each Archify page of docs/archify/, named by its title and marked with Archify's icon,
       // beside the GitHub pill.
       ..list.map(content.figures, fn(f) {
@@ -247,6 +267,13 @@ const ollama_icon = "https://ollama.com/public/ollama.png"
 const ollaya_icon = "https://ollaya.dev/favicon.svg"
 
 // Archify's mark at the revision vendor/archify pins.
+// Zenodo's mark, from Zenodo's own site, and its redirect to this repository's newest DOI: the
+// number is h0ffmann/ptbr-writer's GitHub repository id (`gh api repos/h0ffmann/ptbr-writer`).
+const zenodo_icon =
+  "https://about.zenodo.org/static/img/logos/zenodo-gradient-round.svg"
+
+const zenodo_latest = "https://zenodo.org/badge/latestdoi/1427289123"
+
 const archify_icon =
   "https://raw.githubusercontent.com/tt-a1i/archify/2ab3cae/docs/assets/archify-mark.svg"
 

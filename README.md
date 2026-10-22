@@ -45,15 +45,15 @@ configuração e os arquivos. A borda laranja marca onde você entra e o que voc
 
 ## instalar
 
-A versão oficial é a [v0.2.0](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.2.0). Num
+A versão oficial é a [v0.3.0](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.3.0). Num
 terminal:
 
 ```console
-claude plugin install ptbr-writer --marketplace h0ffmann/ptbr-writer#v0.2.0
+claude plugin install ptbr-writer --marketplace h0ffmann/ptbr-writer#v0.3.0
 ```
 
 Para fixar a versão num repositório, ponha no `.claude/settings.json` dele o marketplace
-`h0ffmann/ptbr-writer` com `"ref": "v0.2.0"` em `extraKnownMarketplaces` e ative
+`h0ffmann/ptbr-writer` com `"ref": "v0.3.0"` em `extraKnownMarketplaces` e ative
 `ptbr-writer@ptbr-writer` em `enabledPlugins`. Para atualizar, troque a tag.
 
 ### OpenCode
@@ -168,7 +168,7 @@ Os commits fixados de cada fonte estão no [`AGENTS.md`](AGENTS.md).
 ## licença
 
 MPL-2.0. Veja [`LICENSE`](LICENSE). Quem distribuir um arquivo modificado do ptbr-writer publica
-esse arquivo sob a MPL. A v0.2.0 e as versões anteriores continuam MIT. O que vem de terceiros
+esse arquivo sob a MPL. As versões anteriores à v0.3.0 continuam MIT. O que vem de terceiros
 mantém a licença e o aviso de cada um.
 
 <sub>ptbr-writer é um fork conceitual e independente do Português Técnico Controlado (PTC), de

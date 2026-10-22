@@ -38,7 +38,7 @@
       "col": 0,
       "type": "external",
       "label": "to-pdf.sh",
-      "sublabel": "plugin ptbr-writer v0.2.0",
+      "sublabel": "plugin ptbr-writer v0.3.0",
       "width": 150
     },
     {

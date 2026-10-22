@@ -274,8 +274,9 @@ release version:
         jq --arg v "$v" '.version = $v' "$json" > "$json.new" && mv "$json.new" "$json"
         files=$(sed 's/^ *//; s/ *$//; s/.*/`&`/' <<<"$due" | paste -sd, - | sed 's/,/, /g')
         awk -v v="$v" -v day="$(date -u +%F)" -v files="$files" '!done && /^## / {print "## v" v " — " day "\n\n- (descreva a release) mudou: " files "\n"; done=1} {print}' CHANGELOG.md > CHANGELOG.new && mv CHANGELOG.new CHANGELOG.md
-        ${EDITOR:-vi} CHANGELOG.md
-        ! grep -q '(descreva a release)' CHANGELOG.md || { echo "release: CHANGELOG.md still has the placeholder" >&2; exit 1; }
+        # No terminal (an agent's shell, CI): no editor; the placeholder check below says what to do.
+        if [ -t 0 ]; then ${EDITOR:-vi} CHANGELOG.md; fi
+        ! grep -q '(descreva a release)' CHANGELOG.md || { echo "release: describe the release in CHANGELOG.md (the placeholder is still there), then commit on this branch" >&2; exit 1; }
         just plugin-check
         git commit -qam "release: v$v" -m "Tested: just plugin-check" -m "Co-Authored-By: Claude <noreply@anthropic.com>"
         git push -q -u origin "chore/release-v$v"
@@ -283,14 +284,24 @@ release version:
     else
         [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] || { echo "release: check out origin/main first (git switch main && git pull)" >&2; exit 1; }
         just release-check "v$v"
+        # Zenodo mints the DOI when it sees the GitHub release that release.yml publishes from this tag.
+        gh api repos/h0ffmann/ptbr-writer/hooks --jq 'any(.[]; .active and (.config.url | startswith("https://zenodo.org/")))' | grep -qx true || { echo "release: Zenodo's webhook is not on for this repository; turn it on in Zenodo's GitHub page first" >&2; exit 1; }
         git tag -a "v$v" -m "ptbr-writer v$v"
         git push -q origin "v$v"
-        echo "release: v$v pushed; release.yml publishes it"
+        echo "release: v$v pushed; waiting for release.yml to publish it"
+        for _ in $(seq 60); do gh release view "v$v" >/dev/null 2>&1 && break; sleep 10; done
+        gh release view "v$v" >/dev/null 2>&1 || { echo "release: no GitHub release v$v after 10 min; see the release workflow" >&2; exit 1; }
+        echo "release: v$v is out; waiting for Zenodo's DOI"
+        for _ in $(seq 60); do just doi 2>/dev/null | grep -q "^v$v"$'\t' && break; sleep 10; done
+        just doi | grep "^v$v"$'\t' || { echo "release: no DOI for v$v after 10 min; run just doi later" >&2; exit 1; }
+        echo "release: put the DOI in CITATION.cff and the README's credits, in a PR"
     fi
 
 # The tag a release pushes must be the plugin's version: just release-check v0.2.0 (release.yml runs it).
 release-check tag: plugin-check
     test "{{ tag }}" = "v$(jq -r .version plugins/ptbr-writer/.claude-plugin/plugin.json)"
+    # Zenodo archives the release with the metadata of .zenodo.json: its version must be the tag's.
+    test "{{ tag }}" = "$(jq -r .version .zenodo.json)"
 
 # Write each README's reading time (the plugin's calculator) under its language line.
 reading-time:
@@ -469,3 +480,12 @@ whitepaper:
 # Cheap and offline: both whitepapers exist and keep to the 8-page cap.
 whitepaper-check:
     for pdf in WHITEPAPER.pdf WHITEPAPER.en.pdf; do p=$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}'); [ "$p" -le 8 ] || { echo "whitepaper-check: $pdf has $p pages; the cap is 8" >&2; exit 1; }; done; echo "whitepaper-check: ok"
+
+# The DOIs Zenodo minted for ptbr-writer, newest first, from Zenodo's public API (no token):
+# version, DOI, concept DOI (always the newest version), license, type, page.
+doi:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    title=$(jq -r .title .zenodo.json)
+    curl -fsS --max-time 60 -G https://zenodo.org/api/records --data-urlencode "q=title:\"$title\"" --data-urlencode size=10 --data-urlencode sort=mostrecent \
+        | jq -er '.hits.hits | if length == 0 then error("no record yet; Zenodo can take a few minutes after a release") else .[] | [.metadata.version // "?", .doi, .conceptdoi // "?", .metadata.license.id // "?", .metadata.resource_type.title // "?", .links.html] | @tsv end'
