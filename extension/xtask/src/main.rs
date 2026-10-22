@@ -1,5 +1,6 @@
-//! `cargo xtask build [--test] [--firefox]`: the extension into dist, dist-test or dist-firefox,
-//! as build.mjs did: the wasm, wasm-bindgen's glue, wasm-opt, the static files and the manifest.
+//! `cargo xtask build [--test] [--firefox]`: the extension into dist, dist-test or dist-firefox:
+//! the wasm, wasm-bindgen's glue, wasm-opt, the content script's JavaScript build (wasm2js), the
+//! static files (the pages, their loaders, the CSS) and the manifest.
 
 use serde_json::{Value, json};
 use std::fs;
@@ -108,7 +109,6 @@ fn build(test: bool, firefox: bool) -> Result<(), String> {
     println!("ptbr_ext_js_bg.wasm.js: {} bytes (the content script, wasm2js)", size(&js)?);
 
     copy_dir(&root.join("static"), &out)?;
-    copy_dir(&root.join("loaders"), &out)?;
     let manifest = manifest(&root, test, firefox)?;
     fs::write(out.join("manifest.json"), serde_json::to_string_pretty(&manifest).unwrap() + "\n")
         .map_err(|e| e.to_string())
