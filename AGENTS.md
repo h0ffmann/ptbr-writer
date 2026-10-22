@@ -44,7 +44,7 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 - `justfile` — recipes for running OpenCode, serving Qwen, and quality checks.
 - `flake.nix` / `flake.lock` — reproducible dev shell.
 - `evals/` — regression cases for rules (not yet run by a harness).
-- `README.md` — human-facing documentation (pt-BR); `README.en.md` is its English mirror.
+- `README.md` — human-facing documentation (pt-BR); `README.en.md` is its English mirror. Hard cap: 10 minutes of reading time each, by the plugin's own calculator (`just quality` fails above it). Detail goes to the site (rules, origins, roadmap, awesome, ELI5, graphs), to `docs/`, or to *Reference* below, never back into the README.
 - `.claude/skills/figure/` — the `figure` dev skill (not in the plugin): the rules for a Mermaid figure and its reading card.
 - `lint/saramago/` — Vale prose linter for Saramago's punctuation; `just saramago FILE`, self-test `just saramago-check` (part of `just quality`).
 - `REUSE.md` — reuse rules for the author levels (citation, public domain, style only).
@@ -91,3 +91,79 @@ lanes, nodes and edges, only the words translated) drawn to `docs/img/en/<slug>.
 pt-BR PNG and `README.en.md` the English one, never the other. `just figure-init`, `just figure`,
 `just figure-check` (the last runs in `just quality` and fails on a missing twin, a twin that is not the same
 drawing, or a README that embeds the other language's PNG).
+
+## Reference (moved from the README)
+
+Facts that left the README when it was cut to 10 minutes. They stay true only while the code says
+so; check the file before you repeat one.
+
+**Install.**
+- Inside Claude Code: `/plugin marketplace add h0ffmann/ptbr-writer#v0.2.0`, then
+  `/plugin install ptbr-writer@ptbr-writer`. To update, remove the marketplace and add it again
+  with the new tag; in a repository, change the `ref`.
+- Pin in a repository's `.claude/settings.json`:
+  `{"extraKnownMarketplaces": {"ptbr-writer": {"source": {"source": "github", "repo": "h0ffmann/ptbr-writer", "ref": "v0.2.0"}}}, "enabledPlugins": {"ptbr-writer@ptbr-writer": true}}`.
+- `scripts/install_current.sh` (curl it inside Claude Code with `!`, then `/reload-plugins`)
+  installs the tip of `main`, or `PTBR_REF`; `main` is not a fixed version.
+- OpenCode: `scripts/install-opencode.sh vX.Y.Z` copies `ptbr-writer`, `ptbr` and `cientifico` as
+  files to `~/.config/opencode/skills/` (`--project`: `./.opencode/`) and installs the `ask-levels`
+  plugin; it needs `bash`, `curl` and `tar`, and the binaries are `linux-x86_64` and
+  `linux-aarch64`. Tested on OpenCode 1.19.0: the skills load and the instruction reaches the model;
+  ⚠ the model answering with the `question` tool was not measured (`opencode run` does not offer
+  it). `ptbr-routing` is not installed: it depends on a Claude Code hook. ⚠ `v0.3.0` does not exist
+  yet.
+
+**Use.**
+- `/ptbr-writer:ptbr-writer` is the same as `/ptbr-writer:ptbr`. A `bipr` example and its cost:
+  `docs/bipr/exemplo-pr-49.md`.
+- A request that starts with `ptbr` uses `ptbr-writer.toml`; ptbr-writer named mid-sentence
+  triggers nothing. Layers, each over the one before: `plugins/ptbr-writer/ptbr-writer.default.toml`,
+  `~/.config/ptbr-writer/ptbr-writer.toml`, `./ptbr-writer.toml`, the request. An unknown value or a
+  folder outside the root is ignored with a warning. Keys: `levels`, `formats` (`txt`, `md`, `pdf`,
+  `notes`), `folder` (relative, no `..`), `print` (what the console shows in full), `languages`
+  (`pt-BR` and/or `asd-ste100`; the ASD-STE100 file ends in `-ste100`).
+- File name: `ptbr-writer-<AAAAMMDDThhmmZ>-<objetivo>-<nível>.<ext>`, one UTC stamp per request;
+  2 levels × 3 formats = 6 files. Suggest `ptbr-writer-*` in `.gitignore`. `notes` files follow
+  smart-note (`<id>-<slug>.md`).
+- `.pdf`: the machine's pandoc and xelatex; without them, after asking, Nix builds picasso's
+  `labs/ptbr-pdf` (`to-pdf`, Rust, Typst, fonts embedded) at `PICASSO_REV`. Measured with
+  `just pdf-bench` on picasso v0.2.0, fresh GitHub runner, 4 cores
+  ([run](https://github.com/h0ffmann/ptbr-writer/actions/runs/39537436728)): 14 MiB download from 6
+  cache.nixos.org paths, 72 MiB on disk, 25 MiB built, 892 s the first time.
+- Planned levels, outside `SKILL.md`: `site/data/planned.tsv`.
+
+**Browser extension.**
+- A check runs after 1 s without typing, on fields of 3 words or more; password fields are skipped,
+  Gmail's quoted history is not sent, and above 4000 characters only the cursor's paragraph goes.
+- Default models: `claude-haiku-5-5`; `deepseek-flash` (⚠ read in DeepSeek's docs on 2026-10-21).
+  Keys stay in `chrome.storage.local`. On by default: `web.whatsapp.com` (`leve`),
+  `mail.google.com` and `github.com` (`descritivo`); other https sites by **Ativar neste site**.
+- ⚠ Tested by hand on 2026-10-21 on WhatsApp Web with a real key; Gmail and GitHub not yet.
+- Firefox: `about:debugging#/runtime/this-firefox`, load `extension/dist-firefox/manifest.json`,
+  then grant the sites in `about:addons`; it goes away when Firefox closes. The `.mcp.json` Firefox
+  MCP lets an agent install and drive it (`docs/EXTENSION_FIREFOX.md`).
+- Ollama: `just ext-ollama [model]` (default `qwen3.6:27b`, the model of `just opencode-qwen`;
+  `qwen3:8b` for a smaller GPU). Suggested: `qwen3.6:27b`, `qwen3:14b`, `qwen3:8b`, `qwen3:4b`, plus
+  what Ollama has. Ollama answers 403 to an extension origin unless started with `OLLAMA_ORIGINS`;
+  the recipe sets it and says how for a systemd Ollama. **Baixar** is very experimental (#63).
+  ⚠ No review with a real Qwen 3 was measured.
+- Ollaya: `just ext-ollaya [model]` (default `decima`, `docs/SURVEY_DECISION_MODEL.md`). One
+  `/api/decide` per sentence, up to 32; a rule at 50% or more becomes an underline with only
+  **Ignorar**. With **Ollaya escolhe o estilo** on, Ollaya picks `conciso`, `socrático` or `amigável`
+  and Ollama writes in it; Ollaya down, Ollama writes alone. ⚠ Latency, accuracy and the threshold
+  were not measured (#61).
+
+**Reading time** (`ptbr-reading-time`): prose words (no code blocks, URLs or Markdown; inline code
+counts) ÷ 238 per minute; ×1.15 when the mean sentence passes 20 words and ×1.15 when over 25% of
+words have 10+ letters; 10 s per non-empty code line; 5 s per link; rounded up, `< 1 min` up to 60 s.
+238 is Brysbaert (2019) for English non-fiction; ⚠ pt-BR uses the same rate unscaled, and the other
+numbers are this project's choices. `bash plugins/ptbr-writer/bin/run.sh reading-time FILE`.
+
+**Credits, pinned.** marola-research `041cedd`; ww3-gpu `319e4e2`; K-Dense scientific-writing
+`a1043ef`; labdaps `artigo` `246c164`; closed-source `563c339` and ouroboric `2858c11` (CIE
+invariants); orwell-writing `1be9984`; Archify v3.0.1 `2ab3cae`. Full citation: Kassis, T.,
+Agarwal, V., He, Y., Patel, D., & Brueckner, A. M. (2026). *Scientific Agent Skills: A Library of
+Procedural Knowledge for Research Agents*. arXiv:2609.00065. https://doi.org/10.48550/arXiv.2609.00065.
+Brysbaert, M. (2019), https://doi.org/10.1016/j.jml.2019.104047. smart-note: *How to Take Smart
+Notes* (Ahrens), Luhmann's Zettelkasten, Pirsig's slips for *Lila* ⚠. Retórica's epigraph: Pirsig,
+*ZAMM* (1974), checked in two public reproductions, not the print edition ⚠.
