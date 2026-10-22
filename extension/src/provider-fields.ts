@@ -1,6 +1,6 @@
 import { LOCAL_ORIGINS, localModels, localPull } from './providers';
 import { MODELS, isLocal } from './settings';
-import { maskKey, setOllayaStyle } from './sites';
+import { maskKey, setOllayaStyle, setSound } from './sites';
 import type { ProviderId, Settings } from './types';
 
 export interface ProviderFields {
@@ -122,6 +122,14 @@ export function mountProviderFields(
   });
   const pullRow = document.createElement('p');
   pullRow.append(pull, ' ', status);
-  container.append(labeled('Provedor', provider), labeled('Modelo', model), pullRow, styleRow, labeled('Chave', key));
+  // Sound, off by default: a cue on each event and 🔊 on the card, with the system's own pt-BR voice.
+  // No server. Saved on the click, like the on/off switch.
+  const sound = Object.assign(document.createElement('input'), { id: 'sound', type: 'checkbox', checked: s.sound });
+  sound.addEventListener('change', async () => {
+    s.sound = sound.checked;
+    await setSound(sound.checked);
+  });
+  const soundRow = labeled('🔊 Som: efeitos e ler em voz alta (voz do sistema, sem servidor)', sound);
+  container.append(labeled('Provedor', provider), labeled('Modelo', model), pullRow, styleRow, labeled('Chave', key), soundRow);
   return fields;
 }

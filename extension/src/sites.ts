@@ -62,6 +62,11 @@ export async function setOllayaStyle(ollayaStyle: boolean): Promise<void> {
   await saveSettings({ ...s, ollayaStyle });
 }
 
+export async function setSound(sound: boolean): Promise<void> {
+  const s = await loadSettings();
+  await saveSettings({ ...s, sound });
+}
+
 export async function setEnabled(enabled: boolean): Promise<void> {
   const s = await loadSettings();
   await saveSettings({ ...s, enabled });

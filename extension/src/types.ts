@@ -26,6 +26,8 @@ export interface Settings {
   models: Record<ProviderId, string>;
   // A feature flag: Ollaya picks the style before Ollama writes. Off, or Ollaya down, Ollama writes alone.
   ollayaStyle: boolean;
+  // Sound, off by default: a cue on each event and 🔊 on the card (content/sound.ts). No server.
+  sound: boolean;
   sites: Record<string, SiteConfig>; // key: hostname
   apiBase?: Partial<Record<ProviderId, string>>; // honored only when __TEST__
 }

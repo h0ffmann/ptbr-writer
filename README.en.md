@@ -86,6 +86,11 @@ Nothing in the text changes without your click on **Aceitar** (accept). Firefox 
 
 ⚠ The local providers were not measured on pt-BR.
 
+**🔊 Sound**, off by default, in the popup and the options: a short cue when suggestions appear, on
+accept, on ignore and on an error, and a 🔊 on the card that reads the suggestion aloud. The cues are
+made in code, with no audio file, and the reading uses only a local pt-BR voice of the system: no
+text goes to a voice server.
+
 ## use
 
 | Command | Does |
