@@ -228,3 +228,11 @@ pub fn bipr_page_test() {
   assert string.contains(html, "install_current.sh")
   assert string.contains(html, "href=\"index.html\"")
 }
+
+// The whitepaper, one PDF pill per language, with the site's own PDF icon.
+pub fn whitepaper_pills_test() {
+  let page = prerender.render()
+  assert string.contains(page, "whitepaper/WHITEPAPER.pdf")
+  assert string.contains(page, "whitepaper/WHITEPAPER.en.pdf")
+  assert string.contains(page, "pdf.svg")
+}

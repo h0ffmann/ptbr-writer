@@ -44,6 +44,7 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 - `justfile` — recipes for running OpenCode, serving Qwen, and quality checks.
 - `flake.nix` / `flake.lock` — reproducible dev shell.
 - `evals/` — regression cases for rules (not yet run by a harness).
+- `docs/whitepaper/` — the whitepaper's sources: `pt-BR.md` and `en.md` (same sections, same facts) and `template.tex`, a copy of h0ffmann/closed-source's Paper Fabric template at `563c339` (MIT). `just whitepaper` builds `WHITEPAPER.pdf` and `WHITEPAPER.en.pdf` (pandoc and XeLaTeX from the host; the marola and ouroboric logos fetched at pinned commits with their sha256, never committed). Hard cap: 8 pages each (`just whitepaper-check`, in `just quality`). Every fact in it comes from a repo file; `⚠` stays in the PDF.
 - `README.md` — human-facing documentation (pt-BR); `README.en.md` is its English mirror. Hard cap: 10 minutes of reading time each, by the plugin's own calculator (`just quality` fails above it). Detail goes to the site (rules, origins, roadmap, awesome, ELI5, graphs), to `docs/`, or to *Reference* below, never back into the README.
 - `.claude/skills/figure/` — the `figure` dev skill (not in the plugin): the rules for a Mermaid figure and its reading card.
 - `lint/saramago/` — Vale prose linter for Saramago's punctuation; `just saramago FILE`, self-test `just saramago-check` (part of `just quality`).

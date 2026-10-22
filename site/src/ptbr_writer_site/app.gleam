@@ -173,6 +173,17 @@ fn cover() -> Element(msg) {
           html.text("/bipr"),
         ],
       ),
+      // The whitepaper, one pill per language; `just site` copies WHITEPAPER.pdf and WHITEPAPER.en.pdf.
+      pdf_pill(
+        "whitepaper/WHITEPAPER.pdf",
+        "o whitepaper do ptbr-writer, em português do Brasil",
+        "Whitepaper (pt-BR)",
+      ),
+      pdf_pill(
+        "whitepaper/WHITEPAPER.en.pdf",
+        "the ptbr-writer whitepaper, in English",
+        "Whitepaper (EN)",
+      ),
       // Each Archify page of docs/archify/, named by its title and marked with Archify's icon,
       // beside the GitHub pill.
       ..list.map(content.figures, fn(f) {
@@ -261,6 +272,25 @@ fn made_with(name: String, icon: String, href: String) -> Element(msg) {
 /// The code graphs (built by `just site` with picasso's code-graph), beside the Archify pills, with
 /// their own icon: they are not Archify pages. This repository's, then picasso's at the pinned
 /// forks/picasso, which this one's external nodes link into.
+fn pdf_pill(href: String, title: String, name: String) -> Element(msg) {
+  html.a(
+    [
+      attribute.class("ghost figure-pill"),
+      attribute.href(href),
+      attribute.title(title),
+    ],
+    [
+      html.img([
+        attribute.src("pdf.svg"),
+        attribute.alt("PDF"),
+        attribute.width(20),
+        attribute.height(20),
+      ]),
+      html.text(name),
+    ],
+  )
+}
+
 fn grafo_pill(href: String, title: String, name: String) -> Element(msg) {
   html.a(
     [

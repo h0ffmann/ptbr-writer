@@ -128,6 +128,9 @@ o roadmap, os projetos relacionados e as figuras:
 - [Fluxo do modelo local](https://h0ffmann.github.io/ptbr-writer/figuras/modelo-local.html)
 - [De onde vem o .pdf](https://h0ffmann.github.io/ptbr-writer/figuras/pdf-dependencias.html)
 
+O whitepaper, em 8 páginas, está em [`WHITEPAPER.pdf`](WHITEPAPER.pdf) e, em inglês, em
+[`WHITEPAPER.en.pdf`](WHITEPAPER.en.pdf).
+
 ## tempo de leitura
 
 Todo texto que o plugin gera traz uma estimativa de leitura, calculada pelo binário
