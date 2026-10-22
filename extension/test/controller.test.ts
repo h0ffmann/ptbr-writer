@@ -22,7 +22,7 @@ beforeEach(() => {
   vi.useFakeTimers();
   store = {};
   listeners = [];
-  send.mockClear();
+  send.mockReset().mockImplementation(async () => ({ ok: true, suggestions: [] }));
   (globalThis as any).chrome = {
     storage: {
       local: {
@@ -59,6 +59,34 @@ const type = (el: HTMLTextAreaElement, v: string) => {
 };
 
 describe('startContent', () => {
+  it('a tab left with the old script after the extension reloads says to reload the page', async () => {
+    site(true);
+    send.mockImplementation(async () => {
+      throw new Error('Extension context invalidated.');
+    });
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    type(el, 'um dois três quatro');
+    await vi.advanceTimersByTimeAsync(1000);
+    const badge = document.getElementById('ptbr-writer-root')?.shadowRoot?.querySelector('.ptbr-badge');
+    expect(badge?.textContent).toBe('recarregue a página');
+  });
+
+  it('any other send failure still shows a provider error', async () => {
+    site(true);
+    send.mockImplementation(async () => {
+      throw new Error('boom');
+    });
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    type(el, 'um dois três quatro');
+    await vi.advanceTimersByTimeAsync(1000);
+    const badge = document.getElementById('ptbr-writer-root')?.shadowRoot?.querySelector('.ptbr-badge');
+    expect(badge?.textContent).toBe('erro do provider');
+  });
+
   it('follows a new wait: no call before it, one call after it', async () => {
     site(true);
     dispose = await startContent();

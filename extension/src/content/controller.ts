@@ -30,6 +30,17 @@ export function editableRoot(target: EventTarget | null): HTMLElement | null {
 // Runs the content script on this page. It follows the settings: when this site's level changes,
 // the fields start over with the new level; when the site or the extension is switched off, it
 // stops and clears what it drew. Resolves to a function that undoes it all (for tests).
+// After the extension reloads, a tab opened before it keeps the old script, which can no longer
+// reach the service worker: say so instead of a provider error, since nothing left the browser.
+async function send(r: CheckRequest): Promise<CheckResult> {
+  try {
+    return await chrome.runtime.sendMessage<CheckRequest, CheckResult>(r);
+  } catch (e) {
+    if (/context invalidated/i.test(String(e))) return { ok: false, error: 'reload' };
+    throw e;
+  }
+}
+
 export async function startContent(): Promise<() => void> {
   const fields = new Map<HTMLElement, FieldState>();
   let level: Level | null = null;
@@ -106,7 +117,7 @@ export async function startContent(): Promise<() => void> {
     watcher = createWatcher({
       level,
       delayMs,
-      send: (r: CheckRequest) => chrome.runtime.sendMessage<CheckRequest, CheckResult>(r),
+      send,
       onResult(el, located, offset) {
         Object.assign(field(el), { located, offset });
         render(el);
