@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![versão](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=vers%C3%A3o&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#licença)
-[![leitura estimada: ~26 min](https://img.shields.io/badge/leitura%20estimada-~26%20min-1682D4?style=flat-square)](#tempo-de-leitura)
+[![leitura estimada: ~29 min](https://img.shields.io/badge/leitura%20estimada-~29%20min-1682D4?style=flat-square)](#tempo-de-leitura)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#instalar)
 [![extensão de navegador (Chrome): dev local (WIP)](https://img.shields.io/badge/extens%C3%A3o%20de%20navegador-dev%20local%20(WIP)-1682D4?style=flat-square&logo=googlechrome&logoColor=white)](#chrome)
 [![extensão de navegador (Firefox): dev local (WIP)](https://img.shields.io/badge/extens%C3%A3o%20de%20navegador-dev%20local%20(WIP)-1682D4?style=flat-square&logo=firefoxbrowser&logoColor=white)](docs/EXTENSION_FIREFOX.md)
@@ -27,7 +27,10 @@
 - **Não muda tese, autoria nem conclusão, e não busca fontes.** Marca com `⚠` o que não checou.
   Objetivo: manter a documentação PT-BR e EN de um repositório gastando menos tokens.
 
-![Fluxo de um pedido: você escreve ptbr; na primeira vez, 4 perguntas gravadas em ptbr-writer.toml; depois a skill ptbr-writer (ou cientifico, se pede fontes) escreve um texto por nível e idioma; a saída é a resposta no console e, se pedido, arquivos .txt, .md, .pdf ou notes na pasta.](docs/img/em-um-minuto.png)
+**Fluxo do plugin do Claude Code.** A extensão de navegador e o modelo local têm as suas figuras, em
+[usar](#extensao-figuras).
+
+![Fluxo do plugin do Claude Code: você escreve ptbr; na primeira vez, 4 perguntas gravadas em ptbr-writer.toml; depois a skill ptbr-writer (ou cientifico, se pede fontes) escreve um texto por nível e idioma; a saída é a resposta no console e, se pedido, arquivos .txt, .md, .pdf ou notes na pasta.](docs/img/em-um-minuto.png)
 
 <details open>
 <summary>Como ler esta figura</summary>
@@ -246,6 +249,66 @@ falso, nenhuma API real); no CI, `.github/workflows/extension.yml`. ⚠ Em 2026-
 mão no WhatsApp Web, com uma chave real de um dos providers; o Gmail e o GitHub ainda não foram
 testados com o editor de verdade.
 
+<a id="extensao-figuras"></a>
+**Fluxo da extensão de navegador.**
+
+![Fluxo da extensão de navegador: no Chrome ou no Firefox, um campo com 3 palavras e 1 s parado pede revisão; a extensão junta as regras do nível do site e chama o provider escolhido, que é um de três modos: chave de API (Claude ou DeepSeek), Ollama + Qwen nesta máquina, ou Ollaya, ainda planejado; as sugestões voltam como sublinhados, e Aceitar troca o trecho no campo.](docs/img/extensao-fluxo.png)
+
+<details open>
+<summary>Como ler esta figura</summary>
+
+**Em uma frase.** A extensão manda o texto do campo, com as regras do nível do site, a um provider
+que você escolhe; as sugestões voltam como sublinhados, e só o seu clique em **Aceitar** muda o texto.
+
+**Como ler.** Da esquerda para a direita, de cima para baixo. A faixa de cima é a página; a do meio é a
+extensão; a de baixo são os três modos, "quem gera o texto", e a extensão usa um por vez. A seta
+tracejada vai ao modo planejado (Ollaya), que ainda não existe. Caixa com borda laranja é onde você
+entra ou o que você recebe.
+
+**Fora da figura.** O botão **Ignorar**, os sites ligados de início, o limite de 4000 caracteres, a
+permissão de cada site e o selo de erro no campo. O modo local tem a figura seguinte.
+
+**Evidência.** As 3 palavras e 1 s: `extension/src/content/watcher.ts` (`MIN_WORDS`, `delayMs`). O nível
+do site e as regras: `extension/src/background.ts` (`levelFor`, `buildSystemPrompt`). Os providers:
+`extension/src/providers.ts` e `extension/src/provider-fields.ts`. **Aceitar**:
+`extension/src/content/overlay.ts`. O Ollaya: issue
+[#61](https://github.com/h0ffmann/ptbr-writer/issues/61). Fonte da figura:
+[`docs/archify/extensao-fluxo.json`](docs/archify/extensao-fluxo.json).
+
+</details>
+
+**Fluxo do modelo local (LLM ou SLM), com download sob demanda.**
+
+> [!WARNING]
+> O botão **Baixar** é MUITO EXPERIMENTAL: no teste de 2026-10-21 ele não pareceu funcionar direito
+> ([#63](https://github.com/h0ffmann/ptbr-writer/issues/63)). Prefira baixar o modelo antes, com
+> `just ext-ollama`.
+
+![Fluxo do modelo local: você escolhe Ollama + Qwen no popup; o navegador pede a permissão para 127.0.0.1:11434 nesse clique; concedida, a extensão lê em /api/tags os modelos já baixados e os junta aos sugeridos, do LLM qwen3.6:27b ao SLM qwen3:4b; um modelo já baixado vai a /api/chat, cujas sugestões viram sublinhados na página; um modelo não baixado passa pelo Baixar (/api/pull, muito experimental, #63), que relê a lista; se o Ollama está fora do ar ou responde 403, o campo mostra o selo Ollama inacessível.](docs/img/modelo-local.png)
+
+<details open>
+<summary>Como ler esta figura</summary>
+
+**Em uma frase.** Com o modo local, o texto não sai da sua máquina: a extensão pergunta ao Ollama
+quais modelos ele tem, oferece baixar um que falta e usa o escolhido para revisar.
+
+**Como ler.** Da esquerda para a direita. A faixa de cima é o popup e a página; a do meio é o Ollama
+em `127.0.0.1:11434`; a de baixo é a falha. As setas tracejadas são o caminho do **Baixar**, muito
+experimental. "LLM" é o modelo grande (`qwen3.6:27b`, 18 GB) e "SLM" é o pequeno (`qwen3:4b`, 2,5 GB);
+`qwen3:14b` e `qwen3:8b` ficam entre eles.
+
+**Fora da figura.** A permissão recusada (o seletor volta ao provider anterior), o `OLLAMA_ORIGINS`
+que o Ollama precisa para aceitar a extensão e a receita `just ext-ollama`; os dois estão em
+[`docs/EXTENSION_FIREFOX.md`](docs/EXTENSION_FIREFOX.md).
+
+**Evidência.** `extension/src/providers.ts` (`ollamaModels`, `ollamaPull`, `buildRequest`,
+`classifyError`), `extension/src/provider-fields.ts` (a lista e o **Baixar**) e
+`extension/src/settings.ts` (os modelos sugeridos). Os tamanhos vêm de
+[`docs/EXTENSION_FIREFOX.md`](docs/EXTENSION_FIREFOX.md). ⚠ Nenhuma revisão com um Qwen 3 foi medida.
+Fonte da figura: [`docs/archify/modelo-local.json`](docs/archify/modelo-local.json).
+
+</details>
+
 ## níveis
 
 | Nível | Uso |
@@ -322,7 +385,9 @@ Três pedidos reais, gerados pelo próprio plugin; o PDF sai do `.md` pelo `to-p
 
 Cada figura é uma página do Archify, publicada no site:
 
-- [O que acontece com um pedido ptbr](https://h0ffmann.github.io/ptbr-writer/figuras/em-um-minuto.html)
+- [Fluxo do plugin do Claude Code: um pedido ptbr](https://h0ffmann.github.io/ptbr-writer/figuras/em-um-minuto.html)
+- [Fluxo da extensão de navegador: do campo ao sublinhado](https://h0ffmann.github.io/ptbr-writer/figuras/extensao-fluxo.html)
+- [Fluxo do modelo local (LLM ou SLM): baixar sob demanda, muito experimental](https://h0ffmann.github.io/ptbr-writer/figuras/modelo-local.html)
 - [De onde vem o .pdf](https://h0ffmann.github.io/ptbr-writer/figuras/pdf-dependencias.html)
 
 E o grafo do código deste repositório, gerado a cada build do site pelo `code-graph` do
@@ -330,7 +395,7 @@ E o grafo do código deste repositório, gerado a cada build do site pelo `code-
 [Grafo do código](https://h0ffmann.github.io/ptbr-writer/grafo/graph.html). Os nós que usam o picasso
 levam ao [grafo do picasso](https://h0ffmann.github.io/ptbr-writer/grafo/picasso.html), gerado do
 submódulo `forks/picasso` no mesmo commit dos outros pins.
-A extensão do Chrome, em TypeScript, tem o seu:
+A extensão de navegador (Chrome e Firefox), em TypeScript, tem o seu:
 [Grafo da extensão](https://h0ffmann.github.io/ptbr-writer/grafo/extensao.html), só de `extension/`.
 
 ## roadmap
