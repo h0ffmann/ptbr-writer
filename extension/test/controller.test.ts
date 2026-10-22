@@ -1,7 +1,10 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { startContent } from '../src/content/controller';
+import { playCue } from '../src/content/sound';
 import type { CheckRequest, Level } from '../src/types';
+
+vi.mock('../src/content/sound', () => ({ playCue: vi.fn(), speak: vi.fn(() => true) }));
 
 type Listener = (changes: Record<string, unknown>, area: string) => void;
 let store: Record<string, unknown>;
@@ -53,6 +56,37 @@ const type = (el: HTMLTextAreaElement, v: string) => {
 };
 
 describe('startContent', () => {
+  it('sound on: a cue when suggestions appear and when an error shows; off: silence', async () => {
+    const sug = { original: 'dois', replacement: '2', rule: 'PTW-7', severity: 'aviso', occurrence: 1 };
+    const cues = vi.mocked(playCue);
+    cues.mockClear();
+    store.settings = { sound: true, sites: { [location.hostname]: { enabled: true, level: 'descritivo' } } };
+    send.mockResolvedValueOnce({ ok: true, suggestions: [sug] } as any);
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    type(el, 'um dois três quatro');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(cues).toHaveBeenCalledWith('found');
+    send.mockResolvedValueOnce({ ok: false, error: 'no-key' } as any);
+    type(el, 'um dois três quatro cinco');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(cues).toHaveBeenCalledWith('error');
+    dispose();
+    dispose = undefined;
+
+    cues.mockClear();
+    site(true);
+    send.mockResolvedValueOnce({ ok: true, suggestions: [sug] } as any);
+    dispose = await startContent();
+    const quiet = textarea();
+    quiet.focus();
+    type(quiet, 'um dois três quatro');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(send).toHaveBeenCalled();
+    expect(cues).not.toHaveBeenCalled();
+  });
+
   it('stops sending once the site is switched off', async () => {
     site(true);
     dispose = await startContent();

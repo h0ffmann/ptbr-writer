@@ -3,6 +3,7 @@ import type { CheckError, CheckRequest, CheckResult, Level, Located } from '../t
 import { acceptSuggestion } from './apply';
 import { forget, renderBadge, renderSuggestions, repositionAll } from './overlay';
 import { textModel } from './text';
+import { playCue, speak } from './sound';
 import { createWatcher } from './watcher';
 
 const TEXT_INPUTS = ['text', 'search', 'email', 'url'];
@@ -30,6 +31,13 @@ export async function startContent(): Promise<() => void> {
   const fields = new Map<HTMLElement, FieldState>();
   let level: Level | null = null;
   let watcher: ReturnType<typeof createWatcher> | null = null;
+  // Settings.sound, read with the level: off, nothing plays and the card has no 🔊.
+  let sound = false;
+  const cue = (c: Parameters<typeof playCue>[0]) => {
+    if (sound) playCue(c);
+  };
+  // The card reads what it proposes: the rewrite or, for a detection, the sentence itself.
+  const speakIt = (l: Located) => speak(l.detectOnly ? l.original : l.replacement);
 
   const field = (el: HTMLElement) => {
     let f = fields.get(el);
@@ -59,9 +67,14 @@ export async function startContent(): Promise<() => void> {
       f.located = f.located
         .filter((x) => x !== l)
         .map((x) => (x.start >= l.end ? { ...x, start: x.start + delta, end: x.end + delta } : x));
+      cue('accept');
       render(el);
     };
-    renderSuggestions(el, f.located, f.offset, accept, drop);
+    const ignore = (l: Located) => {
+      cue('ignore');
+      drop(l);
+    };
+    renderSuggestions(el, f.located, f.offset, accept, ignore, sound ? speakIt : undefined);
     renderBadge(el, f.state, f.located.length);
   };
 
@@ -82,7 +95,13 @@ export async function startContent(): Promise<() => void> {
   };
 
   const follow = async () => {
-    const next = levelFor(location.hostname, await loadSettings());
+    const s = await loadSettings();
+    const next = levelFor(location.hostname, s);
+    if (s.sound !== sound) {
+      sound = s.sound;
+      // The open fields get or lose 🔊 on their cards now, not at the next check.
+      for (const el of fields.keys()) render(el);
+    }
     if (next === level) return;
     stop();
     level = next;
@@ -91,10 +110,14 @@ export async function startContent(): Promise<() => void> {
       level,
       send: (r: CheckRequest) => chrome.runtime.sendMessage<CheckRequest, CheckResult>(r),
       onResult(el, located, offset) {
+        // A cue when a field with no suggestion gets some, not on every check that keeps them.
+        if (field(el).located.length === 0 && located.length > 0) cue('found');
         Object.assign(field(el), { located, offset });
         render(el);
       },
       onState(el, state) {
+        // A cue when a new error shows on the badge, not again while the same one stays.
+        if (state !== 'idle' && state !== 'checking' && field(el).state !== state) cue('error');
         field(el).state = state;
         render(el);
       },

@@ -82,6 +82,11 @@ Nada muda no texto sem o seu clique em **Aceitar**. O Firefox 128+ usa `just ext
 
 ⚠ Os providers locais não foram medidos em pt-BR.
 
+**🔊 Som**, desligado por padrão, no popup e nas opções: um efeito curto quando aparecem sugestões, ao
+aceitar, ao ignorar e num erro, e um 🔊 no cartão que lê a sugestão em voz alta. Os efeitos são
+gerados no código, sem arquivo de som, e a leitura usa só uma voz pt-BR local do sistema: nenhum
+texto vai a um servidor de voz.
+
 ## usar
 
 | Comando | Faz |

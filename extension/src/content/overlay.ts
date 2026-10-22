@@ -85,6 +85,8 @@ interface Drawn {
   offset: number;
   onAccept: (l: Located) => void;
   onIgnore: (l: Located) => void;
+  // Reads a suggestion aloud; false when there is no local voice. Absent with the sound off.
+  onSpeak?: (l: Located) => boolean;
   layer: HTMLElement;
   badge?: HTMLElement;
   // Where each underlined span is on screen (client coordinates), for the hover test.
@@ -188,9 +190,10 @@ export function renderSuggestions(
   offset: number,
   onAccept: (l: Located) => void,
   onIgnore: (l: Located) => void,
+  onSpeak?: (l: Located) => boolean,
 ): void {
   const d = entry(el);
-  Object.assign(d, { located, offset, onAccept, onIgnore });
+  Object.assign(d, { located, offset, onAccept, onIgnore, onSpeak });
   if (card?.el === el) closeCard();
   draw(el, d);
 }
@@ -318,6 +321,24 @@ function openCard(el: HTMLElement, l: Located, d: Drawn, hover = false) {
   };
   if (!detect) actions.append(button('accept', 'Aceitar', () => d.onAccept(l)));
   actions.append(button('ignore', 'Ignorar', () => d.onIgnore(l)));
+  // 🔊 reads the suggestion aloud and keeps the card open; it is there only with the sound on.
+  if (d.onSpeak) {
+    const speakIt = d.onSpeak;
+    const b = doc.createElement('button');
+    b.type = 'button';
+    b.dataset.action = 'speak';
+    b.textContent = '🔊';
+    b.title = 'Ouvir';
+    b.setAttribute('aria-label', 'Ouvir a sugestão');
+    b.addEventListener('mousedown', (e) => e.preventDefault());
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (speakIt(l)) return;
+      b.disabled = true;
+      b.title = 'Sem voz pt-BR local nesta máquina';
+    });
+    actions.append(b);
+  }
   node.append(rule, change, actions);
   node.addEventListener('mousedown', (e) => e.preventDefault());
   overlayRoot(doc).appendChild(node);
