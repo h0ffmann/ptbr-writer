@@ -1,5 +1,5 @@
-# The citation of ptbr-writer. Written by hand from .zenodo.json; change the two together. The DOI
-# goes here after Zenodo mints it (`just doi`).
+# The citation of ptbr-writer. Written by hand from .zenodo.json; change the two together (title, authors,
+# version, keywords). The DOI goes here after Zenodo mints it (`just doi`).
 cff-version: 1.2.0
 message: "If you cite ptbr-writer, cite it like this."
 title: "ptbr-writer: português técnico controlado para pessoas e agentes"
@@ -16,7 +16,7 @@ authors:
 repository-code: "https://github.com/h0ffmann/ptbr-writer"
 url: "https://h0ffmann.github.io/ptbr-writer/"
 license: MPL-2.0
-keywords: [technical writing, Brazilian Portuguese, controlled language, coding agents, decision models]
+keywords: [technical writing, Brazilian Portuguese, controlled language, ASD-STE100, scientific writing, Claude Code, Claude Code plugin, OpenCode, browser extension, decision models, Ollama, Ollaya, reproducibility, Brazil]
 references:
   - type: software
     title: "Português Técnico Controlado (PTC)"
