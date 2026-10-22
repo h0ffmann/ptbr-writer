@@ -1,0 +1,168 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Local model flow (LLM or SLM): download on demand, very experimental",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "hidden"
+    },
+    "output": "modelo-local.html"
+  },
+  "lanes": [
+    {
+      "id": "popup",
+      "label": "In the extension popup"
+    },
+    {
+      "id": "ollama",
+      "label": "In Ollama (127.0.0.1:11434)"
+    },
+    {
+      "id": "desvio",
+      "label": "Failure"
+    }
+  ],
+  "mainPath": [
+    "escolhe",
+    "permissao",
+    "lista",
+    "modelo",
+    "chat",
+    "sublinhados"
+  ],
+  "nodes": [
+    {
+      "id": "escolhe",
+      "lane": "popup",
+      "col": 0,
+      "type": "external",
+      "label": "Ollama + Qwen",
+      "sublabel": "you pick the provider",
+      "width": 150
+    },
+    {
+      "id": "permissao",
+      "lane": "popup",
+      "col": 1,
+      "type": "security",
+      "label": "permission",
+      "sublabel": "127.0.0.1:11434, on the click",
+      "width": 150
+    },
+    {
+      "id": "lista",
+      "lane": "ollama",
+      "col": 2,
+      "type": "backend",
+      "label": "/api/tags",
+      "sublabel": "models already downloaded",
+      "width": 150
+    },
+    {
+      "id": "modelo",
+      "lane": "popup",
+      "col": 3,
+      "type": "frontend",
+      "label": "model",
+      "sublabel": "27b LLM to 4b SLM",
+      "width": 150
+    },
+    {
+      "id": "baixar",
+      "lane": "ollama",
+      "col": 3,
+      "type": "backend",
+      "label": "Baixar (download)",
+      "sublabel": "/api/pull, #63",
+      "tag": "very experimental",
+      "width": 150
+    },
+    {
+      "id": "chat",
+      "lane": "ollama",
+      "col": 4,
+      "type": "backend",
+      "label": "/api/chat",
+      "sublabel": "think false, temperature 0",
+      "width": 150
+    },
+    {
+      "id": "inacessivel",
+      "lane": "desvio",
+      "col": 5,
+      "type": "external",
+      "label": "Ollama unreachable",
+      "sublabel": "the badge in the field",
+      "width": 150
+    },
+    {
+      "id": "sublinhados",
+      "lane": "popup",
+      "col": 5,
+      "type": "external",
+      "label": "underlines",
+      "sublabel": "on the page",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "escolhe",
+      "to": "permissao"
+    },
+    {
+      "id": "e2",
+      "from": "permissao",
+      "to": "lista",
+      "label": "granted"
+    },
+    {
+      "id": "e3",
+      "from": "lista",
+      "to": "modelo",
+      "label": "adds the suggested"
+    },
+    {
+      "id": "e4",
+      "from": "modelo",
+      "to": "chat",
+      "label": "downloaded"
+    },
+    {
+      "id": "e5",
+      "from": "modelo",
+      "to": "baixar",
+      "label": "not downloaded",
+      "role": "branch",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "e6",
+      "from": "baixar",
+      "to": "lista",
+      "label": "reads the list again",
+      "role": "return",
+      "variant": "dashed",
+      "fromSide": "left",
+      "toSide": "right"
+    },
+    {
+      "id": "e7",
+      "from": "chat",
+      "to": "sublinhados",
+      "label": "suggestions"
+    },
+    {
+      "id": "e8",
+      "from": "chat",
+      "to": "inacessivel",
+      "label": "down or 403",
+      "role": "error"
+    }
+  ]
+}
