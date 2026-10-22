@@ -1,5 +1,9 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
+# The extension recipes run in the dev shell (cargo, wasm-bindgen, binaryen); outside it they enter it.
+_cargo := `command -v cargo || true`
+dev := if _cargo == "" { "nix develop " + justfile_directory() + " --no-update-lock-file -c" } else { "" }
+
 # ptbr-writer — recipes for developing and running the skill with OpenCode + local Qwen.
 
 default:
@@ -359,11 +363,11 @@ labels:
 
 # Chrome extension (Rust, wasm): build into extension/dist.
 ext-build:
-    cd extension && cargo xtask build
+    cd extension && {{ dev }} cargo xtask build
 
 # The same extension for Firefox (128+), into extension/dist-firefox.
 ext-build-firefox:
-    cd extension && cargo xtask build --firefox
+    cd extension && {{ dev }} cargo xtask build --firefox
 
 # Serve a model with Ollama for the extension's provider "Ollama (local)", at 127.0.0.1:11434.
 # Ollama answers 403 to an extension's origin unless started with OLLAMA_ORIGINS; this sets it.
@@ -442,11 +446,11 @@ ext-ollaya model="decima":
 
 # Chrome extension: format, clippy (host and wasm32, with and without the test build) and unit tests.
 ext-test:
-    cd extension && cargo fmt --all -- --check && cargo clippy --all-targets -- -D warnings && cargo clippy --target wasm32-unknown-unknown -- -D warnings && cargo clippy --target wasm32-unknown-unknown --features test-build -- -D warnings && cargo test && cargo test --features test-build
+    cd extension && {{ dev }} bash -euo pipefail -c 'cargo fmt --all -- --check && cargo clippy --all-targets -- -D warnings && cargo clippy --target wasm32-unknown-unknown -- -D warnings && cargo clippy --target wasm32-unknown-unknown --features test-build -- -D warnings && cargo test && cargo test --features test-build'
 
 # Chrome extension: end-to-end tests (Playwright) against extension/dist-test.
 ext-e2e:
-    cd extension && npm ci && npx playwright install chromium && cargo xtask build --test && npx playwright test
+    cd extension && {{ dev }} bash -euo pipefail -c 'npm ci && npx playwright install chromium && cargo xtask build --test && npx playwright test'
 
 # The whitepaper, in pt-BR and English: docs/whitepaper/{pt-BR,en}.md -> pandoc (docs/whitepaper/template.tex,
 # the Paper Fabric template of h0ffmann/closed-source) -> XeLaTeX twice -> WHITEPAPER.pdf and WHITEPAPER.en.pdf.
