@@ -1,6 +1,4 @@
 <div align="center">
-| [extensão do Chrome](extension/build.mjs) | em andamento | sublinha num campo o que o nível pede para mudar; dev local, ainda fora da Chrome Web Store; também roda no Firefox 128+ |
-| [FOSS (Ollama, Ollaya)](extension/src/providers.ts) | em andamento | providers locais de código aberto, sem chave e sem nuvem: o Ollama escreve a troca e o Ollaya aponta a regra ou escolhe o estilo; latência e acerto em pt-BR não medidos ⚠ |
 
 <img alt="Uma pena de escrever, numa linha só: desenho original" src="site/static/favicon.svg" width="120"/>
 
@@ -438,6 +436,8 @@ Fonte: [`site/data/roadmap.tsv`](site/data/roadmap.tsv).
 | [plugin](plugins/ptbr-writer/.claude-plugin/plugin.json) | feito | plugin do Claude Code, instalado com um comando na versão da release; o OpenCode lê o `SKILL.md` direto |
 | [distribuição](CHANGELOG.md) | feito | release por tag com `just release`; a v0.2.0 é a versão oficial, instalada por tag |
 | [opencode](scripts/install-opencode.sh) | em andamento | skills e plugin do `ask-levels` para o OpenCode, instalados por tag; testado no OpenCode 1.19.0 (skills e instrução), a ferramenta `question` não foi medida ⚠; o script entra na próxima release ⚠ |
+| [extensão do Chrome](extension/build.mjs) | em andamento | sublinha num campo o que o nível pede para mudar; dev local, ainda fora da Chrome Web Store; também roda no Firefox 128+ |
+| [FOSS (Ollama, Ollaya)](extension/src/providers.ts) | em andamento | providers locais de código aberto, sem chave e sem nuvem: o Ollama escreve a troca e o Ollaya aponta a regra ou escolhe o estilo; latência e acerto em pt-BR não medidos ⚠ |
 | [retórica](skills/retorica/SKILL.md) | planejado | só o esqueleto, sem regras |
 
 ## awesome-ptbr-writer
