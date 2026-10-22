@@ -3,6 +3,12 @@
 Uma versão só: a tag `vX.Y.Z`, o `version` de `plugins/ptbr-writer/.claude-plugin/plugin.json` e o
 cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, depois do merge, cria a tag; `release.yml` publica a release.
 
+## Unreleased
+
+- A v0.3.0 tem DOI no Zenodo, como preprint. O `CITATION.cff` traz o DOI de conceito, que sempre leva
+  à versão mais recente, e o da v0.3.0. Os READMEs ganham um selo do Zenodo, e a pílula do site leva
+  ao DOI de conceito; nenhum dos dois mostra o número.
+
 ## v0.3.0 — 2026-10-22
 
 - Instale com `claude plugin install ptbr-writer --marketplace h0ffmann/ptbr-writer#v0.3.0`. É a

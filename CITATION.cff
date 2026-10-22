@@ -1,10 +1,18 @@
 # The citation of ptbr-writer. Written by hand from .zenodo.json; change the two together (title, authors,
-# version, keywords). The DOI goes here after Zenodo mints it (`just doi`).
+# version, keywords). The DOIs are the ones Zenodo minted (`just doi`); the concept DOI always resolves to the newest.
 cff-version: 1.2.0
 message: "If you cite ptbr-writer, cite it like this."
 title: "ptbr-writer: português técnico controlado para pessoas e agentes"
 type: software
 version: v0.3.0
+doi: "10.5281/zenodo.23554531"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23554531"
+    description: "the concept DOI: always the newest version"
+  - type: doi
+    value: "10.5281/zenodo.23554532"
+    description: "v0.3.0"
 authors:
   - family-names: Hoffmann
     given-names: Matheus
