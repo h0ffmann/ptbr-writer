@@ -56,6 +56,14 @@ As palavras são as dos assuntos de commit (`feat`, `fix`, `docs`, `chore`).
 | `prioridade/média` | `#FF9F1C` | A próxima, quando nenhuma alta está aberta |
 | `prioridade/baixa` | `#FFF5B1` | Quando houver tempo |
 
+## rsi: melhoria do harness
+
+O PR #69 adiou a definição de RSI no `AGENTS.md` para um PR com fonte. Até lá, o rótulo marca só um uso: o erro que pede uma mudança no loop, e não só no arquivo.
+
+| Rótulo | Cor | Significa |
+|---|---|---|
+| `rsi` | `#D4C5F9` | Erro que o harness deixou passar; a correção muda o loop para que ele não volte |
+
 ## Rótulos padrão do GitHub
 
 Os rótulos padrão (`bug`, `enhancement`, `documentation`, …) ficam, para que nada que os filtre quebre. Não os aplique a itens novos: use `tipo/fix`, `tipo/feat` e `tipo/docs`.
@@ -65,7 +73,8 @@ Os rótulos padrão (`bug`, `enhancement`, `documentation`, …) ficam, para que
 1. Escolha um `tipo/*`.
 2. Escolha uma ou mais `área/*`: as partes do repositório que o item muda.
 3. Se o item é sobre um nível, acrescente o `nível/*`.
-4. Se o item está aberto, acrescente um `status/*` e uma `prioridade/*`. Ao fechar o item, tire esses dois.
+4. Se a correção precisa mudar o harness, acrescente `rsi`.
+5. Se o item está aberto, acrescente um `status/*` e uma `prioridade/*`. Ao fechar o item, tire esses dois.
 
 ## Sincronizar
 
