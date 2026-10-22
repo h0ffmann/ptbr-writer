@@ -323,7 +323,7 @@ _reading-badge file lang:
         echo "[![leitura estimada: $min](https://img.shields.io/badge/leitura%20estimada-$enc-1682D4?style=flat-square)](#tempo-de-leitura)"
     fi
 
-quality: pins saramago-check plugin-check figure-check ext-test
+quality: pins saramago-check plugin-check figure-check whitepaper-check ext-test
     bash skills/ptbr-routing/bin/run.sh --self-test
     bash skills/ptbr-routing/bin/run.sh --check
     just --list >/dev/null
@@ -436,3 +436,36 @@ ext-test: ext-build
 # Chrome extension: end-to-end tests (Playwright) against extension/dist-test.
 ext-e2e:
     cd extension && npx playwright install chromium && node build.mjs --test && npx playwright test
+
+# The whitepaper, in pt-BR and English: docs/whitepaper/{pt-BR,en}.md -> pandoc (docs/whitepaper/template.tex,
+# the Paper Fabric template of h0ffmann/closed-source) -> XeLaTeX twice -> WHITEPAPER.pdf and WHITEPAPER.en.pdf.
+# The marola and ouroboric logos are their projects' marks, not licensed here: each is fetched at the commit
+# closed-source pins, its sha256 checked, and converted in build/; never committed. Hard cap: 8 pages each.
+whitepaper:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    out=build/whitepaper; rm -rf "$out"; mkdir -p "$out/logos"
+    while read -r name sha url; do
+        curl -fsSL --max-time 60 "$url" -o "$out/logos/$name.svg"
+        echo "$sha  $out/logos/$name.svg" | sha256sum -c --quiet - || { echo "whitepaper: $name logo is not the pinned file" >&2; exit 1; }
+        rsvg-convert -f pdf -o "$out/logos/$name.pdf" "$out/logos/$name.svg"
+    done <<'LOGOS'
+    marola 71567f8c69a5c5e18b8b712a280cae1dac402e6a2e7ceb331408a4e713159cf9 https://raw.githubusercontent.com/marola-dev/marola/d0d576ea014335acbc190a09ce9fcbe0f89a391d/docs/assets/logo.svg
+    ouroboric 935eb9acf636f5da8651bdee14e6b53670e216d6a1667b46c48d62ec6f26f59d https://raw.githubusercontent.com/ouroboric-dev/ouroboric/4ab80ed2486a5e0ab0ade13e5089c2a4acdb4216/docs/7-branding/identity/logo/ouroboric-logo-horizontal.svg
+    LOGOS
+    # The revision stamped on every page: short hash + commit count, as in closed-source.
+    printf '%s+%s' "$(git rev-parse --short HEAD)" "$(git rev-list --count HEAD)" > "$out/.current-revision"
+    for lang in pt-BR en; do
+        pdf=WHITEPAPER.pdf; [ "$lang" = en ] && pdf=WHITEPAPER.en.pdf
+        pandoc --from markdown+fancy_lists+raw_tex --number-sections --top-level-division=section --fail-if-warnings -s \
+            --template docs/whitepaper/template.tex -t latex -o "$out/$lang.tex" "docs/whitepaper/$lang.md"
+        (cd "$out" && for _ in 1 2; do xelatex -interaction=nonstopmode -halt-on-error "$lang.tex" > /dev/null || { tail -n 30 "$lang.log" >&2; exit 1; }; done)
+        cp "$out/$lang.pdf" "$pdf"
+        pages=$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}')
+        [ "$pages" -le 8 ] || { echo "whitepaper: $pdf has $pages pages; the cap is 8" >&2; exit 1; }
+        echo "whitepaper: $pdf ($pages pages)"
+    done
+
+# Cheap and offline: both whitepapers exist and keep to the 8-page cap.
+whitepaper-check:
+    for pdf in WHITEPAPER.pdf WHITEPAPER.en.pdf; do p=$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}'); [ "$p" -le 8 ] || { echo "whitepaper-check: $pdf has $p pages; the cap is 8" >&2; exit 1; }; done; echo "whitepaper-check: ok"

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="PDF">
+  <!-- An original page icon for the whitepaper pills, in the site's palette: a sheet with a folded
+       corner (the pen blue) and a PDF band (the review red), drawn to read at 20 px. -->
+  <path d="M9 1.75h11.25L27 8.5v20.75a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V2.75a1 1 0 0 1 1-1z" fill="#ffffff" stroke="#1d3fd0" stroke-width="1.75" stroke-linejoin="round"/>
+  <path d="M20.25 1.75V7.5a1 1 0 0 0 1 1H27" fill="none" stroke="#1d3fd0" stroke-width="1.75" stroke-linejoin="round"/>
+  <rect x="1.5" y="13" width="23" height="12" rx="2" fill="#c8102e"/>
+  <text x="13" y="22.6" text-anchor="middle" font-family="Inter, 'Helvetica Neue', Arial, sans-serif" font-size="9.6" font-weight="800" fill="#ffffff">PDF</text>
+</svg>

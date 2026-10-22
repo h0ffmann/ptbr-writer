@@ -36,6 +36,8 @@
             lsof
             vale # the Saramago prose linter (lint/saramago)
             nodejs # runs vendor/archify (`just figure`); Chrome comes from the host
+            librsvg # rsvg-convert: the whitepaper's logos, SVG to PDF (`just whitepaper`)
+            poppler-utils # pdfinfo: the whitepaper's 5-page cap; pandoc and XeLaTeX come from the host
             iproute2
           ];
 
