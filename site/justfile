@@ -31,6 +31,8 @@ build: content
     # The PDFs the plugin generated (docs/eli5/RESULTS.tsv), next to the page that links them.
     mkdir -p dist/eli5
     tail -n +2 ../docs/eli5/RESULTS.tsv | cut -f3 | while read -r pdf; do cp "../docs/eli5/$pdf" dist/eli5/; done
+    # The whitepaper, in pt-BR and English (just whitepaper), for the two PDF pills on the cover.
+    mkdir -p dist/whitepaper && cp ../WHITEPAPER.pdf ../WHITEPAPER.en.pdf dist/whitepaper/
     touch dist/.nojekyll
 
 # Formatting, tests and a build: what CI runs
@@ -51,3 +53,4 @@ ci: content
     for lab in gleam-website code-graph ptbr-pdf ptbr-tools; do jq -e --arg l "$lab" 'any(.nodes[]; .external == "picasso" and (.href | test("labs_" + ($l | gsub("-"; "_")))))' ../build/grafo/graph.json >/dev/null || { echo "site: no link to picasso labs/$lab in the code graph" >&2; exit 1; }; done
     for f in ../docs/archify/*.json; do test -s "dist/figuras/$(basename "$f" .json).html" || { echo "site: no page for $f" >&2; exit 1; }; done
     tail -n +2 ../docs/eli5/RESULTS.tsv | cut -f3 | while read -r pdf; do test -s "dist/eli5/$pdf" && grep -qF "eli5/$pdf" dist/index.html || { echo "site: no ELI5 PDF or link for $pdf" >&2; exit 1; }; done
+    for pdf in WHITEPAPER.pdf WHITEPAPER.en.pdf; do test -s "dist/whitepaper/$pdf" && grep -qF "whitepaper/$pdf" dist/index.html || { echo "site: no whitepaper PDF or pill for $pdf" >&2; exit 1; }; done
