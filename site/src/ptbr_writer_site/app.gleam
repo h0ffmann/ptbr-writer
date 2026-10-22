@@ -207,20 +207,40 @@ const gleam_icon =
 const claude_code_icon =
   "https://code.claude.com/docs/_mintlify/favicons/claude-code/pLsy-mRpNksna2sx/_generated/favicon/favicon-32x32.png"
 
+const typescript_icon = "https://www.typescriptlang.org/favicon-32x32.png"
+
+const nix_icon = "https://nixos.org/favicon.svg"
+
+const opencode_icon = "https://opencode.ai/favicon.svg"
+
+// The site serves its icon under a content hash: a new release may move it.
+const opencodereview_icon = "https://open-codereview.ai/dbd8996c7419925db8e3.svg"
+
+const ollama_icon = "https://ollama.com/public/ollama.png"
+
+const ollaya_icon = "https://ollaya.dev/favicon.svg"
+
 // Archify's mark at the revision vendor/archify pins.
 const archify_icon =
   "https://raw.githubusercontent.com/tt-a1i/archify/2ab3cae/docs/assets/archify-mark.svg"
 
+/// A pill: the name, with its owner's icon when the owner publishes one (`""`: none).
 fn made_with(name: String, icon: String, href: String) -> Element(msg) {
-  html.a([attribute.href(href), attribute.rel("noopener")], [
-    html.img([
-      attribute.src(icon),
-      attribute.alt(""),
-      attribute.width(18),
-      attribute.height(18),
-    ]),
-    html.text(" " <> name),
-  ])
+  let img = case icon {
+    "" -> []
+    _ -> [
+      html.img([
+        attribute.src(icon),
+        attribute.alt(""),
+        attribute.width(18),
+        attribute.height(18),
+      ]),
+    ]
+  }
+  html.a(
+    [attribute.href(href), attribute.rel("noopener")],
+    list.append(img, [html.text(" " <> name)]),
+  )
 }
 
 /// The code graphs (built by `just site` with picasso's code-graph), beside the Archify pills, with
@@ -245,13 +265,32 @@ fn grafo_pill(href: String, title: String, name: String) -> Element(msg) {
   )
 }
 
-/// "feito com [lucy] Gleam e [claude] Claude Code", on the cover and again in the footer.
+/// "feito com" the languages GitHub counts in this repository (Gleam first, TypeScript last and
+/// grudgingly), then "com" the agents and the local model servers it runs on. On the cover and
+/// again in the footer.
 pub fn made_with_line(class: String) -> Element(msg) {
   html.p([attribute.class(class)], [
     html.text("feito com "),
     made_with("Gleam", gleam_icon, "https://gleam.run"),
-    html.text(" e "),
+    made_with("Just", "", "https://just.systems"),
+    made_with("Shell", "", "https://www.gnu.org/software/bash/"),
+    made_with("Nix", nix_icon, "https://nixos.org"),
+    made_with("CSS", "", "https://www.w3.org/Style/CSS/"),
+    made_with("JavaScript", "", "https://tc39.es"),
+    made_with("HTML", "", "https://html.spec.whatwg.org"),
+    html.text(" e, infelizmente, "),
+    made_with("TypeScript", typescript_icon, "https://www.typescriptlang.org"),
+    html.text(" (a extensão de navegador insistiu); com "),
     made_with("Claude Code", claude_code_icon, "https://claude.com/claude-code"),
+    made_with("OpenCode", opencode_icon, "https://opencode.ai"),
+    made_with(
+      "OpenCodeReview",
+      opencodereview_icon,
+      "https://github.com/alibaba/open-code-review",
+    ),
+    made_with("Ollama", ollama_icon, "https://ollama.com"),
+    html.text(" e "),
+    made_with("Ollaya", ollaya_icon, "https://github.com/ollaya-dev/ollaya"),
   ])
 }
 
@@ -626,7 +665,7 @@ fn footer() -> Element(msg) {
     made_with_line("made-with"),
     html.p([], [
       html.text(
-        "os nomes e os ícones de Gleam e de Claude Code são marcas dos seus donos, não licenciadas aqui; os ícones carregam dos sites deles. a ",
+        "os nomes e os ícones das linguagens e das ferramentas acima são marcas dos seus donos, não licenciadas aqui; os ícones carregam dos sites deles. a ",
       ),
       html.a([attribute.href(commons <> "Flag_of_Brazil.svg")], [
         html.text("bandeira do Brasil"),
