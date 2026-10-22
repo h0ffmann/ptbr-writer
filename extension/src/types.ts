@@ -29,7 +29,7 @@ export interface Settings {
   delayMs: 1000 | 2000 | 3000; // wait after the last keystroke
   apiBase?: Partial<Record<ProviderId, string>>; // honored only when __TEST__
 }
-export type CheckError = 'no-key' | 'auth' | 'rate-limit' | 'provider' | 'network';
+export type CheckError = 'no-key' | 'auth' | 'rate-limit' | 'provider' | 'network' | 'reload';
 export interface CheckRequest {
   type: 'check';
   key: string;

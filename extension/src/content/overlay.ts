@@ -77,6 +77,7 @@ const BADGE_LABEL: Record<CheckError, string> = {
   'rate-limit': 'limite atingido',
   provider: 'erro do provider',
   network: 'erro do provider',
+  reload: 'recarregue a página',
 };
 
 interface Drawn {
