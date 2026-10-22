@@ -93,7 +93,7 @@ O `scripts/firefox-mcp.sh` passa esse binário sempre que ele existe.
 
 ### 4. O Ollama e as origens
 
-O provider **Ollama + Qwen (local)** chama `http://127.0.0.1:11434/api/chat`. A extensão pede a
+O provider **Ollama (local)** (até 2026-10-22, **Ollama + Qwen (local)**) chama `http://127.0.0.1:11434/api/chat`. A extensão pede a
 permissão para `http://127.0.0.1:11434/*` no clique que escolhe o provider.
 
 O Ollama confere o cabeçalho `Origin`. Os resultados, com `curl -H "Origin: ..."` em `/api/tags`:
@@ -142,7 +142,7 @@ parou com `the Ollama at 127.0.0.1:11434 refuses extensions (HTTP 403)` e mostro
 5. No Firefox, abra `about:debugging#/runtime/this-firefox`, clique em **Carregar extensão
    temporária…** e escolha `extension/dist-firefox/manifest.json`.
 6. Em `about:addons` → ptbr-writer → **Permissões**, libere os sites e `127.0.0.1:11434`.
-7. No popup, escolha **Ollama + Qwen (local)** e o modelo baixado.
+7. No popup, escolha **Ollama (local)** e o modelo baixado.
 8. Abra o WhatsApp Web, escreva 3 palavras ou mais num campo e espere 1 s.
 
 Para o Claude Code fazer os passos 5 a 8, abra uma sessão nova no repo, aprove o servidor `firefox`

@@ -21,7 +21,7 @@
     },
     {
       "id": "modos",
-      "label": "Modes: who writes the text"
+      "label": "Modes: who reviews the text"
     }
   ],
   "mainPath": [
@@ -73,8 +73,8 @@
       "lane": "modos",
       "col": 3,
       "type": "backend",
-      "label": "Ollama + Qwen",
-      "sublabel": "on this machine, no key",
+      "label": "Ollama",
+      "sublabel": "local LLM, no key",
       "width": 150
     },
     {
@@ -83,7 +83,7 @@
       "col": 4,
       "type": "backend",
       "label": "Ollaya",
-      "sublabel": "planned, #61",
+      "sublabel": "decides, points only",
       "width": 150
     },
     {
@@ -135,9 +135,8 @@
       "id": "e5",
       "from": "provedor",
       "to": "ollaya",
-      "label": "not yet",
-      "role": "branch",
-      "variant": "dashed"
+      "label": "one of",
+      "role": "branch"
     },
     {
       "id": "e6",
@@ -150,6 +149,14 @@
       "from": "sublinhados",
       "to": "aceitar",
       "label": "you click"
+    },
+    {
+      "id": "e8",
+      "from": "ollaya",
+      "to": "ollama",
+      "label": "style, if on",
+      "role": "branch",
+      "variant": "dashed"
     }
   ]
 }

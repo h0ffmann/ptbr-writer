@@ -5,7 +5,7 @@ import { CIENTIFICO, SKILL } from '../src/skills';
 import { DEFAULT_SETTINGS } from '../src/settings';
 import type { CheckRequest, Settings } from '../src/types';
 
-const settings: Settings = { ...DEFAULT_SETTINGS, keys: { claude: 'sk-test', deepseek: 'sk-test', ollama: '' } };
+const settings: Settings = { ...DEFAULT_SETTINGS, keys: { claude: 'sk-test', deepseek: 'sk-test', ollama: '', ollaya: '' } };
 const req: CheckRequest = { type: 'check', key: 'k1', text: 'texto de teste aqui', level: 'estrito' };
 const suggestion = { original: 'a nível de', replacement: 'em', rule: 'PTW-1', severity: 'aviso', occurrence: 1 };
 const claudeBody = { content: [{ type: 'text', text: JSON.stringify({ suggestions: [suggestion] }) }] };
@@ -46,6 +46,47 @@ describe('handleCheck', () => {
     expect(await handleCheck(req, { fetch: okFetch({}, 403), settings: ollama })).toEqual({ ok: false, error: 'local' });
     const down = vi.fn(async () => { throw new TypeError('fail'); }) as unknown as typeof fetch;
     expect(await handleCheck(req, { fetch: down, settings: ollama })).toEqual({ ok: false, error: 'local' });
+  });
+
+  it('ollaya: one decide request per sentence, detections back; down or 403 -> local-ollaya; truncated -> provider', async () => {
+    const ollaya: Settings = { ...DEFAULT_SETTINGS, provider: 'ollaya' };
+    const text = 'Foi decidido que o deploy será feito. A equipe valida o build hoje.';
+    const first = 'Foi decidido que o deploy será feito.';
+    const body = { answers: { regra: { type: 'choice', choice: 'PTW-1', probabilities: { 'PTW-1': 0.9 } } }, state_truncated: false };
+    const f = okFetch(body);
+    const r = await handleCheck({ ...req, text }, { fetch: f, settings: ollaya });
+    expect(r.ok && r.suggestions[0]).toEqual({ original: first, replacement: '', detectOnly: true, rule: 'PTW-1 (90%)', severity: 'aviso', occurrence: 1 });
+    expect(r.ok && r.suggestions.map((s) => s.original)).toEqual([first, 'A equipe valida o build hoje.']);
+    const [url, init] = (f as any).mock.calls[0];
+    expect(url).toBe('http://127.0.0.1:11435/api/decide');
+    expect((f as any).mock.calls).toHaveLength(2);
+    expect(JSON.parse(init.body).model).toBe('decima');
+    expect(JSON.parse(init.body).state).toBe(first);
+    expect(await handleCheck(req, { fetch: okFetch({}, 403), settings: ollaya })).toEqual({ ok: false, error: 'local-ollaya' });
+    const down = vi.fn(async () => { throw new TypeError('fail'); }) as unknown as typeof fetch;
+    expect(await handleCheck(req, { fetch: down, settings: ollaya })).toEqual({ ok: false, error: 'local-ollaya' });
+    const cut = { ...body, state_truncated: true };
+    expect(await handleCheck({ ...req, text }, { fetch: okFetch(cut), settings: ollaya })).toEqual({ ok: false, error: 'provider' });
+  });
+
+  it('ollaya + ollama: Ollaya picks the style, Ollama writes in it; Ollaya down, Ollama writes alone', async () => {
+    const both: Settings = { ...DEFAULT_SETTINGS, provider: 'ollama', ollayaStyle: true };
+    const chat = { message: { content: JSON.stringify([suggestion]) }, done_reason: 'stop' };
+    const f = vi.fn(async (url: string) =>
+      new Response(JSON.stringify(url.endsWith('/api/decide') ? { answers: { estilo: { choice: 'conciso' } } } : chat)),
+    ) as unknown as typeof fetch;
+    const r = await handleCheck(req, { fetch: f, settings: both });
+    expect(r.ok && r.suggestions[0].rule).toBe('PTW-1 · estilo conciso');
+    const [first, second] = (f as any).mock.calls;
+    expect(first[0]).toBe('http://127.0.0.1:11435/api/decide');
+    expect(second[0]).toBe('http://127.0.0.1:11434/api/chat');
+    expect(JSON.parse(second[1].body).messages[0].content).toContain('Estilo da reescrita: `conciso`');
+    const down = vi.fn(async (url: string) => {
+      if (url.endsWith('/api/decide')) throw new TypeError('fail');
+      return new Response(JSON.stringify(chat));
+    }) as unknown as typeof fetch;
+    const alone = await handleCheck(req, { fetch: down, settings: both });
+    expect(alone.ok && alone.suggestions[0].rule).toBe('PTW-1');
   });
 
   it('a truncated reply -> provider, not "no problems"', async () => {

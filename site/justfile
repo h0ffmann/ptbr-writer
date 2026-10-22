@@ -46,7 +46,7 @@ ci: content
     # The extension graph (TypeScript): its own files, and the way back to ours.
     grep -qF '<a class="hop back" href="graph.html">' dist/grafo/extensao.html && jq -e 'any(.nodes[]; .source_file == "src/background.ts")' ../build/grafo-extensao/graph.json >/dev/null || { echo "site: the extension graph has no src/background.ts or no way back" >&2; exit 1; }
     # The local provider (Ollama) and the OpenCode plugin are in the graphs.
-    jq -e 'any(.nodes[]; .label == "ollamaPull()")' ../build/grafo-extensao/graph.json >/dev/null && jq -e 'any(.nodes[]; .source_file == "opencode/ptbr-writer.js")' ../build/grafo/graph.json >/dev/null || { echo "site: no ollamaPull() in the extension graph or no opencode/ptbr-writer.js in the code graph" >&2; exit 1; }
+    jq -e 'any(.nodes[]; .label == "localPull()")' ../build/grafo-extensao/graph.json >/dev/null && jq -e 'any(.nodes[]; .source_file == "opencode/ptbr-writer.js")' ../build/grafo/graph.json >/dev/null || { echo "site: no localPull() in the extension graph or no opencode/ptbr-writer.js in the code graph" >&2; exit 1; }
     # Every picasso lab this repo pins is a node of its graph that links into picasso's page.
     for lab in gleam-website code-graph ptbr-pdf ptbr-tools; do jq -e --arg l "$lab" 'any(.nodes[]; .external == "picasso" and (.href | test("labs_" + ($l | gsub("-"; "_")))))' ../build/grafo/graph.json >/dev/null || { echo "site: no link to picasso labs/$lab in the code graph" >&2; exit 1; }; done
     for f in ../docs/archify/*.json; do test -s "dist/figuras/$(basename "$f" .json).html" || { echo "site: no page for $f" >&2; exit 1; }; done

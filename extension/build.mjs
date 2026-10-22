@@ -35,7 +35,7 @@ const manifest = {
   description: plugin.description,
   permissions: ['storage', 'scripting', 'activeTab'],
   host_permissions: ['https://api.anthropic.com/*', 'https://api.deepseek.com/*', ...local],
-  optional_host_permissions: ['http://127.0.0.1:11434/*', '<all_urls>'],
+  optional_host_permissions: ['http://127.0.0.1:11434/*', 'http://127.0.0.1:11435/*', '<all_urls>'],
   background: { service_worker: 'background.js', type: 'module' },
   options_page: 'options.html',
   action: { default_popup: 'popup.html' },

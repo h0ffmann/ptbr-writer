@@ -46,7 +46,7 @@ describe('defaults', () => {
   it('values', () => {
     expect(DEFAULT_SETTINGS.enabled).toBe(true);
     expect(DEFAULT_SETTINGS.provider).toBe('claude');
-    expect(DEFAULT_SETTINGS.keys).toEqual({ claude: '', deepseek: '', ollama: '' });
+    expect(DEFAULT_SETTINGS.keys).toEqual({ claude: '', deepseek: '', ollama: '', ollaya: '' });
     expect(DEFAULT_SETTINGS.models.claude).toBe('claude-haiku-5-5');
   });
 });
@@ -59,7 +59,7 @@ describe('loadSettings', () => {
   it('keeps default keys and models missing from storage', async () => {
     stub({ settings: { keys: { claude: 'sk-test' }, models: { deepseek: 'deepseek-v4-pro' } } });
     const s = await loadSettings();
-    expect(s.keys).toEqual({ claude: 'sk-test', deepseek: '', ollama: '' });
+    expect(s.keys).toEqual({ claude: 'sk-test', deepseek: '', ollama: '', ollaya: '' });
     expect(s.models).toEqual({ ...DEFAULT_SETTINGS.models, deepseek: 'deepseek-v4-pro' });
   });
   it('a stored model outside the list falls back to the provider default', async () => {
@@ -73,6 +73,7 @@ describe('loadSettings', () => {
     expect(MODELS.deepseek[0]).toBe(DEFAULT_SETTINGS.models.deepseek);
     expect(MODELS.ollama).toEqual(['qwen3.6:27b', 'qwen3:14b', 'qwen3:8b', 'qwen3:4b']);
     expect(MODELS.ollama[0]).toBe(DEFAULT_SETTINGS.models.ollama);
+    expect(MODELS.ollaya[0]).toBe(DEFAULT_SETTINGS.models.ollaya);
   });
   it('keeps the default sites when storage has one host', async () => {
     stub({ settings: { sites: { 'bank.example': { enabled: true, level: 'estrito' } } } });
