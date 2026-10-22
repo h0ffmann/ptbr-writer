@@ -1,0 +1,18 @@
+# The citation of ptbr-writer. Written by hand from .zenodo.json; change the two together. The DOI
+# goes here after Zenodo mints it (`just doi`).
+cff-version: 1.2.0
+message: "If you cite ptbr-writer, cite it like this."
+title: "ptbr-writer: português técnico controlado para pessoas e agentes"
+type: software
+version: v0.3.0
+authors:
+  - family-names: Hoffmann
+    given-names: Matheus
+    orcid: "https://orcid.org/0009-0009-1056-7661"
+    affiliation: "Escola Politécnica, Universidade Federal do Rio de Janeiro"
+  - family-names: "Soares da Silva Júnior"
+    given-names: "Rôb Klér"
+repository-code: "https://github.com/h0ffmann/ptbr-writer"
+url: "https://h0ffmann.github.io/ptbr-writer/"
+license: MPL-2.0
+keywords: [technical writing, Brazilian Portuguese, controlled language, coding agents, decision models]
