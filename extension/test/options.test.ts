@@ -141,6 +141,39 @@ describe('provider, key and model', () => {
     expect([...$<HTMLSelectElement>('#model').options][0].textContent).toBe('qwen3.6:27b (sugerido)');
   });
 
+  it('Ollaya: picking it asks for 127.0.0.1:11435, lists its models, Baixar pulls from it', async () => {
+    await renderOptions(root());
+    choose('ollaya');
+    await flush();
+    expect(request).toHaveBeenCalledWith({ origins: ['http://127.0.0.1:11435/*'] });
+    expect($<HTMLSelectElement>('#provider').value).toBe('ollaya');
+    expect($<HTMLInputElement>('#key').disabled).toBe(true);
+    expect(modelOptions()).toEqual(['decima', 'laya:multilingual', 'decima:small', 'pplx-decider', 'winnow:e4b', 'llama3.2:1b']);
+    $<HTMLButtonElement>('#pull-model').click();
+    await flush();
+    await flush();
+    expect(ollama).toHaveBeenCalledWith('http://127.0.0.1:11435/api/pull', {
+      method: 'POST',
+      body: JSON.stringify({ model: 'decima', stream: false }),
+    });
+    expect($('#pull-status').textContent).toBe('pronto');
+  });
+
+  it('Ollaya + Ollama: the style flag shows only with Ollama, asks for 11435 and saves on the click', async () => {
+    await renderOptions(root());
+    const row = $<HTMLInputElement>('#ollaya-style').closest('label') as HTMLElement;
+    expect(row.hidden).toBe(true);
+    choose('ollama');
+    await flush();
+    expect(row.hidden).toBe(false);
+    const box = $<HTMLInputElement>('#ollaya-style');
+    box.checked = true;
+    box.dispatchEvent(new Event('change'));
+    await flush();
+    expect(request).toHaveBeenLastCalledWith({ origins: ['http://127.0.0.1:11435/*'] });
+    expect((await loadSettings()).ollayaStyle).toBe(true);
+  });
+
   it('saving writes only the chosen provider and keeps the other key', async () => {
     store = { settings: { keys: { claude: 'sk-c-1111', deepseek: '' } } };
     await renderOptions(root());
@@ -151,7 +184,7 @@ describe('provider, key and model', () => {
     await flush();
     const s = await loadSettings();
     expect(s.provider).toBe('deepseek');
-    expect(s.keys).toEqual({ claude: 'sk-c-1111', deepseek: 'sk-new-9999', ollama: '' });
+    expect(s.keys).toEqual({ claude: 'sk-c-1111', deepseek: 'sk-new-9999', ollama: '', ollaya: '' });
     expect(s.models.deepseek).toBe('deepseek-v4-pro');
     expect(s.models.claude).toBe('claude-haiku-5-5');
   });

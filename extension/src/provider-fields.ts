@@ -1,6 +1,6 @@
-import { OLLAMA_ORIGINS, ollamaModels, ollamaPull } from './providers';
-import { MODELS } from './settings';
-import { maskKey } from './sites';
+import { LOCAL_ORIGINS, localModels, localPull } from './providers';
+import { MODELS, isLocal } from './settings';
+import { maskKey, setOllayaStyle } from './sites';
 import type { ProviderId, Settings } from './types';
 
 export interface ProviderFields {
@@ -12,7 +12,8 @@ export interface ProviderFields {
 const PROVIDERS: [ProviderId, string][] = [
   ['claude', 'Claude'],
   ['deepseek', 'DeepSeek'],
-  ['ollama', 'Ollama + Qwen (local)'],
+  ['ollama', 'Ollama (local)'],
+  ['ollaya', 'Ollaya (local, só aponta)'],
 ];
 
 function option(value: string, text: string): HTMLOptionElement {
@@ -44,41 +45,60 @@ export function mountProviderFields(
   key.autocomplete = 'off';
   const fields = { provider, model, key };
 
-  // Ollama's list: the suggested models (MODELS.ollama, the first one suggested) and the ones
-  // already installed; one not installed is downloaded with Baixar.
+  // A local server's list (Ollama, Ollaya): the suggested models (MODELS[p], the first one suggested)
+  // and the ones already installed; one not installed is downloaded with Baixar.
   const pull = Object.assign(document.createElement('button'), { id: 'pull-model', type: 'button', textContent: 'Baixar' });
   const status = Object.assign(document.createElement('span'), { id: 'pull-status' });
   status.setAttribute('role', 'status');
   let installed: string[] = [];
-  const models = (p: ProviderId) => (p === 'ollama' ? [...new Set([...MODELS.ollama, ...installed])] : MODELS[p]);
+  const models = (p: ProviderId) => (isLocal(p) ? [...new Set([...MODELS[p], ...installed])] : MODELS[p]);
   const label = (p: ProviderId, m: string) =>
-    p !== 'ollama'
+    !isLocal(p)
       ? m
-      : m + (m === MODELS.ollama[0] ? ' (sugerido)' : '') + (installed.includes(m) ? '' : ' (baixar)');
+      : m + (m === MODELS[p][0] ? ' (sugerido)' : '') + (installed.includes(m) ? '' : ' (baixar)');
   const fill = (p: ProviderId) => {
     model.replaceChildren(...models(p).map((m) => option(m, label(p, m))));
     model.value = s.models[p];
-    pull.hidden = p !== 'ollama' || installed.includes(model.value);
+    pull.hidden = !isLocal(p) || installed.includes(model.value);
   };
   const refresh = async () => {
-    installed = await ollamaModels();
-    if (provider.value === 'ollama') fill('ollama');
+    const p = provider.value as ProviderId;
+    if (!isLocal(p)) return;
+    const got = await localModels(p);
+    // A switch while the list was loading: this list belongs to the other server.
+    if (provider.value !== p) return;
+    installed = got;
+    fill(p);
   };
 
+  // Ollaya + Ollama: a feature flag beside Ollama. On, Ollaya picks the style and Ollama writes in it;
+  // Ollaya down, Ollama writes alone. Saved on the click, like the on/off switch.
+  const style = Object.assign(document.createElement('input'), { id: 'ollaya-style', type: 'checkbox', checked: s.ollayaStyle });
+  const styleRow = labeled('Ollaya escolhe o estilo (conciso, socrático, amigável)', style);
+  style.addEventListener('change', async () => {
+    // The permission for Ollaya, asked in this click as for the provider itself.
+    if (style.checked && !(await chrome.permissions.request(LOCAL_ORIGINS.ollaya))) style.checked = false;
+    s.ollayaStyle = style.checked;
+    await setOllayaStyle(style.checked);
+  });
+
   const show = (p: ProviderId) => {
+    styleRow.hidden = p !== 'ollama';
     key.value = maskKey(s.keys[p]);
+    // The other server's models are not this one's.
+    installed = [];
     fill(p);
-    if (p === 'ollama') void refresh();
-    // Ollama runs on this machine and takes no key.
-    key.disabled = p === 'ollama';
-    key.placeholder = p === 'ollama' ? 'sem chave: just ext-ollama' : '';
+    if (isLocal(p)) void refresh();
+    // Ollama and Ollaya run on this machine and take no key.
+    key.disabled = isLocal(p);
+    key.placeholder = isLocal(p) ? `sem chave: just ext-${p}` : '';
   };
   provider.value = s.provider;
   show(s.provider);
   provider.addEventListener('change', async () => {
     const p = provider.value as ProviderId;
-    // Asked in the click that picks Ollama: the browser shows its prompt only during a user gesture.
-    if (p === 'ollama' && !(await chrome.permissions.request(OLLAMA_ORIGINS))) {
+    // Asked in the click that picks a local server: the browser shows its prompt only during a user gesture.
+    if (isLocal(p) && !(await chrome.permissions.request(LOCAL_ORIGINS[p]))) {
       provider.value = s.provider;
       return;
     }
@@ -88,19 +108,20 @@ export function mountProviderFields(
   });
   model.addEventListener('change', () => {
     s.models[provider.value as ProviderId] = model.value;
-    pull.hidden = provider.value !== 'ollama' || installed.includes(model.value);
+    pull.hidden = !isLocal(provider.value as ProviderId) || installed.includes(model.value);
     onChange(fields);
   });
   pull.addEventListener('click', async () => {
     pull.disabled = true;
     status.textContent = `baixando ${model.value}…`;
-    const ok = await ollamaPull(model.value);
+    const p = provider.value as 'ollama' | 'ollaya';
+    const ok = await localPull(p, model.value);
     if (ok) await refresh();
-    status.textContent = ok ? 'pronto' : 'falhou: o Ollama está no ar (just ext-ollama)?';
+    status.textContent = ok ? 'pronto' : `falhou: o ${p === 'ollama' ? 'Ollama' : 'Ollaya'} está no ar (just ext-${p})?`;
     pull.disabled = false;
   });
   const pullRow = document.createElement('p');
   pullRow.append(pull, ' ', status);
-  container.append(labeled('Provedor', provider), labeled('Modelo', model), pullRow, labeled('Chave', key));
+  container.append(labeled('Provedor', provider), labeled('Modelo', model), pullRow, styleRow, labeled('Chave', key));
   return fields;
 }

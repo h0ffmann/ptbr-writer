@@ -77,6 +77,7 @@ const BADGE_LABEL: Record<CheckError, string> = {
   provider: 'erro do provider',
   network: 'erro do provider',
   local: 'Ollama inacessível',
+  'local-ollaya': 'Ollaya inacessível',
 };
 
 interface Drawn {
@@ -296,7 +297,10 @@ function openCard(el: HTMLElement, l: Located, d: Drawn, hover = false) {
   s.textContent = l.original;
   const strong = doc.createElement('strong');
   strong.textContent = l.replacement;
-  change.append(s, ' → ', strong);
+  // A detection (Ollaya) has no replacement: the card names the rule and the sentence, with only Ignorar.
+  const detect = l.detectOnly === true;
+  if (detect) change.append(l.original);
+  else change.append(s, ' → ', strong);
   const actions = doc.createElement('div');
   actions.className = 'ptbr-actions';
   const button = (action: string, label: string, run: () => void) => {
@@ -312,7 +316,8 @@ function openCard(el: HTMLElement, l: Located, d: Drawn, hover = false) {
     });
     return b;
   };
-  actions.append(button('accept', 'Aceitar', () => d.onAccept(l)), button('ignore', 'Ignorar', () => d.onIgnore(l)));
+  if (!detect) actions.append(button('accept', 'Aceitar', () => d.onAccept(l)));
+  actions.append(button('ignore', 'Ignorar', () => d.onIgnore(l)));
   node.append(rule, change, actions);
   node.addEventListener('mousedown', (e) => e.preventDefault());
   overlayRoot(doc).appendChild(node);

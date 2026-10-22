@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=version&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#license)
-[![estimated reading time: ~28 min](https://img.shields.io/badge/reading%20time-~28%20min-1682D4?style=flat-square)](#reading-time)
+[![estimated reading time: ~30 min](https://img.shields.io/badge/reading%20time-~30%20min-1682D4?style=flat-square)](#reading-time)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 [![browser extension (Chrome): local dev (WIP)](https://img.shields.io/badge/browser%20extension-local%20dev%20(WIP)-1682D4?style=flat-square&logo=googlechrome&logoColor=white)](#chrome)
 [![browser extension (Firefox): local dev (WIP)](https://img.shields.io/badge/browser%20extension-local%20dev%20(WIP)-1682D4?style=flat-square&logo=firefoxbrowser&logoColor=white)](docs/EXTENSION_FIREFOX.md)
@@ -145,7 +145,7 @@ The experiment of 2026-10-21, with the workstation and the steps to reproduce it
 
 No key and no cloud: `just ext-ollama` serves Qwen through Ollama at `127.0.0.1:11434` (`qwen3.6:27b`,
 the model of `just opencode-qwen`; `just ext-ollama qwen3:8b` for a smaller GPU). In the popup,
-choose **Ollama + Qwen (local)**: in that click the browser asks for the permission to
+choose **Ollama (local)**: in that click the browser asks for the permission to
 `http://127.0.0.1:11434/*`, and the text never leaves the machine. The model list suggests `qwen3.6:27b`
 and offers `qwen3:14b`, `qwen3:8b`, `qwen3:4b` and the models already installed in Ollama; a model
 not yet installed shows `(baixar)`, and the **Baixar** (download) button downloads it through Ollama
@@ -153,6 +153,26 @@ not yet installed shows `(baixar)`, and the **Baixar** (download) button downloa
 extension's origin unless started with `OLLAMA_ORIGINS=chrome-extension://*,moz-extension://*`;
 the recipe starts it so and, when an Ollama without it already runs (the systemd service, say),
 says how to allow it. ⚠ Not yet tested with the real Qwen in the extension.
+
+Pointing out that a sentence breaks a rule is a decision, and a decision model makes it without
+generating text. `just ext-ollaya` serves [Ollaya](https://github.com/ollaya-dev/ollaya) at
+`127.0.0.1:11435` with `decima`; in the popup, choose **Ollaya (local, só aponta)** (points only),
+which asks for the permission to `http://127.0.0.1:11435/*` in that click. For each sentence of the
+field (up to 32), the extension asks `/api/decide` which rule the sentence breaks, with `nenhuma`
+(none) and the level's rules (PTW and, at `científico`, CIE) as the answers. A rule at 50% or more
+becomes an underline with the rule and the probability on the card. Ollaya does not write the
+corrected sentence, so the card only has **Ignorar** (ignore). The model list, **Baixar** and
+`OLLAYA_ORIGINS` work as with Ollama. Why `decima` and the other suggested models:
+[`docs/SURVEY_DECISION_MODEL.md`](docs/SURVEY_DECISION_MODEL.md) (pt-BR). ⚠ Not measured: the latency
+and the accuracy on pt-BR, and the 50% threshold was not tuned
+([#61](https://github.com/h0ffmann/ptbr-writer/issues/61)).
+
+Ollaya and Ollama also work together, as independent switches. With **Ollama (local)** chosen,
+tick **Ollaya escolhe o estilo** (Ollaya picks the style): before each review, Ollaya reads the field
+and picks the conversation style (`conciso`, `socrático` or `amigável`: concise, Socratic, friendly),
+and Ollama writes the replacements in that style, with **Aceitar**. The card names the chosen style.
+If Ollaya is down, Ollama reviews alone, as with the switch off. ⚠ Not measured: whether the chosen
+style improves the review.
 
 ## use
 
@@ -257,7 +277,7 @@ providers; Gmail and GitHub have not been tested with their real editors yet.
 <a id="extension-figures"></a>
 **Browser extension flow.**
 
-![Browser extension flow: in Chrome or Firefox, a field with 3 words and 1 s idle asks for a review; the extension adds the rules of the site's level and calls the chosen provider, which is one of three modes: API key (Claude or DeepSeek), Ollama + Qwen on this machine, or Ollaya, still planned; the suggestions come back as underlines, and Aceitar (accept) replaces the span in the field.](docs/img/en/extensao-fluxo.png)
+![Browser extension flow: in Chrome or Firefox, a field with 3 words and 1 s idle asks for a review; the extension adds the rules of the site's level and calls the chosen provider, which is one of three modes: API key (Claude or DeepSeek), Ollama with an LLM on this machine, or Ollaya, which decides and only points and, with the switch on, picks the style Ollama writes in; the suggestions come back as underlines, and Aceitar (accept) replaces the span in the field.](docs/img/en/extensao-fluxo.png)
 
 <details open>
 <summary>How to read this figure</summary>
@@ -267,8 +287,9 @@ you choose; the suggestions come back as underlines, and only your click on **Ac
 text.
 
 **How to read.** Left to right, top to bottom. The top lane is the page; the middle one is the
-extension; the bottom one holds the three modes, "who writes the text", and the extension uses one at
-a time. The dashed arrow goes to the planned mode (Ollaya), which does not exist yet. A box with an
+extension; the bottom one holds the three modes, "who reviews the text", and the extension uses one at
+a time. Ollaya only points: the card of its suggestions has no **Aceitar**. The dashed arrow is the
+**Ollaya escolhe o estilo** switch: Ollaya picks the style, and Ollama writes. A box with an
 orange border is where you come in or what you get back.
 
 **Not shown.** The **Ignorar** button, the sites on from the start, the 4000-character limit, each
@@ -277,7 +298,7 @@ site's permission and the error badge in the field. The local mode has the next 
 **Evidence.** The 3 words and 1 s: `extension/src/content/watcher.ts` (`MIN_WORDS`, `delayMs`). The
 site's level and the rules: `extension/src/background.ts` (`levelFor`, `buildSystemPrompt`). The
 providers: `extension/src/providers.ts` and `extension/src/provider-fields.ts`. **Aceitar**:
-`extension/src/content/overlay.ts`. Ollaya: issue
+`extension/src/content/overlay.ts`. Ollaya: `extension/src/decisions.ts` and issue
 [#61](https://github.com/h0ffmann/ptbr-writer/issues/61). Source of the figure:
 [`docs/archify/en/extensao-fluxo.json`](docs/archify/en/extensao-fluxo.json).
 
@@ -290,7 +311,7 @@ providers: `extension/src/providers.ts` and `extension/src/provider-fields.ts`. 
 > right ([#63](https://github.com/h0ffmann/ptbr-writer/issues/63)). Prefer to download the model
 > first, with `just ext-ollama`.
 
-![Local model flow: you pick Ollama + Qwen in the popup; the browser asks for the 127.0.0.1:11434 permission in that click; once granted, the extension reads the models already downloaded from /api/tags and adds them to the suggested ones, from the LLM qwen3.6:27b to the SLM qwen3:4b; a model already downloaded goes to /api/chat, whose suggestions become underlines on the page; a model not downloaded goes through Baixar (/api/pull, very experimental, #63), which reads the list again; if Ollama is down or answers 403, the field shows the Ollama inacessível badge.](docs/img/en/modelo-local.png)
+![Local model flow: you pick Ollama in the popup; the browser asks for the 127.0.0.1:11434 permission in that click; once granted, the extension reads the models already downloaded from /api/tags and adds them to the suggested ones, from the LLM qwen3.6:27b to the SLM qwen3:4b; a model already downloaded goes to /api/chat, whose suggestions become underlines on the page; a model not downloaded goes through Baixar (/api/pull, very experimental, #63), which reads the list again; if Ollama is down or answers 403, the field shows the Ollama inacessível badge.](docs/img/en/modelo-local.png)
 
 <details open>
 <summary>How to read this figure</summary>
@@ -307,7 +328,7 @@ experimental. "LLM" is the large model (`qwen3.6:27b`, 18 GB) and "SLM" the smal
 `OLLAMA_ORIGINS` Ollama needs to accept the extension and the `just ext-ollama` recipe; both are in
 [`docs/EXTENSION_FIREFOX.md`](docs/EXTENSION_FIREFOX.md).
 
-**Evidence.** `extension/src/providers.ts` (`ollamaModels`, `ollamaPull`, `buildRequest`,
+**Evidence.** `extension/src/providers.ts` (`localModels`, `localPull`, `buildRequest`,
 `classifyError`), `extension/src/provider-fields.ts` (the list and **Baixar**) and
 `extension/src/settings.ts` (the suggested models). The sizes come from
 [`docs/EXTENSION_FIREFOX.md`](docs/EXTENSION_FIREFOX.md). ⚠ No review with a Qwen 3 was measured.

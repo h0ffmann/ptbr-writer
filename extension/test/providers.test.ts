@@ -5,7 +5,7 @@ import type { Settings } from '../src/types';
 
 const base: Settings = {
   ...DEFAULT_SETTINGS,
-  keys: { claude: 'sk-test', deepseek: 'sk-test', ollama: '' },
+  keys: { claude: 'sk-test', deepseek: 'sk-test', ollama: '', ollaya: '' },
 };
 
 describe('buildRequest', () => {
@@ -122,5 +122,10 @@ describe('classifyError', () => {
     expect(classifyError(403, 'ollama')).toBe('local');
     expect(classifyError(500, 'ollama')).toBe('provider');
     expect(classifyError(403, 'claude')).toBe('auth');
+  });
+  it('Ollaya: down or refusing the extension origin is local-ollaya', () => {
+    expect(classifyError(null, 'ollaya')).toBe('local-ollaya');
+    expect(classifyError(403, 'ollaya')).toBe('local-ollaya');
+    expect(classifyError(404, 'ollaya')).toBe('provider');
   });
 });

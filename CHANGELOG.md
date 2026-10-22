@@ -5,6 +5,19 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- A extensão ganha o provider **Ollaya (local, só aponta)** (#61): um modelo de decisão do
+  [Ollaya](https://github.com/ollaya-dev/ollaya) diz, frase a frase, qual regra do nível a frase
+  quebra; a regra vira um sublinhado sem troca, e o cartão só tem **Ignorar**. A fiação é a do Ollama:
+  sem chave, permissão `http://127.0.0.1:11435/*` pedida no clique, lista de modelos, **Baixar** e
+  `just ext-ollaya` com `OLLAYA_ORIGINS`. O modelo sugerido é o `decima`; a escolha está em
+  `docs/SURVEY_DECISION_MODEL.md`. ⚠ Latência e acerto em pt-BR não medidos.
+- **Ollaya + Ollama**: com o Ollama escolhido, a chave **Ollaya escolhe o estilo** faz o Ollaya
+  escolher o estilo da conversa (`conciso`, `socrático`, `amigável`) antes de cada revisão, e o Ollama
+  escreve as trocas nesse estilo. As duas são chaves independentes: com o Ollaya fora do ar, o Ollama
+  revisa sozinho.
+- O provider **Ollama + Qwen (local)** vira **Ollama (local)**: o Qwen é só um dos modelos.
+- O site diz "feito com" as linguagens do repositório (TypeScript por último, infelizmente) e com
+  Claude Code, OpenCode, OpenCodeReview, Ollama e Ollaya.
 - Cada figura do Archify ganha um gêmeo em inglês (`docs/archify/en/<slug>.json`, desenhado em
   `docs/img/en/<slug>.png`): o `README.md` mostra as figuras em pt-BR e o `README.en.md` as em inglês. O
   `just figure-check` falha quando falta o gêmeo, quando o gêmeo não é o mesmo desenho, ou quando um README

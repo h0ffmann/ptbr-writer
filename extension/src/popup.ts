@@ -1,6 +1,6 @@
 import { normalizeHost } from './hosts';
 import { mountProviderFields } from './provider-fields';
-import { loadSettings } from './settings';
+import { isLocal, loadSettings } from './settings';
 import { LEVELS, disableSiteFlow, enableSiteFlow, saveProviderFields, setEnabled, setLevel } from './sites';
 import type { Level, ProviderId } from './types';
 
@@ -16,7 +16,7 @@ export function hostOf(url: string | undefined): string | null {
   }
 }
 
-const PROVIDER_NAMES: Record<ProviderId, string> = { claude: 'Claude', deepseek: 'DeepSeek', ollama: 'Ollama' };
+const PROVIDER_NAMES: Record<ProviderId, string> = { claude: 'Claude', deepseek: 'DeepSeek', ollama: 'Ollama', ollaya: 'Ollaya' };
 
 function button(id: string, text: string, onClick: () => void): HTMLButtonElement {
   const b = document.createElement('button');
@@ -81,7 +81,7 @@ export async function render(root: HTMLElement): Promise<void> {
   }
 
   const provider = section(root);
-  if (s.provider !== 'ollama' && !s.keys[s.provider]) line(provider, `Sem chave do ${PROVIDER_NAMES[s.provider]}.`);
+  if (!isLocal(s.provider) && !s.keys[s.provider]) line(provider, `Sem chave do ${PROVIDER_NAMES[s.provider]}.`);
   const fields = mountProviderFields(provider, s, (f) => {
     void saveProviderFields({ provider: f.provider.value as ProviderId, model: f.model.value, key: '', enabled: enabled.checked });
   });
