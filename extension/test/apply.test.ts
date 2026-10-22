@@ -66,6 +66,25 @@ describe('acceptSuggestion', () => {
     expect(selected).toBe('Foi decidido');
   });
 
+  it('an editor that handles paste itself (WhatsApp) gets the replacement as a paste, not execCommand', () => {
+    const el = document.createElement('div');
+    el.setAttribute('contenteditable', 'true');
+    el.innerHTML = '<p>Foi <b>decidido</b> hoje</p>';
+    document.body.appendChild(el);
+    let pasted = '';
+    let selected = '';
+    el.addEventListener('paste', (e) => {
+      selected = document.getSelection()?.toString() ?? '';
+      pasted = (e as ClipboardEvent).clipboardData?.getData('text/plain') ?? '';
+      e.preventDefault();
+    });
+    const exec = vi.fn(() => true);
+    (document as unknown as { execCommand: typeof exec }).execCommand = exec;
+    expect(acceptSuggestion(el, passive, 0)).toBe(true);
+    expect(pasted).toBe('A equipe decidiu');
+    expect(selected).toBe('Foi decidido');
+    expect(exec).not.toHaveBeenCalled();
+  });
   it('does not call execCommand when the contenteditable text changed', () => {
     const el = document.createElement('div');
     el.setAttribute('contenteditable', 'true');

@@ -44,8 +44,10 @@ export async function startFakeServer(): Promise<FakeServer> {
       return;
     }
     try {
-      const html = await readFile(join(PAGES, basename(path)));
-      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+      const file = basename(path);
+      const html = await readFile(join(PAGES, file));
+      const type = file.endsWith('.js') ? 'text/javascript' : 'text/html';
+      res.writeHead(200, { 'content-type': `; charset=utf-8` });
       res.end(html);
     } catch {
       res.writeHead(404).end();
