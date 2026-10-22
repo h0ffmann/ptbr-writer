@@ -237,10 +237,15 @@ pub fn whitepaper_pills_test() {
   assert string.contains(page, "pdf.svg")
 }
 
-// A discreet link to the Zenodo record: Zenodo's mark and its redirect to the newest DOI, no number.
+// A discreet link to the Zenodo record: Zenodo's mark and the concept DOI (always the newest
+// version) as the link's target; the number is never shown as text.
 pub fn zenodo_pill_test() {
   let page = prerender.render()
-  assert string.contains(page, "zenodo.org/badge/latestdoi/1427289123")
+  assert string.contains(
+    page,
+    "href=\"https://doi.org/10.5281/zenodo.23554531\"",
+  )
   assert string.contains(page, "zenodo-gradient-round.svg")
-  assert !string.contains(page, "10.5281/zenodo")
+  assert !string.contains(page, ">10.5281/")
+  assert !string.contains(page, "zenodo.23554531<")
 }
