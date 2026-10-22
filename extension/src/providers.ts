@@ -34,7 +34,7 @@ export function buildRequest(
         },
         body: JSON.stringify({
           model: s.models.claude,
-          max_tokens: 1024,
+          max_tokens: 2048,
           temperature: 0,
           system,
           messages: [{ role: 'user', content: user }],
@@ -52,8 +52,11 @@ export function buildRequest(
       },
       body: JSON.stringify({
         model: s.models.deepseek,
-        max_tokens: 1024,
+        max_tokens: 2048,
         temperature: 0,
+        // Both DeepSeek models think by default, and the thinking counts against max_tokens: it left the
+        // answer empty. A correction needs no chain of thought.
+        thinking: { type: 'disabled' },
         messages: [
           { role: 'system', content: system },
           { role: 'user', content: user },
