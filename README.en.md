@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=version&style=flat-square)](CHANGELOG.md)
 [![license: MIT](https://img.shields.io/badge/license-MIT-1682D4?style=flat-square)](#license)
-[![estimated reading time: ~26 min](https://img.shields.io/badge/reading%20time-~26%20min-1682D4?style=flat-square)](#reading-time)
+[![estimated reading time: ~28 min](https://img.shields.io/badge/reading%20time-~28%20min-1682D4?style=flat-square)](#reading-time)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 [![browser extension (Chrome): local dev (WIP)](https://img.shields.io/badge/browser%20extension-local%20dev%20(WIP)-1682D4?style=flat-square&logo=googlechrome&logoColor=white)](#chrome)
 [![browser extension (Firefox): local dev (WIP)](https://img.shields.io/badge/browser%20extension-local%20dev%20(WIP)-1682D4?style=flat-square&logo=firefoxbrowser&logoColor=white)](docs/EXTENSION_FIREFOX.md)
@@ -28,7 +28,10 @@
   with `⚠` what it did not check. Goal: keep a repository's PT-BR and EN documentation while
   spending fewer tokens.
 
-![Flow of a request (labels in Portuguese): you write ptbr; the first time, 4 questions saved in ptbr-writer.toml; then the ptbr-writer skill (or cientifico, if the text needs sources) writes one text per level and language; the output is the reply in the console and, if asked, .txt, .md, .pdf or notes files in the folder.](docs/img/em-um-minuto.png)
+**Claude Code plugin flow.** The browser extension and the local model have their own figures, in
+[use](#extension-figures).
+
+![Claude Code plugin flow (labels in Portuguese): you write ptbr; the first time, 4 questions saved in ptbr-writer.toml; then the ptbr-writer skill (or cientifico, if the text needs sources) writes one text per level and language; the output is the reply in the console and, if asked, .txt, .md, .pdf or notes files in the folder.](docs/img/em-um-minuto.png)
 
 <details open>
 <summary>How to read this figure</summary>
@@ -252,6 +255,67 @@ characters only the caret's paragraph is sent. Tests: `just ext-test` (Vitest) a
 On 2026-10-21 the repo owner tested it by hand on WhatsApp Web, with a real key for one of the
 providers; Gmail and GitHub have not been tested with their real editors yet.
 
+<a id="extension-figures"></a>
+**Browser extension flow.**
+
+![Browser extension flow (labels in Portuguese): in Chrome or Firefox, a field with 3 words and 1 s idle asks for a review; the extension adds the rules of the site's level and calls the chosen provider, which is one of three modes: API key (Claude or DeepSeek), Ollama + Qwen on this machine, or Ollaya, still planned; the suggestions come back as underlines, and Aceitar (accept) replaces the span in the field.](docs/img/extensao-fluxo.png)
+
+<details open>
+<summary>How to read this figure</summary>
+
+**Takeaway.** The extension sends the field's text, with the rules of the site's level, to a provider
+you choose; the suggestions come back as underlines, and only your click on **Aceitar** changes the
+text.
+
+**How to read.** Left to right, top to bottom. The top lane is the page; the middle one is the
+extension; the bottom one holds the three modes, "who writes the text", and the extension uses one at
+a time. The dashed arrow goes to the planned mode (Ollaya), which does not exist yet. A box with an
+orange border is where you come in or what you get back.
+
+**Not shown.** The **Ignorar** button, the sites on from the start, the 4000-character limit, each
+site's permission and the error badge in the field. The local mode has the next figure.
+
+**Evidence.** The 3 words and 1 s: `extension/src/content/watcher.ts` (`MIN_WORDS`, `delayMs`). The
+site's level and the rules: `extension/src/background.ts` (`levelFor`, `buildSystemPrompt`). The
+providers: `extension/src/providers.ts` and `extension/src/provider-fields.ts`. **Aceitar**:
+`extension/src/content/overlay.ts`. Ollaya: issue
+[#61](https://github.com/h0ffmann/ptbr-writer/issues/61). Source of the figure:
+[`docs/archify/extensao-fluxo.json`](docs/archify/extensao-fluxo.json).
+
+</details>
+
+**Local model flow (LLM or SLM), with download on demand.**
+
+> [!WARNING]
+> The **Baixar** (download) button is VERY EXPERIMENTAL: in the 2026-10-21 test it did not seem to work
+> right ([#63](https://github.com/h0ffmann/ptbr-writer/issues/63)). Prefer to download the model
+> first, with `just ext-ollama`.
+
+![Local model flow (labels in Portuguese): you pick Ollama + Qwen in the popup; the browser asks for the 127.0.0.1:11434 permission in that click; once granted, the extension reads the models already downloaded from /api/tags and adds them to the suggested ones, from the LLM qwen3.6:27b to the SLM qwen3:4b; a model already downloaded goes to /api/chat, whose suggestions become underlines on the page; a model not downloaded goes through Baixar (/api/pull, very experimental, #63), which reads the list again; if Ollama is down or answers 403, the field shows the Ollama inacessível badge.](docs/img/modelo-local.png)
+
+<details open>
+<summary>How to read this figure</summary>
+
+**Takeaway.** In the local mode the text does not leave your machine: the extension asks Ollama which
+models it has, offers to download a missing one and reviews with the one you chose.
+
+**How to read.** Left to right. The top lane is the popup and the page; the middle one is Ollama at
+`127.0.0.1:11434`; the bottom one is the failure. The dashed arrows are the **Baixar** path, very
+experimental. "LLM" is the large model (`qwen3.6:27b`, 18 GB) and "SLM" the small one (`qwen3:4b`,
+2.5 GB); `qwen3:14b` and `qwen3:8b` sit between them.
+
+**Not shown.** A refused permission (the selector goes back to the previous provider), the
+`OLLAMA_ORIGINS` Ollama needs to accept the extension and the `just ext-ollama` recipe; both are in
+[`docs/EXTENSION_FIREFOX.md`](docs/EXTENSION_FIREFOX.md).
+
+**Evidence.** `extension/src/providers.ts` (`ollamaModels`, `ollamaPull`, `buildRequest`,
+`classifyError`), `extension/src/provider-fields.ts` (the list and **Baixar**) and
+`extension/src/settings.ts` (the suggested models). The sizes come from
+[`docs/EXTENSION_FIREFOX.md`](docs/EXTENSION_FIREFOX.md). ⚠ No review with a Qwen 3 was measured.
+Source of the figure: [`docs/archify/modelo-local.json`](docs/archify/modelo-local.json).
+
+</details>
+
 ## levels
 
 | Level | Use |
@@ -328,7 +392,9 @@ Three real requests, generated by the plugin itself; the PDF comes from the `.md
 
 Each figure is an Archify page, published on the site:
 
-- [What happens to a ptbr request](https://h0ffmann.github.io/ptbr-writer/figuras/em-um-minuto.html)
+- [Claude Code plugin flow: a ptbr request](https://h0ffmann.github.io/ptbr-writer/figuras/em-um-minuto.html)
+- [Browser extension flow: from the field to the underline](https://h0ffmann.github.io/ptbr-writer/figuras/extensao-fluxo.html)
+- [Local model flow (LLM or SLM): download on demand, very experimental](https://h0ffmann.github.io/ptbr-writer/figuras/modelo-local.html)
 - [Where the .pdf comes from](https://h0ffmann.github.io/ptbr-writer/figuras/pdf-dependencias.html)
 
 And the code graph of this repository, built on each site build by the `code-graph` of
@@ -336,7 +402,7 @@ And the code graph of this repository, built on each site build by the `code-gra
 [Code graph](https://h0ffmann.github.io/ptbr-writer/grafo/graph.html). The nodes that use picasso
 lead into [picasso's graph](https://h0ffmann.github.io/ptbr-writer/grafo/picasso.html), built from the
 `forks/picasso` submodule at the same commit as the other pins.
-The Chrome extension, in TypeScript, has its own:
+The browser extension (Chrome and Firefox), in TypeScript, has its own:
 [Extension graph](https://h0ffmann.github.io/ptbr-writer/grafo/extensao.html), of `extension/` only.
 
 ## roadmap
