@@ -1,0 +1,85 @@
+[workspace]
+members = [".", "xtask"]
+resolver = "3"
+
+[package]
+name = "ptbr-ext"
+version = "0.3.0"
+edition = "2024"
+publish = false
+description = "The ptbr-writer browser extension, Rust compiled to WebAssembly"
+license = "MPL-2.0"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# The __TEST__ define of build.mjs: apiBase honored, localhost in the manifest.
+test-build = []
+
+[dependencies]
+serde = { version = "=1.0.229", features = ["derive"] }
+# preserve_order: a decide body lists `nenhuma` first, as the model reads the options in order.
+serde_json = { version = "=1.0.154", features = ["preserve_order"] }
+# NFC and General_Category=Mark, for locate().
+unicode-normalization = "=0.1.26"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+# Pinned to the wasm-bindgen-cli of flake.nix: the glue and the crate must match.
+wasm-bindgen = "=0.2.129"
+wasm-bindgen-futures = "=0.4.79"
+js-sys = "=0.3.106"
+serde-wasm-bindgen = "=0.6.5"
+web-sys = { version = "=0.3.106", features = [
+  "AbortController",
+  "AbortSignal",
+  "CssStyleDeclaration",
+  "Document",
+  "DomRect",
+  "DomRectList",
+  "Element",
+  "Event",
+  "EventTarget",
+  "FocusEvent",
+  "Headers",
+  "HtmlButtonElement",
+  "HtmlCollection",
+  "HtmlElement",
+  "HtmlInputElement",
+  "HtmlLabelElement",
+  "HtmlOptionElement",
+  "HtmlSelectElement",
+  "HtmlTableElement",
+  "HtmlTableRowElement",
+  "HtmlTableSectionElement",
+  "HtmlTextAreaElement",
+  "InputEvent",
+  "InputEventInit",
+  "KeyboardEvent",
+  "MouseEvent",
+  "MutationObserver",
+  "Node",
+  "NodeFilter",
+  "NodeList",
+  "Range",
+  "Request",
+  "RequestInit",
+  "ResizeObserver",
+  "Response",
+  "Selection",
+  "ShadowRoot",
+  "ShadowRootInit",
+  "ShadowRootMode",
+  "Text",
+  "TreeWalker",
+  "Window",
+  "console",
+] }
+
+[profile.release]
+# "z" over "s": measured by `cargo xtask build` on the empty entry points (phase 1); re-measure after phase 2.
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
