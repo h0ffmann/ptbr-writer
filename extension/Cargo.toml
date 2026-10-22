@@ -14,7 +14,7 @@ license = "MPL-2.0"
 crate-type = ["cdylib", "rlib"]
 
 [features]
-# The __TEST__ define of build.mjs: apiBase honored, localhost in the manifest.
+# The test build (`cargo xtask build --test`): apiBase honored, localhost and the e2e grants in the manifest.
 test-build = []
 
 [dependencies]
