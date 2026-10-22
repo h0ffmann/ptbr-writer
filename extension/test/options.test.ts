@@ -348,3 +348,94 @@ describe('popup settings', () => {
     expect((await loadSettings()).enabled).toBe(false);
   });
 });
+
+describe('text settings', () => {
+  const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as T;
+  const change = (sel: string, value: string) => {
+    const e = $<HTMLSelectElement>(sel);
+    e.value = value;
+    e.dispatchEvent(new Event('change'));
+  };
+  const optionTexts = (sel: string) => [...$<HTMLSelectElement>(sel).options].map((o) => o.textContent);
+
+  it('popup: the tone is saved at once', async () => {
+    await renderPopup(root());
+    change('#tone', 'formal');
+    await flush();
+    expect((await loadSettings()).tone).toBe('formal');
+  });
+  it('popup: tone options are capitalized, values unchanged; the rewrite label is O quanto corrigir', async () => {
+    await renderPopup(root());
+    expect(optionTexts('#tone')).toEqual(['Informal', 'Neutro', 'Formal']);
+    expect([...$<HTMLSelectElement>('#tone').options].map((o) => o.value)).toEqual(['informal', 'neutro', 'formal']);
+    expect($('#rewrite').closest('label')!.textContent).toContain('O quanto corrigir');
+  });
+  it('popup: Só erros saves rewrite false; the wait has 1, 2 and 3 s', async () => {
+    await renderPopup(root());
+    expect(optionTexts('#rewrite')).toEqual(['Só erros', 'Erros e reescrita']);
+    expect(optionTexts('#delay')).toEqual(['1 s', '2 s', '3 s']);
+    change('#rewrite', 'false');
+    await flush();
+    change('#delay', '3000');
+    await flush();
+    const s = await loadSettings();
+    expect(s.rewrite).toBe(false);
+    expect(s.delayMs).toBe(3000);
+  });
+  it('options: adding Kafka and then kafka leaves one entry', async () => {
+    await renderOptions(root());
+    for (const v of ['Kafka', 'kafka']) {
+      $<HTMLInputElement>('#new-never-fix').value = v;
+      $<HTMLButtonElement>('#add-never-fix').click();
+      await flush();
+    }
+    expect((await loadSettings()).neverFix).toEqual(['Kafka']);
+    expect($('#never-fix').textContent).toContain('Kafka');
+  });
+  it('options: Remover drops the entry', async () => {
+    store = { settings: { neverFix: ['Kafka', 'Redis'] } };
+    await renderOptions(root());
+    ($('#never-fix li button') as HTMLButtonElement).click();
+    await flush();
+    expect((await loadSettings()).neverFix).toEqual(['Redis']);
+  });
+  it('options: Add keeps an entry another tab wrote after the render', async () => {
+    await renderOptions(root());
+    store.settings = { neverFix: ['Redis'] };
+    $<HTMLInputElement>('#new-never-fix').value = 'Kafka';
+    $<HTMLButtonElement>('#add-never-fix').click();
+    await flush();
+    expect((await loadSettings()).neverFix).toEqual(['Redis', 'Kafka']);
+  });
+  it('options: Remover keeps an entry another tab wrote after the render', async () => {
+    store = { settings: { neverFix: ['Kafka'] } };
+    await renderOptions(root());
+    store.settings = { neverFix: ['Kafka', 'Redis'] };
+    ($('#never-fix li button') as HTMLButtonElement).click();
+    await flush();
+    expect((await loadSettings()).neverFix).toEqual(['Redis']);
+  });
+  it('options: an entry with markup is shown as text', async () => {
+    const evil = '<img src=x onerror=alert(1)>';
+    store = { settings: { neverFix: [evil] } };
+    await renderOptions(root());
+    expect($('#never-fix').querySelector('img')).toBeNull();
+    expect($('#never-fix').textContent).toContain(evil);
+  });
+  it('options: empty or long input shows a message and saves nothing', async () => {
+    await renderOptions(root());
+    for (const v of ['', 'um dois três quatro']) {
+      $<HTMLInputElement>('#new-never-fix').value = v;
+      $<HTMLButtonElement>('#add-never-fix').click();
+      await flush();
+      expect($('#never-fix-error').textContent).toBe('Use de 1 a 3 palavras.');
+    }
+    expect((await loadSettings()).neverFix).toEqual([]);
+  });
+  it('options: the selects save at once too', async () => {
+    await renderOptions(root());
+    change('#tone', 'informal');
+    await flush();
+    expect((await loadSettings()).tone).toBe('informal');
+  });
+});

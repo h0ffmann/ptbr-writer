@@ -4,10 +4,9 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { ProviderId, Settings } from '../src/types';
-import { startFakeServer, type FakeServer } from './fake-server';
+import { REWRITE_FIXED, TYPED, startFakeServer, type FakeServer } from './fake-server';
 
 const EXTENSION = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist-test');
-const TYPED = 'Foi decidido que o deploy vai ser na sexta.';
 const FIXED = 'A equipe decidiu que o deploy vai ser na sexta.';
 // How long the pipeline (debounce, service worker, fetch, render) may take before a test fails. The
 // wait ends as soon as the underline shows, so a fast run stays fast; a loaded machine (CI, parallel
@@ -26,6 +25,7 @@ test.afterAll(async () => {
   await server.close();
 });
 test.afterEach(async () => {
+  server.mode = 'default';
   await context?.close();
   if (profile) rmSync(profile, { recursive: true, force: true });
   context = undefined;
@@ -151,4 +151,34 @@ test('passar o mouse na palavra abre o cartão', async () => {
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.locator('.ptbr-card [data-action=accept]').click();
   await expect(page.locator('#field')).toHaveValue(FIXED);
+});
+
+test('frase reorganizada mostra só o amarelo', async () => {
+  server.mode = 'rewrite';
+  await launch('claude');
+  const page = await open('127.0.0.1', 'textarea.html');
+  await page.locator('#field').click();
+  await page.keyboard.type(TYPED);
+  const aviso = page.locator('.ptbr-underline-aviso');
+  await expect(aviso).toHaveCount(1, { timeout: UI_TIMEOUT });
+  await expect(page.locator('.ptbr-underline-erro')).toHaveCount(0);
+  await aviso.locator('.ptbr-hit').first().click();
+  await expect(page.locator('.ptbr-card')).toContainText('Reescrita');
+  await page.locator('.ptbr-card [data-action=accept]').click();
+  await expect(page.locator('#field')).toHaveValue(REWRITE_FIXED);
+});
+
+test('editor Lexical (como o do WhatsApp) aceita a correção e não chama a API de novo', async () => {
+  await launch('claude');
+  const page = await open('127.0.0.1', 'lexical.html');
+  await page.locator('#editor').click();
+  await page.keyboard.type(TYPED);
+  await accept(page);
+  const lexicalText = () => page.evaluate(() => (window as unknown as { lexicalText: () => string }).lexicalText());
+  await expect.poll(lexicalText).toBe(FIXED);
+  await expect(page.locator('#editor')).toHaveText(FIXED);
+  const calls = server.calls.length;
+  await page.waitForTimeout(2_500);
+  expect(await lexicalText()).toBe(FIXED);
+  expect(server.calls.length).toBe(calls);
 });

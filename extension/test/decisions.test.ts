@@ -5,9 +5,9 @@ import { CIENTIFICO, SKILL } from '../src/skills';
 const TEXT = 'Foi decidido que o deploy será feito. A equipe valida o build hoje.\nFoi decidido que o deploy será feito.';
 
 describe('rulesOf', () => {
-  it('reads PTW-1 to PTW-13 with their titles', () => {
+  it('reads PTW-1 to PTW-17 with their titles', () => {
     const r = rulesOf(SKILL, '## Regras (em desenvolvimento)');
-    expect(Object.keys(r)).toEqual(Array.from({ length: 13 }, (_, i) => `PTW-${i + 1}`));
+    expect(Object.keys(r)).toEqual(Array.from({ length: 17 }, (_, i) => `PTW-${i + 1}`));
     expect(r['PTW-1']).toBe('Quem faz, aparece');
   });
 });
@@ -31,7 +31,7 @@ describe('decideAsks', () => {
     expect(body.state).toBe('A equipe valida o build hoje.');
     expect(body.questions.regra.type).toBe('choice');
     expect(Object.keys(body.questions.regra.criteria)[0]).toBe('nenhuma');
-    expect(Object.keys(body.questions.regra.criteria)).toHaveLength(14);
+    expect(Object.keys(body.questions.regra.criteria)).toHaveLength(18);
   });
   it('científico adds the CIE rules', () => {
     const body = decideAsks('decima', 'científico', TEXT, SKILL, CIENTIFICO)[0].body as any;

@@ -1,4 +1,5 @@
 export type Level = 'estrito' | 'descritivo' | 'leve' | 'científico';
+export type Tone = 'informal' | 'neutro' | 'formal';
 export type ProviderId = 'claude' | 'deepseek' | 'ollama' | 'ollaya';
 export type Severity = 'erro' | 'aviso';
 // The conversation style of a rewrite, which Ollaya picks for Ollama (Settings.ollayaStyle).
@@ -27,9 +28,21 @@ export interface Settings {
   // A feature flag: Ollaya picks the style before Ollama writes. Off, or Ollaya down, Ollama writes alone.
   ollayaStyle: boolean;
   sites: Record<string, SiteConfig>; // key: hostname
+  tone: Tone;
+  rewrite: boolean; // true: errors and rewrites; false: errors only
+  neverFix: string[]; // 1 to 3 words each, at most 200
+  delayMs: 1000 | 2000 | 3000; // wait after the last keystroke
   apiBase?: Partial<Record<ProviderId, string>>; // honored only when __TEST__
 }
-export type CheckError = 'no-key' | 'local' | 'local-ollaya' | 'auth' | 'rate-limit' | 'provider' | 'network';
+export type CheckError =
+  | 'no-key'
+  | 'local'
+  | 'local-ollaya'
+  | 'auth'
+  | 'rate-limit'
+  | 'provider'
+  | 'network'
+  | 'reload';
 export interface CheckRequest {
   type: 'check';
   key: string;

@@ -1,3 +1,4 @@
+import { NEVER_FIX_MAX_WORDS } from '../never-fix';
 import type { CheckError, Located } from '../types';
 import { rangeFor, textModel } from './text';
 
@@ -78,6 +79,7 @@ const BADGE_LABEL: Record<CheckError, string> = {
   network: 'erro do provider',
   local: 'Ollama inacessível',
   'local-ollaya': 'Ollaya inacessível',
+  reload: 'recarregue a página',
 };
 
 interface Drawn {
@@ -85,6 +87,8 @@ interface Drawn {
   offset: number;
   onAccept: (l: Located) => void;
   onIgnore: (l: Located) => void;
+  titles: Record<string, string>;
+  onNeverFix?: (l: Located) => void;
   layer: HTMLElement;
   badge?: HTMLElement;
   // Where each underlined span is on screen (client coordinates), for the hover test.
@@ -176,7 +180,7 @@ function entry(el: HTMLElement): Drawn {
     const layer = el.ownerDocument.createElement('div');
     layer.className = 'ptbr-layer';
     root.appendChild(layer);
-    d = { located: [], offset: 0, onAccept: () => {}, onIgnore: () => {}, layer, badge: d?.badge, hits: [] };
+    d = { located: [], offset: 0, onAccept: () => {}, onIgnore: () => {}, titles: {}, layer, badge: d?.badge, hits: [] };
     drawn.set(el, d);
   }
   return d;
@@ -188,9 +192,10 @@ export function renderSuggestions(
   offset: number,
   onAccept: (l: Located) => void,
   onIgnore: (l: Located) => void,
+  extra: { titles?: Record<string, string>; onNeverFix?: (l: Located) => void } = {},
 ): void {
   const d = entry(el);
-  Object.assign(d, { located, offset, onAccept, onIgnore });
+  Object.assign(d, { located, offset, onAccept, onIgnore, titles: extra.titles ?? {}, onNeverFix: extra.onNeverFix });
   if (card?.el === el) closeCard();
   draw(el, d);
 }
@@ -290,7 +295,11 @@ function openCard(el: HTMLElement, l: Located, d: Drawn, hover = false) {
   node.setAttribute('role', 'dialog');
   const rule = doc.createElement('p');
   rule.className = 'ptbr-rule';
-  rule.textContent = l.rule;
+  // A local provider adds to the code (`PTW-3 (83%)`, `PTW-3 · estilo conciso`): the title is the code's.
+  const code = /^[A-Z]+-\d+/.exec(l.rule)?.[0] ?? l.rule;
+  const title = d.titles[code];
+  const rewritten = l.severity === 'aviso' && l.rule === 'PTW-17' && !l.detectOnly;
+  rule.textContent = rewritten ? 'Reescrita' : title ? `${l.rule} · ${title}` : l.rule;
   const change = doc.createElement('p');
   change.className = 'ptbr-change';
   const s = doc.createElement('s');
@@ -318,6 +327,11 @@ function openCard(el: HTMLElement, l: Located, d: Drawn, hover = false) {
   };
   if (!detect) actions.append(button('accept', 'Aceitar', () => d.onAccept(l)));
   actions.append(button('ignore', 'Ignorar', () => d.onIgnore(l)));
+  // A detection changes nothing, so the never-fix list has nothing to keep there.
+  if (!detect && d.onNeverFix && l.original.trim().split(/\s+/).length <= NEVER_FIX_MAX_WORDS) {
+    const never = d.onNeverFix;
+    actions.append(button('never', 'Sempre ignorar', () => never(l)));
+  }
   node.append(rule, change, actions);
   node.addEventListener('mousedown', (e) => e.preventDefault());
   overlayRoot(doc).appendChild(node);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyToString, dropOverlaps, locate, parseSuggestions } from '../src/suggestions';
+import { applyToString, dropOverlaps, filterSuggestions, locate, parseSuggestions } from '../src/suggestions';
 import type { Located, Suggestion } from '../src/types';
 
 const sug = (original: string, occurrence = 1, replacement = 'x'): Suggestion => ({
@@ -89,5 +89,60 @@ describe('applyToString', () => {
   it('aplica a troca', () => {
     const l: Located = { ...sug('Foi decidido', 1, 'A equipe decidiu'), start: 0, end: 12 };
     expect(applyToString('Foi decidido hoje', l)).toBe('A equipe decidiu hoje');
+  });
+});
+
+describe('filterSuggestions', () => {
+  const text = 'bomd ia tudo bem com vc. O relatório está pronto';
+  const mk = (original: string, replacement: string, severity: 'erro' | 'aviso'): Suggestion => ({
+    original,
+    replacement,
+    rule: 'PTW-1',
+    severity,
+    occurrence: 1,
+  });
+  const aviso = mk('bomd ia tudo bem com vc.', 'Bom dia, tudo bem com você.', 'aviso');
+  const erro = mk('vc', 'você', 'erro');
+  const on = { rewrite: true, neverFix: [] as string[] };
+
+  it('erro dentro de aviso: fica só o aviso', () => {
+    expect(filterSuggestions(text, [aviso, erro], on)).toEqual([aviso]);
+  });
+  it('só erros: fica só o erro', () => {
+    expect(filterSuggestions(text, [aviso, erro], { ...on, rewrite: false })).toEqual([erro]);
+  });
+  it('aviso não achado: o erro fica', () => {
+    const lost = mk('bomd  ia', 'Bom dia', 'aviso');
+    expect(filterSuggestions(text, [lost, erro], on)).toEqual([erro]);
+  });
+  it('lista: some o erro e o aviso que trocam a entrada', () => {
+    const keep = mk('O relatório está pronto', 'O relatório está pronto, vc', 'aviso');
+    const drop = mk('bomd ia tudo bem com vc.', 'Bom dia, tudo bem.', 'aviso');
+    expect(filterSuggestions(text, [erro], { rewrite: true, neverFix: ['vc'] })).toEqual([]);
+    expect(filterSuggestions(text, [drop], { rewrite: true, neverFix: ['vc'] })).toEqual([]);
+    expect(filterSuggestions(text, [keep], { rewrite: true, neverFix: ['vc'] })).toEqual([keep]);
+  });
+  it('lista: troca só de maiúscula também some; com a entrada intacta, fica', () => {
+    const t = 'falei com maria ontem';
+    const up = mk('maria', 'Maria', 'erro');
+    const comma = mk('maria', 'maria,', 'erro');
+    expect(filterSuggestions(t, [up], { rewrite: true, neverFix: ['maria'] })).toEqual([]);
+    expect(filterSuggestions(t, [comma], { rewrite: true, neverFix: ['maria'] })).toEqual([comma]);
+  });
+  it('aviso descartado pela lista devolve os seus erros', () => {
+    const drop = mk('bomd ia tudo bem com vc.', 'Bom dia, tudo bem com você.', 'aviso');
+    const bomd = mk('bomd ia', 'bom dia', 'erro');
+    expect(filterSuggestions(text, [drop, bomd], { rewrite: true, neverFix: ['vc'] })).toEqual([bomd]);
+  });
+  it('aviso que atravessa uma quebra de linha some e devolve os seus erros', () => {
+    const t = 'bomd ia tudo\nbem com vc.';
+    const across = mk('bomd ia tudo\nbem com vc.', 'Bom dia, tudo bem com você?', 'aviso');
+    const bomd = mk('bomd ia', 'bom dia', 'erro');
+    expect(filterSuggestions(t, [across, bomd], on)).toEqual([bomd]);
+  });
+  it('sobreposição parcial: fica só o primeiro, sem erro', () => {
+    const a = mk(text.slice(0, 10), 'A', 'aviso');
+    const e = mk(text.slice(5, 15), 'E', 'erro');
+    expect(filterSuggestions(text, [a, e], on)).toEqual([a]);
   });
 });

@@ -22,7 +22,7 @@ describe('buildRequest', () => {
     const body = JSON.parse(init.body as string);
     expect(body).toEqual({
       model: base.models.claude,
-      max_tokens: 1024,
+      max_tokens: 2048,
       temperature: 0,
       system: 'SYS',
       messages: [{ role: 'user', content: 'USER' }],
@@ -38,7 +38,9 @@ describe('buildRequest', () => {
     const body = JSON.parse(init.body as string);
     expect(body.model).toBe(base.models.deepseek);
     expect(body.temperature).toBe(0);
-    expect(body.max_tokens).toBe(1024);
+    expect(body.max_tokens).toBe(2048);
+    // deepseek-flash and deepseek-v4-pro think by default, and the thinking counts against max_tokens.
+    expect(body.thinking).toEqual({ type: 'disabled' });
     expect(body.messages[0]).toEqual({ role: 'system', content: 'SYS' });
     expect(body.messages[1]).toEqual({ role: 'user', content: 'USER' });
   });

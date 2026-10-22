@@ -3,7 +3,7 @@ import { buildRequest, classifyError, decideRequests, isTruncated, readText, sty
 import { buildSystemPrompt } from './rules';
 import { DEFAULT_SETTINGS, isLocal, levelFor, loadSettings } from './settings';
 import { CIENTIFICO, SKILL } from './skills';
-import { parseSuggestions } from './suggestions';
+import { filterSuggestions, parseSuggestions } from './suggestions';
 import type { CheckError, CheckRequest, CheckResult, Settings, Style, Suggestion } from './types';
 
 const inflight = new Map<string, AbortController>();
@@ -24,7 +24,12 @@ export async function handleCheck(
     if (provider === 'ollaya') return await checkDecisions(req, deps, controller.signal);
     const style = provider === 'ollama' && settings.ollayaStyle ? await pickStyle(req.text, deps, controller.signal) : null;
     if (controller.signal.aborted) return { ok: true, suggestions: [] };
-    const system = buildSystemPrompt(req.level, SKILL, CIENTIFICO, style);
+    const system = buildSystemPrompt(req.level, SKILL, CIENTIFICO, {
+      tone: settings.tone,
+      rewrite: settings.rewrite,
+      neverFix: settings.neverFix,
+      style,
+    });
     const { url, init } = buildRequest(provider, settings, system, req.text);
     let res: Response;
     try {
@@ -46,7 +51,7 @@ export async function handleCheck(
     }
     if (controller.signal.aborted) return { ok: true, suggestions: [] };
     if (isTruncated(provider, json)) return { ok: false, error: 'provider' };
-    const suggestions = parseSuggestions(readText(provider, json));
+    const suggestions = filterSuggestions(req.text, parseSuggestions(readText(provider, json)), settings);
     // The card says which style Ollaya chose, so the rewrite's tone has a visible reason.
     return { ok: true, suggestions: style ? suggestions.map((s) => ({ ...s, rule: `${s.rule} · estilo ${style}` })) : suggestions };
   } finally {
@@ -99,7 +104,8 @@ async function checkDecisions(
   if (signal.aborted) return { ok: true, suggestions: [] };
   const failed = results.find((r) => 'error' in r);
   if (failed && 'error' in failed) return { ok: false, error: failed.error };
-  return { ok: true, suggestions: results.flatMap((r) => ('found' in r && r.found ? [r.found] : [])) };
+  const found = results.flatMap((r) => ('found' in r && r.found ? [r.found] : []));
+  return { ok: true, suggestions: filterSuggestions(req.text, found, deps.settings) };
 }
 
 // The part of chrome.runtime.MessageSender the gate reads.

@@ -36,7 +36,7 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 
 - `SKILL.md` — the skill prompt consumed by OpenCode / Claude Code.
 - `skills/ptbr/SKILL.md` — a symlink to `SKILL.md`: the alias `/ptbr`. Edit `SKILL.md`, never the link.
-- `skills/cientifico/SKILL.md` — the scientific-writing skill (rules CIE); applies PTW-1..13 and adds its own.
+- `skills/cientifico/SKILL.md` — the scientific-writing skill (rules CIE); applies PTW-1..17 and adds its own.
 - `skills/bipr/SKILL.md` — `/bipr`: the branch's commits to a pushed PR with a bilingual body (pt-BR, then the English mirror); user-invoked only (`disable-model-invocation`). The PR body ends with `skills/bipr/footer.md` (the favicon and "Generated with h0ffmann/ptbr-writer bipr skill"), kept out of SKILL.md because a skill body has no links; the skill may later move to a devkit or skills repo.
 - `scripts/install_current.sh` — installs the plugin from the tip of main (or `PTBR_REF`), no release: removes the old install and marketplace, installs again (main keeps the last version number, so `plugin update` sees nothing). For trying unreleased work; the tag stays the stable install.
 - `.mcp.json` + `scripts/firefox-mcp.sh` — the Firefox MCP (Mozilla's `@mozilla/firefox-devtools-mcp`, pinned in the script, throwaway profile; on Ubuntu the snap's real binary, since geckodriver cannot start the `/usr/bin/firefox` wrapper): lets an agent install `extension/dist-firefox` (`install_extension`, type `path`) and drive the page. A dev tool, not part of the plugin.
@@ -134,8 +134,14 @@ so; check the file before you repeat one.
 - Planned levels, outside `SKILL.md`: `site/data/planned.tsv`.
 
 **Browser extension.**
-- A check runs after 1 s without typing, on fields of 3 words or more; password fields are skipped,
-  Gmail's quoted history is not sent, and above 4000 characters only the cursor's paragraph goes.
+- A check runs after the chosen wait without typing (1, 2 or 3 s; 1 s by default), on fields of 3
+  words or more; password fields are skipped, Gmail's quoted history is not sent, and above 4000
+  characters only the cursor's paragraph goes.
+- Red underlines PTW-14 to PTW-16 and the other rules (`erro`); yellow is a PTW-17 rewritten sentence
+  (`aviso`, card **Reescrita**), and no red shows inside a yellow one. Settings: tone (informal,
+  neutro, formal), how much to fix (errors and rewrite, or errors only), the wait, and the "never
+  fix" list (up to 200 entries of 1 to 3 words; the card's **Sempre ignorar** adds one). An Ollaya
+  detection has no replacement, so "errors only" and the never-fix list keep it.
 - Default models: `claude-haiku-5-5`; `deepseek-flash` (⚠ read in DeepSeek's docs on 2026-10-21).
   Keys stay in `chrome.storage.local`. On by default: `web.whatsapp.com` (`leve`),
   `mail.google.com` and `github.com` (`descritivo`); other https sites by **Ativar neste site**.

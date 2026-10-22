@@ -70,7 +70,10 @@ Uma extensão, ainda sem release, sublinha no campo onde você escreve o que o n
 2. Em `chrome://extensions`, ligue o **Modo do desenvolvedor** e carregue `extension/dist/`.
 3. No popup, escolha o provider e o modelo e clique em **Salvar**.
 
-Nada muda no texto sem o seu clique em **Aceitar**. O Firefox 128+ usa `just ext-build-firefox`
+Nada muda no texto sem o seu clique em **Aceitar**. O vermelho marca ortografia, pontuação,
+concordância e as demais regras; o amarelo, uma frase reorganizada (cartão **Reescrita**). Nas
+configurações: o tom, o quanto corrigir, a espera e a lista "nunca corrigir" (**Sempre ignorar**).
+O Firefox 128+ usa `just ext-build-firefox`
 ([guia](docs/EXTENSION_FIREFOX.md)). Os providers:
 
 - **Claude ou DeepSeek:** com a sua chave.
@@ -120,7 +123,7 @@ Para mudar, edite o arquivo ou escreva `ptbr reconfigurar`. O pedido vence o arq
 
 ## regras
 
-As regras PTW-1 a PTW-13 estão na [`SKILL.md`](SKILL.md). A skill `cientifico` acrescenta as
+As regras PTW-1 a PTW-17 estão na [`SKILL.md`](SKILL.md). A skill `cientifico` acrescenta as
 regras CIE. O [site](https://h0ffmann.github.io/ptbr-writer/) mostra cada regra com a sua origem,
 o roadmap, os projetos relacionados e as figuras:
 
@@ -153,6 +156,7 @@ just quality     # tudo o que o CI checa
 - PTW-1 a PTW-8: o PTC de @kayquer (MIT).
 - PTW-9 a PTW-13: a skill `ouro-paper` de marola-dev/marola-research e o "Audience and evidence" de
   h0ffmann/ww3-gpu.
+- PTW-14 a PTW-17: pedido de @robkler.
 - Skill científica: `scientific-writing` de K-Dense-AI/scientific-agent-skills (MIT, Copyright (c)
   2025 K-Dense Inc.) e `artigo` de labdaps/labskills (MIT, Copyright (c) 2026 LABDAPS), em palavras
   próprias. Citação pedida: Kassis, T. et al. (2026), *Scientific Agent Skills*, arXiv:2609.00065.

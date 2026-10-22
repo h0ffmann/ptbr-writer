@@ -22,10 +22,16 @@ beforeEach(() => {
   vi.useFakeTimers();
   store = {};
   listeners = [];
-  send.mockClear();
+  send.mockReset().mockImplementation(async () => ({ ok: true, suggestions: [] }));
   (globalThis as any).chrome = {
     storage: {
-      local: { get: async () => store },
+      local: {
+        get: async () => store,
+        set: async (v: Record<string, unknown>) => {
+          Object.assign(store, v);
+          for (const l of listeners) l({ settings: {} }, 'local');
+        },
+      },
       onChanged: {
         addListener: (l: Listener) => listeners.push(l),
         removeListener: (l: Listener) => (listeners = listeners.filter((x) => x !== l)),
@@ -53,6 +59,49 @@ const type = (el: HTMLTextAreaElement, v: string) => {
 };
 
 describe('startContent', () => {
+  it('a tab left with the old script after the extension reloads says to reload the page', async () => {
+    site(true);
+    send.mockImplementation(async () => {
+      throw new Error('Extension context invalidated.');
+    });
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    type(el, 'um dois três quatro');
+    await vi.advanceTimersByTimeAsync(1000);
+    const badge = document.getElementById('ptbr-writer-root')?.shadowRoot?.querySelector('.ptbr-badge');
+    expect(badge?.textContent).toBe('recarregue a página');
+  });
+
+  it('any other send failure still shows a provider error', async () => {
+    site(true);
+    send.mockImplementation(async () => {
+      throw new Error('boom');
+    });
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    type(el, 'um dois três quatro');
+    await vi.advanceTimersByTimeAsync(1000);
+    const badge = document.getElementById('ptbr-writer-root')?.shadowRoot?.querySelector('.ptbr-badge');
+    expect(badge?.textContent).toBe('erro do provider');
+  });
+
+  it('follows a new wait: no call before it, one call after it', async () => {
+    site(true);
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    store.settings = { sites: { [location.hostname]: { enabled: true, level: 'descritivo' } }, delayMs: 2000 };
+    for (const l of listeners) l({ settings: {} }, 'local');
+    await vi.advanceTimersByTimeAsync(0);
+    type(el, 'um dois três quatro');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(send).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
   it('stops sending once the site is switched off', async () => {
     site(true);
     dispose = await startContent();
@@ -154,6 +203,21 @@ describe('accepting one of several suggestions', () => {
     expect(send).toHaveBeenCalledTimes(1);
   });
 
+  it('a save that only changes neverFix keeps the underlines and does not call the API again', async () => {
+    site(true);
+    send.mockImplementation(async () => ({ ok: true, suggestions }) as never);
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    type(el, TEXT);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(shadow().querySelectorAll('.ptbr-underline-erro').length).toBe(3);
+    await chrome.storage.local.set({ settings: { ...(store.settings as object), neverFix: ['Kafka'] } });
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(shadow().querySelectorAll('.ptbr-underline-erro').length).toBe(3);
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
   it('typing again after accepting clears and checks everything again', async () => {
     site(true);
     send.mockImplementation(async () => ({ ok: true, suggestions }) as never);
@@ -167,5 +231,43 @@ describe('accepting one of several suggestions', () => {
     expect(shadow().querySelectorAll('.ptbr-underline-erro').length).toBe(0);
     await vi.advanceTimersByTimeAsync(1000);
     expect(send).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('Sempre ignorar', () => {
+  it('saves the original in neverFix, drops the underline and does not call the API again', async () => {
+    site(true);
+    send.mockImplementation(
+      async () => ({ ok: true, suggestions: [{ original: 'a nível de', replacement: 'da', rule: 'PTW-5', severity: 'erro', occurrence: 1 }] }) as never,
+    );
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    type(el, 'O deploy a nível de equipe sai na sexta.');
+    await vi.advanceTimersByTimeAsync(1000);
+    const shadow = document.getElementById('ptbr-writer-root')!.shadowRoot!;
+    (shadow.querySelector('.ptbr-underline-erro') as HTMLElement).click();
+    (shadow.querySelector('.ptbr-card [data-action="never"]') as HTMLElement).click();
+    await vi.advanceTimersByTimeAsync(2000);
+    expect((store.settings as { neverFix: string[] }).neverFix).toEqual(['a nível de']);
+    expect(shadow.querySelectorAll('.ptbr-underline-erro').length).toBe(0);
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('card titles', () => {
+  it('a CIE card shows the title from cientifico/SKILL.md', async () => {
+    site(true, 'científico');
+    send.mockImplementation(
+      async () => ({ ok: true, suggestions: [{ original: 'aumentou 40%', replacement: 'aumentou', rule: 'CIE-1', severity: 'erro', occurrence: 1 }] }) as never,
+    );
+    dispose = await startContent();
+    const el = textarea();
+    el.focus();
+    type(el, 'O uso da ferramenta aumentou 40% no trimestre.');
+    await vi.advanceTimersByTimeAsync(1000);
+    const shadow = document.getElementById('ptbr-writer-root')!.shadowRoot!;
+    (shadow.querySelector('.ptbr-underline-erro') as HTMLElement).click();
+    expect(shadow.querySelector('.ptbr-card .ptbr-rule')?.textContent).toBe('CIE-1 · Nada inventado');
   });
 });

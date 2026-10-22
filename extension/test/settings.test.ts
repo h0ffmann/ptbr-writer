@@ -96,3 +96,35 @@ describe('loadSettings', () => {
     expect(await loadSettings()).toEqual(s);
   });
 });
+
+describe('new settings', () => {
+  it('defaults', () => {
+    expect(DEFAULT_SETTINGS.tone).toBe('neutro');
+    expect(DEFAULT_SETTINGS.rewrite).toBe(true);
+    expect(DEFAULT_SETTINGS.neverFix).toEqual([]);
+    expect(DEFAULT_SETTINGS.delayMs).toBe(1000);
+  });
+  it('empty storage gives the new defaults', async () => {
+    stub({});
+    const s = await loadSettings();
+    expect({ tone: s.tone, rewrite: s.rewrite, neverFix: s.neverFix, delayMs: s.delayMs }).toEqual({
+      tone: 'neutro',
+      rewrite: true,
+      neverFix: [],
+      delayMs: 1000,
+    });
+  });
+  it('values outside the list fall back to the defaults', async () => {
+    stub({ settings: { tone: 'gritado', delayMs: 5000, rewrite: 'sim', neverFix: 'x' } });
+    const s = await loadSettings();
+    expect(s.tone).toBe('neutro');
+    expect(s.delayMs).toBe(1000);
+    expect(s.rewrite).toBe(true);
+    expect(s.neverFix).toEqual([]);
+  });
+  it('valid stored values are kept', async () => {
+    stub({ settings: { tone: 'formal', delayMs: 3000, rewrite: false, neverFix: ['Kafka'] } });
+    const s = await loadSettings();
+    expect(s).toMatchObject({ tone: 'formal', delayMs: 3000, rewrite: false, neverFix: ['Kafka'] });
+  });
+});

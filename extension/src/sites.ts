@@ -84,3 +84,11 @@ export async function saveProviderFields(f: {
     models: { ...s.models, [p]: isLocal(p) || MODELS[p].includes(f.model) ? f.model || s.models[p] : s.models[p] },
   });
 }
+
+/** Saves tone, rewrite, wait or the never-fix list; every other setting stays. */
+export async function saveTextSettings(
+  f: Partial<Pick<Settings, 'tone' | 'rewrite' | 'delayMs' | 'neverFix'>>,
+): Promise<void> {
+  const s = await loadSettings();
+  await saveSettings({ ...s, ...f });
+}
