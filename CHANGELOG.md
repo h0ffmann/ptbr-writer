@@ -5,6 +5,9 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- O site embute o whitepaper em pt-BR numa seção própria (`#whitepaper`), como o site do closed-source
+  embute o artigo dele: o PDF num quadro, carregado sob demanda, com links para abrir e baixar onde o
+  quadro não aparece. A pílula do pt-BR sai da capa; a do inglês fica.
 - A v0.3.0 tem DOI no Zenodo, como preprint. O `CITATION.cff` traz o DOI de conceito, que sempre leva
   à versão mais recente, e o da v0.3.0. Os READMEs ganham um selo do Zenodo, e a pílula do site leva
   ao DOI de conceito; nenhum dos dois mostra o número.

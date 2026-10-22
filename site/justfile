@@ -40,7 +40,7 @@ ci: content
     gleam format --check src/ptbr_writer_site/app.gleam src/ptbr_writer_site/page.gleam src/ptbr_writer_site/prerender.gleam src/ptbr_writer_site/bipr.gleam test
     gleam test
     just build
-    for id in instalar uso niveis regras saida smart-note limites receitas figuras eli5 awesome roadmap; do grep -q "id=\"$id\"" dist/index.html || { echo "site: no #$id in index.html" >&2; exit 1; }; done
+    for id in instalar whitepaper uso niveis regras saida smart-note limites receitas figuras eli5 awesome roadmap; do grep -q "id=\"$id\"" dist/index.html || { echo "site: no #$id in index.html" >&2; exit 1; }; done
     test -s dist/grafo/graph.html && test -s dist/grafo/picasso.html && test -s dist/grafo/extensao.html || { echo "site: no grafo/graph.html, grafo/picasso.html or grafo/extensao.html" >&2; exit 1; }
     test -s dist/bipr.html && test -s dist/img/bipr-pr49-corpo.png && test -s dist/img/bipr-pr49-rodape.png || { echo "site: no bipr.html or its screenshots" >&2; exit 1; }
     # Each graph page hops to the other: "↗ picasso" on ours, "← ptbr-writer" on picasso.html.
