@@ -89,7 +89,8 @@ Nothing in the text changes without your click on **Aceitar** (accept). Firefox 
 **🔊 Sound**, off by default, in the popup and the options: a short cue when suggestions appear, on
 accept, on ignore and on an error, and a 🔊 on the card that reads the suggestion aloud. The cues are
 made in code, with no audio file, and the reading uses only a local pt-BR voice of the system: no
-text goes to a voice server.
+text goes to a voice server. The impact: +3,740 bytes in the extension and, when on, ~22 to 46 ms
+on the first cue ([`docs/EXTENSION_SOUND.md`](docs/EXTENSION_SOUND.md), pt-BR).
 
 ## use
 

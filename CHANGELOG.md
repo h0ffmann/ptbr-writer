@@ -5,6 +5,10 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- O impacto do som, medido: +3 740 bytes na extensão (+1 883 com gzip) e, ligado, entre 21,8 e 45,8 ms
+  no primeiro efeito e menos de 0,2 ms nos seguintes (`docs/EXTENSION_SOUND.md`). `just ext-size` mede o
+  tamanho de cada arquivo da extensão, e `just ext-bench-sound` mede o som no Chromium.
+
 - A extensão ganha **🔊 Som** (#55), desligado por padrão, no popup e nas opções: um efeito curto
   quando aparecem sugestões, ao aceitar, ao ignorar e num erro, e um 🔊 no cartão que lê a sugestão em
   voz alta. Os efeitos são tons gerados com a Web Audio API, sem arquivo de som nem licença de
