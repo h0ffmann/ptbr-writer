@@ -159,6 +159,16 @@ describe('provider, key and model', () => {
     expect($('#pull-status').textContent).toBe('pronto');
   });
 
+  it('the sound switch is off by default and saves on the click', async () => {
+    await renderOptions(root());
+    const box = $<HTMLInputElement>('#sound');
+    expect(box.checked).toBe(false);
+    box.checked = true;
+    box.dispatchEvent(new Event('change'));
+    await flush();
+    expect((await loadSettings()).sound).toBe(true);
+  });
+
   it('Ollaya + Ollama: the style flag shows only with Ollama, asks for 11435 and saves on the click', async () => {
     await renderOptions(root());
     const row = $<HTMLInputElement>('#ollaya-style').closest('label') as HTMLElement;

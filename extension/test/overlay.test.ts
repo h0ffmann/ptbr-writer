@@ -88,6 +88,31 @@ describe('renderSuggestions', () => {
     expect(card.textContent).toContain(aviso.original);
   });
 
+  it('🔊 reads the suggestion and keeps the card open; with no local voice it says so', () => {
+    const el = editable();
+    const onSpeak = vi.fn(() => true);
+    renderSuggestions(el, [erro], 0, vi.fn(), vi.fn(), onSpeak);
+    const root = overlayRoot();
+    (root.querySelector('.ptbr-underline-erro') as HTMLElement).click();
+    const b = root.querySelector('[data-action="speak"]') as HTMLButtonElement;
+    expect(b.getAttribute('aria-label')).toBe('Ouvir a sugestão');
+    b.click();
+    expect(onSpeak).toHaveBeenCalledWith(erro);
+    expect(root.querySelector('.ptbr-card')).not.toBeNull();
+    onSpeak.mockReturnValue(false);
+    b.click();
+    expect(b.disabled).toBe(true);
+    expect(b.title).toBe('Sem voz pt-BR local nesta máquina');
+  });
+
+  it('no 🔊 on the card with the sound off', () => {
+    const el = editable();
+    renderSuggestions(el, [erro], 0, vi.fn(), vi.fn());
+    const root = overlayRoot();
+    (root.querySelector('.ptbr-underline-erro') as HTMLElement).click();
+    expect(root.querySelector('[data-action="speak"]')).toBeNull();
+  });
+
   it('calls onIgnore from the card', () => {
     const el = editable();
     const onIgnore = vi.fn();

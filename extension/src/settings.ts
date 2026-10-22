@@ -22,6 +22,7 @@ export const DEFAULT_SETTINGS: Settings = {
     ollaya: 'decima',
   },
   ollayaStyle: false,
+  sound: false,
   sites: {
     'web.whatsapp.com': { enabled: true, level: 'leve' },
     'mail.google.com': { enabled: true, level: 'descritivo' },

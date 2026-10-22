@@ -5,6 +5,11 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- A extensão ganha **🔊 Som** (#55), desligado por padrão, no popup e nas opções: um efeito curto
+  quando aparecem sugestões, ao aceitar, ao ignorar e num erro, e um 🔊 no cartão que lê a sugestão em
+  voz alta. Os efeitos são tons gerados com a Web Audio API, sem arquivo de som nem licença de
+  terceiros (`extension/src/content/sound.ts`); a leitura usa só uma voz pt-BR com `localService`, e
+  as vozes remotas do Chrome nunca são usadas. Não há servidor.
 - A v0.3.0 tem DOI no Zenodo, como preprint. O `CITATION.cff` traz o DOI de conceito, que sempre leva
   à versão mais recente, e o da v0.3.0. Os READMEs ganham um selo do Zenodo, e a pílula do site leva
   ao DOI de conceito; nenhum dos dois mostra o número.
