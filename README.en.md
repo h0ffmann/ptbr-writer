@@ -31,7 +31,7 @@
 **Claude Code plugin flow.** The browser extension and the local model have their own figures, in
 [use](#extension-figures).
 
-![Claude Code plugin flow (labels in Portuguese): you write ptbr; the first time, 4 questions saved in ptbr-writer.toml; then the ptbr-writer skill (or cientifico, if the text needs sources) writes one text per level and language; the output is the reply in the console and, if asked, .txt, .md, .pdf or notes files in the folder.](docs/img/em-um-minuto.png)
+![Claude Code plugin flow: you write ptbr; the first time, 4 questions saved in ptbr-writer.toml; then the ptbr-writer skill (or cientifico, if the text needs sources) writes one text per level and language; the output is the reply in the console and, if asked, .txt, .md, .pdf or notes files in the folder.](docs/img/en/em-um-minuto.png)
 
 <details open>
 <summary>How to read this figure</summary>
@@ -45,15 +45,14 @@ is the configuration and the files. A labelled arrow says when the path applies.
 orange border is where you come in or what you get back.
 
 **Not shown.** The levels and the rules (PTW and CIE), the `smart-note` level, the
-`ptbr reconfigurar` request and the routing skill `ptbr-routing`, which is outside the plugin. The
-figure is in Portuguese in both READMEs: its words are the plugin's own (`ptbr:`,
-`ptbr-writer.toml`, the file names), and one drawing keeps the two pages saying the same.
+`ptbr reconfigurar` request and the routing skill `ptbr-routing`, which is outside the plugin.
+The English drawing is the twin of the Portuguese one: same boxes and arrows, only the words change.
 
 **Evidence.** The 4 questions, `ptbr-writer.toml`, the formats and the languages:
 [`labs/ptbr-tools`](https://github.com/h0ffmann/picasso/tree/main/labs/ptbr-tools) (`ptbr-ask-levels`). The
 `cientifico` skill for sourced text and the output format: [`SKILL.md`](SKILL.md) and
 [`skills/cientifico/SKILL.md`](skills/cientifico/SKILL.md). Source of the figure:
-[`docs/archify/em-um-minuto.json`](docs/archify/em-um-minuto.json); `just figure` draws it again.
+[`docs/archify/en/em-um-minuto.json`](docs/archify/en/em-um-minuto.json); `just figure` draws it again.
 Whether Claude picks `cientifico` by itself, from its description, was not measured ⚠.
 
 </details>
@@ -212,7 +211,7 @@ binary ([run](https://github.com/h0ffmann/ptbr-writer/actions/runs/39537436728))
 
 The time depends on the network. From the second run on, Nix reuses the store.
 
-![Where the .pdf comes from: to-pdf.sh uses pandoc and xelatex if present; otherwise it downloads, through Nix, picasso at the commit to-pdf.sh pins (PICASSO_REV), whose labs/ptbr-pdf compiles the to-pdf 0.1.0 crate, with pulldown-cmark 0.13.4, typst 0.15.1 and typst-as-lib 0.17.0 and 6 embedded fonts.](docs/img/pdf-dependencias.png)
+![Where the .pdf comes from: to-pdf.sh uses pandoc and xelatex if present; otherwise it downloads, through Nix, picasso at the commit to-pdf.sh pins (PICASSO_REV), whose labs/ptbr-pdf compiles the to-pdf 0.1.0 crate, with pulldown-cmark 0.13.4, typst 0.15.1 and typst-as-lib 0.17.0 and 6 embedded fonts.](docs/img/en/pdf-dependencias.png)
 
 <details open>
 <summary>How to read this figure</summary>
@@ -223,7 +222,7 @@ a Rust binary that Nix compiles from a fixed picasso commit, with each library a
 
 **How to read.** Left to right. The middle lane is the path without pandoc; the bottom one, the
 binary's Rust libraries; the top one, the local path and the finished file. A box with an orange
-border is where a path starts or ends. The labels are in Portuguese, as in the first figure.
+border is where a path starts or ends.
 
 **Not shown.** The dependencies of the dependencies (`Cargo.lock` has over 3000 lines), the
 `flake.lock` of `labs/ptbr-pdf` and Nix itself.
@@ -233,7 +232,7 @@ border is where a path starts or ends. The labels are in Portuguese, as in the f
 dependencies), `labs/ptbr-pdf/Cargo.lock` (`pulldown-cmark` 0.13.4, `typst`, `typst-layout` and
 `typst-pdf` 0.15.1, `typst-as-lib` 0.17.0, `to-pdf` 0.1.0) and `labs/ptbr-pdf/fonts/` (six files:
 Libertinus Serif and DejaVu Sans Mono). Source of the figure:
-[`docs/archify/pdf-dependencias.json`](docs/archify/pdf-dependencias.json). That `to-pdf.sh` and
+[`docs/archify/en/pdf-dependencias.json`](docs/archify/en/pdf-dependencias.json). That `to-pdf.sh` and
 the commit pinned in `forks/picasso` agree, `just pins` checks.
 
 </details>
@@ -258,7 +257,7 @@ providers; Gmail and GitHub have not been tested with their real editors yet.
 <a id="extension-figures"></a>
 **Browser extension flow.**
 
-![Browser extension flow (labels in Portuguese): in Chrome or Firefox, a field with 3 words and 1 s idle asks for a review; the extension adds the rules of the site's level and calls the chosen provider, which is one of three modes: API key (Claude or DeepSeek), Ollama + Qwen on this machine, or Ollaya, still planned; the suggestions come back as underlines, and Aceitar (accept) replaces the span in the field.](docs/img/extensao-fluxo.png)
+![Browser extension flow: in Chrome or Firefox, a field with 3 words and 1 s idle asks for a review; the extension adds the rules of the site's level and calls the chosen provider, which is one of three modes: API key (Claude or DeepSeek), Ollama + Qwen on this machine, or Ollaya, still planned; the suggestions come back as underlines, and Aceitar (accept) replaces the span in the field.](docs/img/en/extensao-fluxo.png)
 
 <details open>
 <summary>How to read this figure</summary>
@@ -280,7 +279,7 @@ site's level and the rules: `extension/src/background.ts` (`levelFor`, `buildSys
 providers: `extension/src/providers.ts` and `extension/src/provider-fields.ts`. **Aceitar**:
 `extension/src/content/overlay.ts`. Ollaya: issue
 [#61](https://github.com/h0ffmann/ptbr-writer/issues/61). Source of the figure:
-[`docs/archify/extensao-fluxo.json`](docs/archify/extensao-fluxo.json).
+[`docs/archify/en/extensao-fluxo.json`](docs/archify/en/extensao-fluxo.json).
 
 </details>
 
@@ -291,7 +290,7 @@ providers: `extension/src/providers.ts` and `extension/src/provider-fields.ts`. 
 > right ([#63](https://github.com/h0ffmann/ptbr-writer/issues/63)). Prefer to download the model
 > first, with `just ext-ollama`.
 
-![Local model flow (labels in Portuguese): you pick Ollama + Qwen in the popup; the browser asks for the 127.0.0.1:11434 permission in that click; once granted, the extension reads the models already downloaded from /api/tags and adds them to the suggested ones, from the LLM qwen3.6:27b to the SLM qwen3:4b; a model already downloaded goes to /api/chat, whose suggestions become underlines on the page; a model not downloaded goes through Baixar (/api/pull, very experimental, #63), which reads the list again; if Ollama is down or answers 403, the field shows the Ollama inacessível badge.](docs/img/modelo-local.png)
+![Local model flow: you pick Ollama + Qwen in the popup; the browser asks for the 127.0.0.1:11434 permission in that click; once granted, the extension reads the models already downloaded from /api/tags and adds them to the suggested ones, from the LLM qwen3.6:27b to the SLM qwen3:4b; a model already downloaded goes to /api/chat, whose suggestions become underlines on the page; a model not downloaded goes through Baixar (/api/pull, very experimental, #63), which reads the list again; if Ollama is down or answers 403, the field shows the Ollama inacessível badge.](docs/img/en/modelo-local.png)
 
 <details open>
 <summary>How to read this figure</summary>
@@ -312,7 +311,7 @@ experimental. "LLM" is the large model (`qwen3.6:27b`, 18 GB) and "SLM" the smal
 `classifyError`), `extension/src/provider-fields.ts` (the list and **Baixar**) and
 `extension/src/settings.ts` (the suggested models). The sizes come from
 [`docs/EXTENSION_FIREFOX.md`](docs/EXTENSION_FIREFOX.md). ⚠ No review with a Qwen 3 was measured.
-Source of the figure: [`docs/archify/modelo-local.json`](docs/archify/modelo-local.json).
+Source of the figure: [`docs/archify/en/modelo-local.json`](docs/archify/en/modelo-local.json).
 
 </details>
 

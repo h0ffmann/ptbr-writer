@@ -128,19 +128,19 @@ figure-init:
     git -C vendor/archify sparse-checkout set --no-cone /archify/
     @echo "figure-init: $(git -C vendor/archify rev-parse --short HEAD)"
 
-# Draw every docs/archify/<slug>.json to docs/img/<slug>.png: Archify validates and checks it (finalize),
+# Draw every docs/archify/<slug>.json to docs/img/<slug>.png, and its English twin docs/archify/en/<slug>.json to docs/img/en/<slug>.png: Archify validates and checks it (finalize),
 # picasso's look (docs/archify/picasso.css) goes over it, headless Chrome takes the picture. Needs node,
 # Chrome (CHROME names another) and the Google Fonts; writes docs/archify/figures.lock.
 figure: figure-init
     #!/usr/bin/env bash
     set -euo pipefail
-    mkdir -p build/figure docs/img
-    for src in docs/archify/*.json; do
-        slug="$(basename "$src" .json)"; out="build/figure/$slug"
+    mkdir -p build/figure docs/img/en
+    for src in docs/archify/*.json docs/archify/en/*.json; do
+        slug="${src#docs/archify/}"; slug="${slug%.json}"; out="build/figure/$slug"
         rm -rf "$out"; mkdir -p "$out"
         ARCHIFY_UPDATE_CHECK_DISABLED=1 node vendor/archify/archify/bin/archify.mjs finalize "$(jq -r .diagram_type "$src")" "$src" "$out/page.html" --out-dir "$out/receipts" --quality showcase
         read -r w h < <(grep -o '<svg viewBox="[^"]*"' "$out/page.html" | head -1 | sed -E 's/.*0 0 ([0-9.]+) ([0-9.]+)"/\1 \2/')
-        crop="$(awk -F'\t' -v s="$slug" '$1==s {print $2}' docs/archify/crop.tsv)"; h="${crop:-$h}"
+        crop="$(awk -F'\t' -v s="$(basename "$slug")" '$1==s {print $2}' docs/archify/crop.tsv)"; h="${crop:-$h}"
         FONTS='<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Inter:wght@400;600&display=block">' CSS="$(cat docs/archify/picasso.css)" W="$w" H="$h" \
             perl -0pe 's|</head>|$ENV{FONTS}<style>$ENV{CSS}</style></head>|; s|<svg viewBox="0 0 [0-9.]+ [0-9.]+"|<svg viewBox="0 0 $ENV{W} $ENV{H}"|' "$out/page.html" > "$out/frame.html"
         "${CHROME:-google-chrome}" --headless --disable-gpu --hide-scrollbars --force-dark-mode --force-device-scale-factor=2 --user-data-dir="$PWD/$out/profile" --window-size="$w,$h" --virtual-time-budget=3000 --screenshot="$PWD/docs/img/$slug.png" "file://$PWD/$out/frame.html" 2>/dev/null
@@ -148,22 +148,34 @@ figure: figure-init
     done
     just _figure-lock > docs/archify/figures.lock
 
-# The inputs of each figure (its source, the look, the crop, the Archify pin), one line per slug.
+# The inputs of each figure (its source, the look, the crop, the Archify pin), one line per slug (en/<slug> for a twin).
 _figure-lock:
     #!/usr/bin/env bash
     set -euo pipefail
     pin="$(git ls-files -s vendor/archify | cut -d' ' -f2)"
-    for src in docs/archify/*.json; do
-        printf '%s\t%s\n' "$(basename "$src" .json)" "$(cat "$src" docs/archify/picasso.css docs/archify/crop.tsv | sha256sum | cut -c1-16)-${pin:0:7}"
+    for src in docs/archify/*.json docs/archify/en/*.json; do
+        slug="${src#docs/archify/}"
+        printf '%s\t%s\n' "${slug%.json}" "$(cat "$src" docs/archify/picasso.css docs/archify/crop.tsv | sha256sum | cut -c1-16)-${pin:0:7}"
     done
 
 # Cheap and offline: each docs/archify/<slug>.json has its PNG, and both match the last `just figure`.
+# Each figure has an English twin (docs/archify/en/<slug>.json, locale en) with the same drawing, only
+# the words changed; README.md embeds the pt-BR PNG and README.en.md the English one, never the other.
 figure-check:
     #!/usr/bin/env bash
     set -euo pipefail
+    shape='{d: .diagram_type, l: [.lanes[].id], m: .mainPath, n: [.nodes[] | del(.label, .sublabel, .tag)], e: [.edges[] | del(.label)]}'
     for src in docs/archify/*.json; do
-        test -s "docs/img/$(basename "$src" .json).png" || { echo "figure-check: no PNG for $src; run just figure" >&2; exit 1; }
+        s="$(basename "$src" .json)"; en="docs/archify/en/$s.json"
+        test -s "docs/img/$s.png" || { echo "figure-check: no PNG for $src; run just figure" >&2; exit 1; }
+        test -s "$en" && test -s "docs/img/en/$s.png" || { echo "figure-check: no English twin $en or its PNG; write it and run just figure" >&2; exit 1; }
+        test "$(jq -r .meta.locale "$en")" = en || { echo "figure-check: $en is not meta.locale en" >&2; exit 1; }
+        cmp -s <(jq -S "$shape" "$src") <(jq -S "$shape" "$en") || { echo "figure-check: $en is not the same drawing as $src (lanes, nodes or edges differ)" >&2; exit 1; }
+        ! grep -qF "](docs/img/$s.png)" README.en.md || { echo "figure-check: README.en.md embeds the pt-BR docs/img/$s.png; use docs/img/en/$s.png" >&2; exit 1; }
+        ! grep -qF "](docs/img/en/$s.png)" README.md || { echo "figure-check: README.md embeds the English docs/img/en/$s.png; use docs/img/$s.png" >&2; exit 1; }
+        ! grep -qF "](docs/img/$s.png)" README.md || grep -qF "](docs/img/en/$s.png)" README.en.md || { echo "figure-check: README.md shows $s but README.en.md does not show docs/img/en/$s.png" >&2; exit 1; }
     done
+    for en in docs/archify/en/*.json; do test -s "docs/archify/$(basename "$en")" || { echo "figure-check: $en has no pt-BR source" >&2; exit 1; }; done
     just _figure-lock | cmp -s - docs/archify/figures.lock || { echo "figure-check: a source, the look or the Archify pin changed since the PNG; run just figure" >&2; exit 1; }
     echo "figure-check: ok"
 
