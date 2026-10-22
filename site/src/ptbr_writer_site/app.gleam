@@ -207,7 +207,22 @@ const gleam_icon =
 const claude_code_icon =
   "https://code.claude.com/docs/_mintlify/favicons/claude-code/pLsy-mRpNksna2sx/_generated/favicon/favicon-32x32.png"
 
-const typescript_icon = "https://www.typescriptlang.org/favicon-32x32.png"
+const just_icon = "https://just.systems/favicon.ico"
+
+// The official GNU Bash logo, at the commit of odb/official-bash-logo it was read from.
+const shell_icon =
+  "https://raw.githubusercontent.com/odb/official-bash-logo/e44dab9f89aadd410ff04825b2692eab16711211/assets/Logos/Icons/PNG/64x64.png"
+
+// JavaScript is an Ecma TC39 standard and HTML a WHATWG one: each body's mark. CSS uses the community
+// CSS logo (CSS-Next/logo.css, CC0), pinned: w3.org's favicon did not always load.
+const css_icon =
+  "https://raw.githubusercontent.com/CSS-Next/logo.css/48f24dccd4e169118d17bab998c3d276e95167df/css.square.small.svg"
+
+const javascript_icon = "https://tc39.es/favicon.ico"
+
+const html_icon = "https://resources.whatwg.org/logo.svg"
+
+const rust_icon = "https://www.rust-lang.org/static/images/favicon.svg"
 
 const nix_icon = "https://nixos.org/favicon.svg"
 
@@ -265,22 +280,21 @@ fn grafo_pill(href: String, title: String, name: String) -> Element(msg) {
   )
 }
 
-/// "feito com" the languages GitHub counts in this repository (Gleam first, TypeScript last and
-/// grudgingly), then "com" the agents and the local model servers it runs on. On the cover and
-/// again in the footer.
+/// "feito com" the languages of this repository, each with its owner's mark, then Rust, planned, then
+/// "com" the agents and the local model servers it runs on. On the cover and again in the footer.
 pub fn made_with_line(class: String) -> Element(msg) {
   html.p([attribute.class(class)], [
     html.text("feito com "),
     made_with("Gleam", gleam_icon, "https://gleam.run"),
-    made_with("Just", "", "https://just.systems"),
-    made_with("Shell", "", "https://www.gnu.org/software/bash/"),
+    made_with("Just", just_icon, "https://just.systems"),
+    made_with("Shell", shell_icon, "https://www.gnu.org/software/bash/"),
     made_with("Nix", nix_icon, "https://nixos.org"),
-    made_with("CSS", "", "https://www.w3.org/Style/CSS/"),
-    made_with("JavaScript", "", "https://tc39.es"),
-    made_with("HTML", "", "https://html.spec.whatwg.org"),
-    html.text(" e, infelizmente, "),
-    made_with("TypeScript", typescript_icon, "https://www.typescriptlang.org"),
-    html.text(" (a extensão de navegador insistiu); com "),
+    made_with("CSS", css_icon, "https://www.w3.org/Style/CSS/"),
+    made_with("JavaScript", javascript_icon, "https://tc39.es"),
+    made_with("HTML", html_icon, "https://html.spec.whatwg.org"),
+    html.text(" e, planejado, "),
+    made_with("Rust", rust_icon, "https://www.rust-lang.org"),
+    html.text("; com "),
     made_with("Claude Code", claude_code_icon, "https://claude.com/claude-code"),
     made_with("OpenCode", opencode_icon, "https://opencode.ai"),
     made_with(
@@ -659,7 +673,7 @@ fn footer() -> Element(msg) {
       html.a([attribute.href(repo <> "/commit/" <> content.revision)], [
         html.text(content.revision),
       ]),
-      html.text(" · MIT · "),
+      html.text(" · MPL-2.0 · "),
       html.a([attribute.href(repo)], [html.text("h0ffmann/ptbr-writer")]),
     ]),
     made_with_line("made-with"),
