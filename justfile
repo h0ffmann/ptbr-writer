@@ -489,3 +489,11 @@ doi:
     title=$(jq -r .title .zenodo.json)
     curl -fsS --max-time 60 -G https://zenodo.org/api/records --data-urlencode "q=title:\"$title\"" --data-urlencode size=10 --data-urlencode sort=mostrecent \
         | jq -er '.hits.hits | if length == 0 then error("no record yet; Zenodo can take a few minutes after a release") else .[] | [.metadata.version // "?", .doi, .conceptdoi // "?", .metadata.license.id // "?", .metadata.resource_type.title // "?", .links.html] | @tsv end'
+
+# The extension's size: each file of extension/dist (just ext-build first), in bytes and gzipped (-9).
+ext-size:
+    @cd extension/dist && for f in $(ls | sort); do printf '%s\t%s\t%s\n' "$f" "$(wc -c < "$f")" "$(gzip -9c "$f" | wc -c)"; done && printf 'total\t%s\t%s\n' "$(cat * | wc -c)" "$(tar -c --sort=name --mtime=@0 --owner=0 --group=0 . | gzip -9n | wc -c)"
+
+# The runtime cost of the sound, in real Chromium (headless): extension/bench/sound.mjs.
+ext-bench-sound:
+    cd extension && npx playwright install chromium >/dev/null && node bench/sound.mjs
