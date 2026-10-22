@@ -3,15 +3,18 @@
 Uma versão só: a tag `vX.Y.Z`, o `version` de `plugins/ptbr-writer/.claude-plugin/plugin.json` e o
 cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, depois do merge, cria a tag; `release.yml` publica a release.
 
-## Unreleased
+## v0.3.0 — 2026-10-22
 
+- Instale com `claude plugin install ptbr-writer --marketplace h0ffmann/ptbr-writer#v0.3.0`. É a
+  primeira tag desde a `v0.1.0`: a v0.2.0 subiu o `plugin.json` na `main`, mas a tag nunca foi criada,
+  então o que está nesta seção e na v0.2.0 sai numa tag pela primeira vez. No plugin mudou: `.claude-plugin/marketplace.json`, `SKILL.md`, `plugins/ptbr-writer/.claude-plugin/plugin.json`, `plugins/ptbr-writer/bin/linux-aarch64/ptbr`, `plugins/ptbr-writer/bin/linux-x86_64/ptbr`, `plugins/ptbr-writer/bin/run.sh`, `plugins/ptbr-writer/bin/tools.lock`, `plugins/ptbr-writer/hooks/ask-levels.sh`, `plugins/ptbr-writer/hooks/hooks.json`, `plugins/ptbr-writer/ptbr-writer.default.toml`, `plugins/ptbr-writer/scripts/to-pdf.sh`, `skills/bipr/SKILL.md`, `skills/bipr/footer.md`, `skills/cientifico/SKILL.md`.
 - O whitepaper, em pt-BR (`WHITEPAPER.pdf`) e em inglês (`WHITEPAPER.en.pdf`), 8 páginas cada: a tese
   de que escrita agêntica em pt-BR é uma abstração barata, com três pilares (português brasileiro sob
   medida, portabilidade e um harness que melhora a si mesmo). `just whitepaper` o gera com pandoc e
   XeLaTeX, no template do Paper Fabric do closed-source, com os logos da marola e da ouroboric; o
   `just quality` falha acima de 8 páginas. O site ganha duas pílulas de PDF, uma por idioma.
 - A licença passa de MIT para **MPL-2.0** (`LICENSE`, os selos e a seção de licença dos READMEs, o
-  `plugin.json`, o `site/gleam.toml` e o rodapé do site). A v0.2.0 e as versões anteriores continuam
+  `plugin.json`, o `site/gleam.toml` e o rodapé do site). A `v0.1.0` e os commits anteriores continuam
   MIT, e o que vem de terceiros mantém a licença de cada um.
 - O "feito com" do site mostra o ícone do dono de cada linguagem (Just, Shell, CSS, JavaScript e
   HTML ganham o seu), tira o TypeScript por enquanto e acrescenta o Rust como planejado.
