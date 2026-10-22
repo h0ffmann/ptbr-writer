@@ -334,7 +334,7 @@ _reading-badge file lang:
         echo "[![leitura estimada: $min](https://img.shields.io/badge/leitura%20estimada-$enc-1682D4?style=flat-square)](#tempo-de-leitura)"
     fi
 
-quality: pins saramago-check plugin-check figure-check whitepaper-check ext-test
+quality: pins saramago-check plugin-check figure-check whitepaper-check node-check ext-test
     bash skills/ptbr-routing/bin/run.sh --self-test
     bash skills/ptbr-routing/bin/run.sh --check
     just --list >/dev/null
@@ -489,3 +489,14 @@ doi:
     title=$(jq -r .title .zenodo.json)
     curl -fsS --max-time 60 -G https://zenodo.org/api/records --data-urlencode "q=title:\"$title\"" --data-urlencode size=10 --data-urlencode sort=mostrecent \
         | jq -er '.hits.hits | if length == 0 then error("no record yet; Zenodo can take a few minutes after a release") else .[] | [.metadata.version // "?", .doi, .conceptdoi // "?", .metadata.license.id // "?", .metadata.resource_type.title // "?", .links.html] | @tsv end'
+
+# The node on PATH has the fixes of the October 2026 security release (#83): the minimum of its line,
+# from nodejs.org/en/blog/vulnerability/october-2026-security-releases. Any other line fails, 18 and
+# 20 (end of life) included. The CVE scanners lag the advisory, so the minimum is written here.
+node-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    v=$(node --version); v=${v#v}
+    case "${v%%.*}" in 22) min=22.23.4 ;; 24) min=24.22.1 ;; 26) min=26.12.1 ;; *) min= ;; esac
+    [ -n "$min" ] && [ "$(printf '%s\n%s\n' "$min" "$v" | sort -V | head -1)" = "$min" ] || { echo "node-check: node $v is affected or unsupported; use 22.23.4+, 24.22.1+ or 26.12.1+ (#83)" >&2; exit 1; }
+    echo "node-check: node $v (minimum $min)"
