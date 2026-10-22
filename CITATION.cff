@@ -10,8 +10,9 @@ authors:
     given-names: Matheus
     orcid: "https://orcid.org/0009-0009-1056-7661"
     affiliation: "Escola Politécnica, Universidade Federal do Rio de Janeiro"
-  - family-names: "Soares da Silva Júnior"
-    given-names: "Rôb Klér"
+  - family-names: "Soares da Silva Junior"
+    given-names: "Rob Kler"
+    orcid: "https://orcid.org/0009-0003-3102-4996"
 repository-code: "https://github.com/h0ffmann/ptbr-writer"
 url: "https://h0ffmann.github.io/ptbr-writer/"
 license: MPL-2.0
