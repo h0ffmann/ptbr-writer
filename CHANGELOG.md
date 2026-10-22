@@ -5,6 +5,10 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- Cada figura do Archify ganha um gêmeo em inglês (`docs/archify/en/<slug>.json`, desenhado em
+  `docs/img/en/<slug>.png`): o `README.md` mostra as figuras em pt-BR e o `README.en.md` as em inglês. O
+  `just figure-check` falha quando falta o gêmeo, quando o gêmeo não é o mesmo desenho, ou quando um README
+  mostra o PNG do outro idioma.
 - Figuras (#66): a figura do pedido `ptbr` vira o *fluxo do plugin do Claude Code*, e duas figuras
   novas do Archify mostram o *fluxo da extensão de navegador* (os três modos: chave de API, Ollama +
   Qwen, Ollaya planejado) e o *fluxo do modelo local* (LLM ou SLM), com o **Baixar** sob demanda

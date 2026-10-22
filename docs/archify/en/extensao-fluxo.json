@@ -1,0 +1,155 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Browser extension flow: from the field to the underline",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "hidden"
+    },
+    "output": "extensao-fluxo.html"
+  },
+  "lanes": [
+    {
+      "id": "pagina",
+      "label": "On the page (Chrome or Firefox)"
+    },
+    {
+      "id": "extensao",
+      "label": "In the extension"
+    },
+    {
+      "id": "modos",
+      "label": "Modes: who writes the text"
+    }
+  ],
+  "mainPath": [
+    "campo",
+    "regras",
+    "provedor",
+    "sublinhados",
+    "aceitar"
+  ],
+  "nodes": [
+    {
+      "id": "campo",
+      "lane": "pagina",
+      "col": 0,
+      "type": "external",
+      "label": "text field",
+      "sublabel": "3 words, 1 s idle",
+      "width": 150
+    },
+    {
+      "id": "regras",
+      "lane": "extensao",
+      "col": 1,
+      "type": "backend",
+      "label": "rules of the level",
+      "sublabel": "the site's level, SKILL.md",
+      "width": 150
+    },
+    {
+      "id": "provedor",
+      "lane": "extensao",
+      "col": 2,
+      "type": "backend",
+      "label": "chosen provider",
+      "sublabel": "in the popup or the options",
+      "width": 150
+    },
+    {
+      "id": "api",
+      "lane": "modos",
+      "col": 2,
+      "type": "cloud",
+      "label": "API key",
+      "sublabel": "Claude or DeepSeek",
+      "width": 150
+    },
+    {
+      "id": "ollama",
+      "lane": "modos",
+      "col": 3,
+      "type": "backend",
+      "label": "Ollama + Qwen",
+      "sublabel": "on this machine, no key",
+      "width": 150
+    },
+    {
+      "id": "ollaya",
+      "lane": "modos",
+      "col": 4,
+      "type": "backend",
+      "label": "Ollaya",
+      "sublabel": "planned, #61",
+      "width": 150
+    },
+    {
+      "id": "sublinhados",
+      "lane": "pagina",
+      "col": 3,
+      "type": "frontend",
+      "label": "underlines",
+      "sublabel": "one card per suggestion",
+      "width": 150
+    },
+    {
+      "id": "aceitar",
+      "lane": "pagina",
+      "col": 4,
+      "type": "external",
+      "label": "Aceitar (accept)",
+      "sublabel": "replaces the span in the field",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "campo",
+      "to": "regras",
+      "label": "asks for review"
+    },
+    {
+      "id": "e2",
+      "from": "regras",
+      "to": "provedor"
+    },
+    {
+      "id": "e3",
+      "from": "provedor",
+      "to": "api",
+      "label": "one of",
+      "role": "branch"
+    },
+    {
+      "id": "e4",
+      "from": "provedor",
+      "to": "ollama",
+      "label": "one of",
+      "role": "branch"
+    },
+    {
+      "id": "e5",
+      "from": "provedor",
+      "to": "ollaya",
+      "label": "not yet",
+      "role": "branch",
+      "variant": "dashed"
+    },
+    {
+      "id": "e6",
+      "from": "provedor",
+      "to": "sublinhados",
+      "label": "suggestions"
+    },
+    {
+      "id": "e7",
+      "from": "sublinhados",
+      "to": "aceitar",
+      "label": "you click"
+    }
+  ]
+}
