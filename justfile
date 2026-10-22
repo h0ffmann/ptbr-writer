@@ -334,7 +334,7 @@ _reading-badge file lang:
         echo "[![leitura estimada: $min](https://img.shields.io/badge/leitura%20estimada-$enc-1682D4?style=flat-square)](#tempo-de-leitura)"
     fi
 
-quality: pins saramago-check plugin-check figure-check whitepaper-check ext-test
+quality: pins saramago-check plugin-check figure-check whitepaper-check md-tables ext-test
     bash skills/ptbr-routing/bin/run.sh --self-test
     bash skills/ptbr-routing/bin/run.sh --check
     just --list >/dev/null
@@ -489,3 +489,13 @@ doi:
     title=$(jq -r .title .zenodo.json)
     curl -fsS --max-time 60 -G https://zenodo.org/api/records --data-urlencode "q=title:\"$title\"" --data-urlencode size=10 --data-urlencode sort=mostrecent \
         | jq -er '.hits.hits | if length == 0 then error("no record yet; Zenodo can take a few minutes after a release") else .[] | [.metadata.version // "?", .doi, .conceptdoi // "?", .metadata.license.id // "?", .metadata.resource_type.title // "?", .links.html] | @tsv end'
+
+# Every Markdown table row lives in a table (#74): in each tracked .md, outside code fences, a block of
+# `|` lines starts with a header row and a separator row. A row on its own fails, with file:line.
+md-tables:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    bad=0
+    while IFS= read -r f; do awk -f scripts/md-tables.awk "$f" || bad=1; done < <(git ls-files '*.md' ':!vendor' ':!forks')
+    [ "$bad" = 0 ] || { echo "md-tables: a table row outside a table (above); edit the table with an exact replace, not a regex" >&2; exit 1; }
+    echo "md-tables: ok"

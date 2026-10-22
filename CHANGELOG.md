@@ -5,6 +5,11 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- `just md-tables`, no `just quality`, falha quando uma linha de tabela fica fora da tabela em
+  qualquer Markdown do repositório, e não só antes do primeiro título dos READMEs (#74). O
+  `AGENTS.md` ganha a regra de editar por substituição exata, nunca por regex com `|` como
+  delimitador.
+
 - A v0.3.0 tem DOI no Zenodo, como preprint. O `CITATION.cff` traz o DOI de conceito, que sempre leva
   à versão mais recente, e o da v0.3.0. Os READMEs ganham um selo do Zenodo, e a pílula do site leva
   ao DOI de conceito; nenhum dos dois mostra o número.
