@@ -5,6 +5,7 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- O roadmap ganha a **extensão do Chrome** e o **FOSS (Ollama, Ollaya)**, os dois em andamento.
 - Os READMEs ganham os selos **modelo local: Ollama** e **modelo de decisão: Ollaya**, com o ícone de
   cada um; cada selo leva ao parágrafo do provider (`#ollama`, `#ollaya`).
 - A extensão ganha o provider **Ollaya (local, só aponta)** (#61): um modelo de decisão do
