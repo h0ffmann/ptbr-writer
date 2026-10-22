@@ -13,6 +13,8 @@
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#instalar)
 [![extensão de navegador (Chrome): dev local (WIP)](https://img.shields.io/badge/extens%C3%A3o%20de%20navegador-dev%20local%20(WIP)-1682D4?style=flat-square&logo=googlechrome&logoColor=white)](#chrome)
 [![extensão de navegador (Firefox): dev local (WIP)](https://img.shields.io/badge/extens%C3%A3o%20de%20navegador-dev%20local%20(WIP)-1682D4?style=flat-square&logo=firefoxbrowser&logoColor=white)](docs/EXTENSION_FIREFOX.md)
+[![modelo local: Ollama](https://img.shields.io/badge/modelo%20local-Ollama-1682D4?style=flat-square&logo=ollama&logoColor=white)](#ollama)
+[![modelo de decisão: Ollaya](https://img.shields.io/badge/modelo%20de%20decis%C3%A3o-Ollaya-1682D4?style=flat-square&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0iIzE3MTcxNyIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEuNiAxLjQpIHNjYWxlKC45KSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIuMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNNiA1LjUgMTAuNSA5LjVRMTYgNy41IDIxLjUgOS41TDI2IDUuNVYxOVEyNiAyNy41IDE2IDI3LjVUNiAxOVoiLz48Y2lyY2xlIGN4PSIxMS41IiBjeT0iMTUuNSIgcj0iMy4yNSIvPjxjaXJjbGUgY3g9IjIwLjUiIGN5PSIxNS41IiByPSIzLjI1Ii8+PGNpcmNsZSBjeD0iMTEuNSIgY3k9IjE1LjUiIHI9IjEuMiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIi8+PGNpcmNsZSBjeD0iMjAuNSIgY3k9IjE1LjUiIHI9IjEuMiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIi8+PHBhdGggZD0iTTE0Ljc1IDIxIDE2IDIzbDEuMjUtMiIvPjwvZz48L3N2Zz4K)](#ollaya)
 
 </div>
 
@@ -142,6 +144,8 @@ script usa o binário de dentro do snap, porque o geckodriver não abre o `/usr/
 O experimento de 2026-10-21, com a workstation e os passos para reproduzir, está em
 [`docs/EXTENSION_FIREFOX.md`](docs/EXTENSION_FIREFOX.md).
 
+<a id="ollama"></a>
+
 Sem chave e sem nuvem: `just ext-ollama` serve o Qwen pelo Ollama em `127.0.0.1:11434` (`qwen3.6:27b`,
 o mesmo modelo do `just opencode-qwen`; `just ext-ollama qwen3:8b` para uma GPU menor). No popup,
 escolha **Ollama (local)**: o navegador pede, nesse clique, a permissão para
@@ -152,6 +156,8 @@ Ollama retoma um download interrompido). O Ollama recusa (403) a origem de uma
 extensão se não subir com `OLLAMA_ORIGINS=chrome-extension://*,moz-extension://*`; a receita sobe
 assim e, se já houver um Ollama sem isso (o serviço do systemd, por exemplo), diz como liberar.
 ⚠ Ainda não testado com o Qwen de verdade na extensão.
+
+<a id="ollaya"></a>
 
 Apontar que uma frase quebra uma regra é uma decisão, e um modelo de decisão a toma sem gerar texto.
 `just ext-ollaya` serve o [Ollaya](https://github.com/ollaya-dev/ollaya) em `127.0.0.1:11435` com o
