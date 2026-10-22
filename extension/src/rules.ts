@@ -1,4 +1,38 @@
-import type { Level, Style } from './types';
+import { NEVER_FIX_MAX } from './never-fix';
+import type { Level, Style, Tone } from './types';
+
+export interface PromptOptions {
+  tone: Tone;
+  rewrite: boolean;
+  neverFix: readonly string[];
+  style?: Style | null; // the style Ollaya picked for Ollama, if any
+}
+
+const TONE_LINES: Record<Tone, string> = {
+  informal:
+    'Tom informal: mantenha a voz e as gírias da pessoa; só corrija e esclareça. ' +
+    'Neste tom, mantenha `vc`, `pq`, `tb` e abreviações parecidas: a PTW-14 só separa e junta palavras.',
+  neutro: 'Tom neutro: claro e direto, nem coloquial nem cerimonioso.',
+  formal: 'Tom formal: registro profissional, sem gíria.',
+};
+
+// Lê os cabeçalhos `### PTW-n: Título` e devolve { 'PTW-n': 'Título' }.
+export function ruleTitles(skill: string): Record<string, string> {
+  const titles: Record<string, string> = {};
+  for (const line of skill.split('\n')) {
+    const m = /^### ([A-Z]+-\d+): (.+?)\s*$/.exec(line);
+    if (m) titles[m[1]] = m[2];
+  }
+  return titles;
+}
+
+// A lista vem do usuário: vira texto simples, sem quebra de linha nem aspas.
+function cleanNeverFix(list: readonly string[]): string[] {
+  return list
+    .map((e) => e.replace(/[\p{Cc}\s]+/gu, ' ').replace(/["'`]/g, '').trim())
+    .filter((e) => e && e.length <= 60)
+    .slice(0, NEVER_FIX_MAX);
+}
 
 // The conversation styles Ollaya chooses from (decisions.ts) and Ollama writes in.
 export const STYLES: Record<Style, string> = {
@@ -16,7 +50,9 @@ export function section(skill: string, heading: string, name: string, file = "SK
   return lines.slice(start, end).join('\n').trim();
 }
 
-export function buildSystemPrompt(level: Level, skill: string, cientifico: string, style?: Style | null): string {
+export function buildSystemPrompt(level: Level, skill: string, cientifico: string, opts: PromptOptions): string {
+  const never = cleanNeverFix(opts.neverFix);
+  const style = opts.style;
   const parts = [
     'Você revisa texto em português do Brasil segundo as regras abaixo. Aponte só trechos que quebram uma regra.',
     section(skill, '## Níveis de rigor', 'Níveis de rigor'),
@@ -36,6 +72,15 @@ export function buildSystemPrompt(level: Level, skill: string, cientifico: strin
       '- severity: "erro" ou "aviso";',
       '- occurrence: qual ocorrência do trecho no texto, contando a partir de 1.',
       'Texto sem problemas: responda []. Não reescreva nada fora dos trechos apontados.',
+      'Severidade: `erro` para as regras PTW-8 e PTW-14 a PTW-16; `aviso` só para a PTW-17.',
+      'As demais regras (PTW-1 a 7 e PTW-9 a 13, e CIE) usam `erro`.',
+      'Um `aviso` cobre a frase inteira e já traz todas as correções dela; nenhum `erro` cai dentro de um `aviso`.',
+      'Num `aviso`, o original é a frase inteira e o replacement é a frase reescrita.',
+      'Copie o original letra por letra, sem normalizar espaços nem aspas.',
+      'Não mexa em código, comando, URL, caminho de arquivo ou identificador, com ou sem crases.',
+      TONE_LINES[opts.tone],
+      ...(opts.rewrite ? [] : ['Só erros: não devolva nenhum aviso, ignore a PTW-17; não reorganize frases.']),
+      ...(never.length ? [`Palavras da pessoa: nunca troque estas palavras, nem dentro de uma frase reescrita: ${never.join(' | ')}.`] : []),
     ].join('\n'),
   );
   return parts.join('\n\n');

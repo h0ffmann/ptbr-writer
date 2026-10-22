@@ -5,6 +5,12 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- A skill `ptbr-writer` (plugin) ganha as regras PTW-14 a PTW-17, e a skill `cientifico` aplica as
+  PTW-1 a PTW-17.
+- A extensão do Chrome sublinha de vermelho a ortografia, a pontuação e a concordância (PTW-14 a 16) e
+  de amarelo a frase reorganizada (PTW-17, cartão **Reescrita**); as configurações ganham o tom, o
+  quanto corrigir, a espera e a lista "nunca corrigir". O teste ponta a ponta cobre a frase
+  reorganizada.
 - Node 24.22.1, a release de segurança de 2026-10-21 (#83), no dev shell e no CI. O nixpkgs ainda está na
   24.21.0, afetada, então o `nix/nodejs-bin.nix` usa o binário oficial do nodejs.org, fixado pelo sha256.
   O `just node-check`, no `just quality`, falha abaixo das versões corrigidas. O `cve.yml` roda o

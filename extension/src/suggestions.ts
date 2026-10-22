@@ -1,3 +1,4 @@
+import { breaksEntry } from './never-fix';
 import type { Located, Suggestion } from './types';
 
 export function parseSuggestions(raw: string): Suggestion[] {
@@ -82,4 +83,26 @@ export function dropOverlaps(l: Located[]): Located[] {
 
 export function applyToString(text: string, l: Located): string {
   return text.slice(0, l.start) + l.replacement + text.slice(l.end);
+}
+
+// The service worker's filters, on positions `locate` finds in the sent text, in this order:
+// (1) without `rewrite` every aviso goes; (2) an aviso across a line break goes, as in the watcher,
+// so its erros stay; (3) a suggestion that would change a never-fix entry goes; (4) an erro inside a
+// remaining aviso goes (one sentence, one color); (5) `dropOverlaps` settles the rest.
+export function filterSuggestions(
+  text: string,
+  s: Suggestion[],
+  opts: { rewrite: boolean; neverFix: readonly string[] },
+): Suggestion[] {
+  let l = locate(text, s);
+  // "Só erros" drops rewrites; a detection (Ollaya, no replacement) is not a rewrite and stays.
+  if (!opts.rewrite) l = l.filter((x) => x.severity !== 'aviso' || x.detectOnly);
+  l = l.filter((x) => x.severity !== 'aviso' || !text.slice(x.start, x.end).includes('\n'));
+  // A detect-only card (Ollaya) changes nothing, so it cannot break a word the person keeps.
+  l = l.filter((x) => x.detectOnly || !opts.neverFix.some((e) => breaksEntry(x.original, x.replacement, e)));
+  const avisos = l.filter((x) => x.severity === 'aviso');
+  l = l.filter(
+    (x) => x.severity === 'aviso' || !avisos.some((a) => x.start >= a.start && x.end <= a.end),
+  );
+  return dropOverlaps(l).map(({ start: _start, end: _end, ...rest }) => rest);
 }

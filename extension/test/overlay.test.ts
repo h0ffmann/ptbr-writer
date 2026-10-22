@@ -115,6 +115,47 @@ describe('renderSuggestions', () => {
   });
 });
 
+describe('the card', () => {
+  const open = (items: Located[], extra: Parameters<typeof renderSuggestions>[5], i = 0) => {
+    const el = editable();
+    renderSuggestions(el, items, 0, vi.fn(), vi.fn(), extra);
+    const root = overlayRoot();
+    (root.querySelectorAll('.ptbr-underline')[i] as HTMLElement).click();
+    return root.querySelector('.ptbr-card') as HTMLElement;
+  };
+
+  it('shows the code and the title of an error', () => {
+    const e = { ...erro, rule: 'PTW-15' };
+    expect(open([e], { titles: { 'PTW-15': 'Pontuação' } }).querySelector('.ptbr-rule')?.textContent).toBe('PTW-15 · Pontuação');
+  });
+
+  it('shows only the code when there is no title', () => {
+    expect(open([{ ...erro, rule: 'PTW-15' }], {}).querySelector('.ptbr-rule')?.textContent).toBe('PTW-15');
+  });
+
+  it('shows Reescrita on a PTW-17 warning', () => {
+    expect(open([{ ...aviso, rule: 'PTW-17' }], { titles: { 'PTW-17': 'Frase reorganizada' } }).querySelector('.ptbr-rule')?.textContent).toBe('Reescrita');
+  });
+
+  it('shows the code and the title of a warning from another rule', () => {
+    expect(open([{ ...aviso, rule: 'PTW-2' }], { titles: { 'PTW-2': 'Algo' } }).querySelector('.ptbr-rule')?.textContent).toBe('PTW-2 · Algo');
+  });
+
+  it('has no Sempre ignorar when the original has more than 3 words', () => {
+    const long = { ...erro, original: 'um dois três quatro' };
+    expect(open([long], { onNeverFix: vi.fn() }).querySelector('[data-action="never"]')).toBeNull();
+  });
+
+  it('calls onNeverFix with the item', () => {
+    const onNeverFix = vi.fn();
+    const card = open([aviso], { onNeverFix });
+    const b = card.querySelector('[data-action="never"]') as HTMLElement;
+    expect(b.textContent).toBe('Sempre ignorar');
+    b.click();
+    expect(onNeverFix).toHaveBeenCalledWith(aviso);
+  });
+});
+
 describe('renderBadge', () => {
   it('shows the label of an error', () => {
     const el = editable();

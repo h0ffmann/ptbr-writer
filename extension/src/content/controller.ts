@@ -1,10 +1,14 @@
-import { levelFor, loadSettings } from '../settings';
+import { addNeverFix } from '../never-fix';
+import { ruleTitles } from '../rules';
+import { levelFor, loadSettings, saveSettings } from '../settings';
+import { CIENTIFICO, SKILL } from '../skills';
 import type { CheckError, CheckRequest, CheckResult, Level, Located } from '../types';
 import { acceptSuggestion } from './apply';
 import { forget, renderBadge, renderSuggestions, repositionAll } from './overlay';
 import { textModel } from './text';
 import { createWatcher } from './watcher';
 
+const TITLES = { ...ruleTitles(SKILL), ...ruleTitles(CIENTIFICO) };
 const TEXT_INPUTS = ['text', 'search', 'email', 'url'];
 
 interface FieldState {
@@ -26,9 +30,21 @@ export function editableRoot(target: EventTarget | null): HTMLElement | null {
 // Runs the content script on this page. It follows the settings: when this site's level changes,
 // the fields start over with the new level; when the site or the extension is switched off, it
 // stops and clears what it drew. Resolves to a function that undoes it all (for tests).
+// After the extension reloads, a tab opened before it keeps the old script, which can no longer
+// reach the service worker: say so instead of a provider error, since nothing left the browser.
+async function send(r: CheckRequest): Promise<CheckResult> {
+  try {
+    return await chrome.runtime.sendMessage<CheckRequest, CheckResult>(r);
+  } catch (e) {
+    if (/context invalidated/i.test(String(e))) return { ok: false, error: 'reload' };
+    throw e;
+  }
+}
+
 export async function startContent(): Promise<() => void> {
   const fields = new Map<HTMLElement, FieldState>();
   let level: Level | null = null;
+  let delayMs: number | null = null;
   let watcher: ReturnType<typeof createWatcher> | null = null;
 
   const field = (el: HTMLElement) => {
@@ -61,7 +77,14 @@ export async function startContent(): Promise<() => void> {
         .map((x) => (x.start >= l.end ? { ...x, start: x.start + delta, end: x.end + delta } : x));
       render(el);
     };
-    renderSuggestions(el, f.located, f.offset, accept, drop);
+    // "Sempre ignorar" saves the phrase and drops the underline; the API is not called again.
+    const neverFix = (l: Located) => {
+      drop(l);
+      void loadSettings()
+        .then((s) => saveSettings({ ...s, neverFix: addNeverFix(s.neverFix, l.original) }))
+        .catch(() => {});
+    };
+    renderSuggestions(el, f.located, f.offset, accept, drop, { titles: TITLES, onNeverFix: neverFix });
     renderBadge(el, f.state, f.located.length);
   };
 
@@ -82,14 +105,19 @@ export async function startContent(): Promise<() => void> {
   };
 
   const follow = async () => {
-    const next = levelFor(location.hostname, await loadSettings());
-    if (next === level) return;
+    const s = await loadSettings();
+    const next = levelFor(location.hostname, s);
+    // Only the level and the wait rebuild the watcher; tone, rewrite, the never-fix list and the
+    // provider are read at send time, so a save of those keeps the suggestions on screen.
+    if (next === level && s.delayMs === delayMs) return;
     stop();
     level = next;
+    delayMs = s.delayMs;
     if (!level) return;
     watcher = createWatcher({
       level,
-      send: (r: CheckRequest) => chrome.runtime.sendMessage<CheckRequest, CheckResult>(r),
+      delayMs,
+      send,
       onResult(el, located, offset) {
         Object.assign(field(el), { located, offset });
         render(el);

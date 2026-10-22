@@ -6,7 +6,7 @@ import { DEFAULT_SETTINGS } from '../src/settings';
 import type { CheckRequest, Settings } from '../src/types';
 
 const settings: Settings = { ...DEFAULT_SETTINGS, keys: { claude: 'sk-test', deepseek: 'sk-test', ollama: '', ollaya: '' } };
-const req: CheckRequest = { type: 'check', key: 'k1', text: 'texto de teste aqui', level: 'estrito' };
+const req: CheckRequest = { type: 'check', key: 'k1', text: 'texto a nível de teste aqui', level: 'estrito' };
 const suggestion = { original: 'a nível de', replacement: 'em', rule: 'PTW-1', severity: 'aviso', occurrence: 1 };
 const claudeBody = { content: [{ type: 'text', text: JSON.stringify({ suggestions: [suggestion] }) }] };
 
@@ -26,6 +26,13 @@ describe('handleCheck', () => {
   it('200 returns suggestions', async () => {
     const r = await handleCheck(req, { fetch: okFetch(claudeBody), settings });
     expect(r.ok && r.suggestions).toHaveLength(1);
+  });
+
+  it('aviso with an erro inside it returns 1 suggestion', async () => {
+    const erro = { original: 'nível', replacement: 'nivel', rule: 'PTW-2', severity: 'erro', occurrence: 1 };
+    const body = { content: [{ type: 'text', text: JSON.stringify({ suggestions: [suggestion, erro] }) }] };
+    const r = await handleCheck(req, { fetch: okFetch(body), settings });
+    expect(r.ok && r.suggestions).toEqual([{ ...suggestion }]);
   });
 
   it('401 -> auth, 429 -> rate-limit', async () => {
@@ -87,6 +94,21 @@ describe('handleCheck', () => {
     }) as unknown as typeof fetch;
     const alone = await handleCheck(req, { fetch: down, settings: both });
     expect(alone.ok && alone.suggestions[0].rule).toBe('PTW-1');
+  });
+
+  it('ollama and ollaya replies pass through filterSuggestions', async () => {
+    const ollama: Settings = { ...DEFAULT_SETTINGS, provider: 'ollama', neverFix: ['nível'] };
+    const chat = { message: { content: JSON.stringify([suggestion]) }, done_reason: 'stop' };
+    expect(await handleCheck(req, { fetch: okFetch(chat), settings: ollama })).toEqual({ ok: true, suggestions: [] });
+    const missing = { message: { content: JSON.stringify([{ ...suggestion, original: 'não está no texto' }]) }, done_reason: 'stop' };
+    const plain: Settings = { ...DEFAULT_SETTINGS, provider: 'ollama' };
+    expect(await handleCheck(req, { fetch: okFetch(missing), settings: plain })).toEqual({ ok: true, suggestions: [] });
+    // A detection is not a rewrite: "só erros" and the never-fix list keep it.
+    const ollaya: Settings = { ...DEFAULT_SETTINGS, provider: 'ollaya', rewrite: false, neverFix: ['deploy'] };
+    const text = 'Foi decidido que o deploy será feito.';
+    const body = { answers: { regra: { type: 'choice', choice: 'PTW-1', probabilities: { 'PTW-1': 0.9 } } }, state_truncated: false };
+    const r = await handleCheck({ ...req, text }, { fetch: okFetch(body), settings: ollaya });
+    expect(r.ok && r.suggestions.map((s) => s.original)).toEqual([text]);
   });
 
   it('a truncated reply -> provider, not "no problems"', async () => {
@@ -220,7 +242,19 @@ describe('checkFromSender', () => {
     await checkFromSender({ ...req, level: 'estrito' }, tab(1), { fetch: f, settings: site(true) });
     const [, init] = (f as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
     const system = JSON.parse(init.body as string).system as string;
-    expect(system).toBe(buildSystemPrompt('leve', SKILL, CIENTIFICO));
+    const s = site(true);
+    expect(system).toBe(buildSystemPrompt('leve', SKILL, CIENTIFICO, { tone: s.tone, rewrite: s.rewrite, neverFix: s.neverFix }));
+  });
+
+  it('passes the tone, rewrite and never-fix settings into the prompt', async () => {
+    const f = okFetch(claudeBody);
+    const s: Settings = { ...site(true), tone: 'informal', rewrite: false, neverFix: ['Kafka'] };
+    await checkFromSender(req, tab(1), { fetch: f, settings: s });
+    const [, init] = (f as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    const system = JSON.parse(init.body as string).system as string;
+    expect(system).toContain('mantenha a voz e as gírias');
+    expect(system).toContain('não devolva nenhum aviso');
+    expect(system).toContain('nunca troque estas palavras, nem dentro de uma frase reescrita: Kafka');
   });
 
   it('falls back to sender.url', async () => {

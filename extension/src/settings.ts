@@ -1,4 +1,4 @@
-import type { Level, ProviderId, Settings } from './types';
+import type { Level, ProviderId, Settings, Tone } from './types';
 
 const STORAGE_KEY = 'settings';
 
@@ -27,6 +27,10 @@ export const DEFAULT_SETTINGS: Settings = {
     'mail.google.com': { enabled: true, level: 'descritivo' },
     'github.com': { enabled: true, level: 'descritivo' },
   },
+  tone: 'neutro',
+  rewrite: true,
+  neverFix: [],
+  delayMs: 1000,
 };
 
 // The models the options page offers; the first of each list is the default.
@@ -36,6 +40,9 @@ export const MODELS: Readonly<Record<ProviderId, readonly string[]>> = {
   ollama: ['qwen3.6:27b', 'qwen3:14b', 'qwen3:8b', 'qwen3:4b'], // suggestions; the model list also shows what Ollama has installed
   ollaya: ['decima', 'laya:multilingual', 'decima:small', 'pplx-decider', 'winnow:e4b'], // the same, for Ollaya; the last two want a GPU
 };
+
+export const TONES: readonly Tone[] = ['informal', 'neutro', 'formal'];
+export const DELAYS = [1000, 2000, 3000] as const;
 
 const knownModel = (p: ProviderId, m: string | undefined) =>
   m && (isLocal(p) || MODELS[p].includes(m)) ? m : DEFAULT_SETTINGS.models[p];
@@ -62,6 +69,10 @@ export async function loadSettings(): Promise<Settings> {
       ollaya: knownModel('ollaya', stored.models?.ollaya),
     },
     sites: { ...d.sites, ...stored.sites },
+    tone: TONES.includes(stored.tone as Tone) ? (stored.tone as Tone) : d.tone,
+    rewrite: typeof stored.rewrite === 'boolean' ? stored.rewrite : d.rewrite,
+    neverFix: Array.isArray(stored.neverFix) ? stored.neverFix.filter((e) => typeof e === 'string') : d.neverFix,
+    delayMs: DELAYS.includes(stored.delayMs as (typeof DELAYS)[number]) ? stored.delayMs! : d.delayMs,
   };
 }
 
