@@ -5,6 +5,11 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- O whitepaper, em pt-BR (`WHITEPAPER.pdf`) e em inglês (`WHITEPAPER.en.pdf`), 4 páginas cada: a tese
+  de que escrita agêntica em pt-BR é uma abstração barata, com três pilares (português brasileiro sob
+  medida, portabilidade e um harness que melhora a si mesmo). `just whitepaper` o gera com pandoc e
+  XeLaTeX, no template do Paper Fabric do closed-source, com os logos da marola e da ouroboric; o
+  `just quality` falha acima de 5 páginas. O site ganha duas pílulas de PDF, uma por idioma.
 - A licença passa de MIT para **MPL-2.0** (`LICENSE`, os selos e a seção de licença dos READMEs, o
   `plugin.json`, o `site/gleam.toml` e o rodapé do site). A v0.2.0 e as versões anteriores continuam
   MIT, e o que vem de terceiros mantém a licença de cada um.
