@@ -16,3 +16,12 @@ repository-code: "https://github.com/h0ffmann/ptbr-writer"
 url: "https://h0ffmann.github.io/ptbr-writer/"
 license: MPL-2.0
 keywords: [technical writing, Brazilian Portuguese, controlled language, coding agents, decision models]
+references:
+  - type: software
+    title: "Português Técnico Controlado (PTC)"
+    authors:
+      - alias: kayquer
+    repository-code: "https://github.com/kayquer/portugues-tecnico-controlado"
+    commit: cfdffad0ed98cdebfb7f591481889090a4f4e65b
+    license: MIT
+    notes: "The seed of ptbr-writer's agentic idea: a Claude Code skill with the first 8 rules."
