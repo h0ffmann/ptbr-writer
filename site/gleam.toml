@@ -2,7 +2,7 @@ name = "ptbr_writer_site"
 version = "1.0.0"
 target = "javascript"
 description = "The site of ptbr-writer: every capability of the skill, read from SKILL.md"
-licences = ["MIT"]
+licences = ["MPL-2.0"]
 repository = { type = "github", user = "h0ffmann", repo = "ptbr-writer" }
 
 [javascript]
