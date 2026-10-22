@@ -1,11 +1,15 @@
 {
   "name": "ptbr-writer",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Reescreve texto técnico em pt-BR por nível de rigor (PTW), com a skill científica (CIE) e o alias /ptbr",
   "author": {
     "name": "h0ffmann"
   },
   "repository": "https://github.com/h0ffmann/ptbr-writer",
-  "license": "MIT",
-  "keywords": ["pt-BR", "escrita técnica", "português"]
+  "license": "MPL-2.0",
+  "keywords": [
+    "pt-BR",
+    "escrita técnica",
+    "português"
+  ]
 }

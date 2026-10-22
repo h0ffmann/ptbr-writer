@@ -1,0 +1,43 @@
+# cve — known vulnerabilities in what this repository uses (#83). Runs on main after each merge, on
+# each pull request and every Monday, so an advisory published after a merge still turns main red.
+#
+# - osv: OSV-Scanner reads this repository's lock files (extension/package-lock.json) against
+#   osv.dev. The checkout has no submodules: forks/picasso and vendor/archify are scanned by their
+#   own repositories.
+# - node: the node of the dev shell (nix/nodejs-bin.nix). `just node-check` fails below the fixed
+#   versions of the October 2026 security release, because the advisory databases lag the
+#   Node.js blog; is-my-node-vulnerable checks it against Node.js's own advisories
+#   (nodejs/security-wg), which catches the next release once its records are published.
+name: cve
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "23 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  osv:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - name: OSV-Scanner over this repository's lock files
+        run: nix run nixpkgs#osv-scanner -- scan source --recursive .
+
+  node:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - name: The dev shell's node has the October 2026 fixes
+        run: nix develop --no-update-lock-file --command just node-check
+      - name: is-my-node-vulnerable, on the dev shell's node
+        run: nix develop --no-update-lock-file --command npx --yes is-my-node-vulnerable@1.6.1

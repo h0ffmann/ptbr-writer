@@ -23,7 +23,7 @@ build: content
     # pinned forks/picasso, then this repository, whose nodes that use picasso link into picasso's page.
     code-graph extract ../forks/picasso --out ../build/grafo-picasso --title picasso --backlink ptbr-writer=graph.html
     code-graph extract .. --out ../build/grafo --title ptbr-writer --exclude site/dist --exclude build --link picasso=../build/grafo-picasso/graph.json@picasso.html
-    code-graph extract ../extension --out ../build/grafo-extensao --title "ptbr-writer: extensão do Chrome" --exclude dist --exclude dist-test --backlink ptbr-writer=graph.html
+    code-graph extract ../extension --out ../build/grafo-extensao --title "ptbr-writer: extensão de navegador" --exclude dist --exclude dist-test --backlink ptbr-writer=graph.html
     mkdir -p dist/grafo
     cp ../build/grafo/graph.html dist/grafo/
     cp ../build/grafo-picasso/graph.html dist/grafo/picasso.html
@@ -31,6 +31,8 @@ build: content
     # The PDFs the plugin generated (docs/eli5/RESULTS.tsv), next to the page that links them.
     mkdir -p dist/eli5
     tail -n +2 ../docs/eli5/RESULTS.tsv | cut -f3 | while read -r pdf; do cp "../docs/eli5/$pdf" dist/eli5/; done
+    # The whitepaper, in pt-BR and English (just whitepaper), for the two PDF pills on the cover.
+    mkdir -p dist/whitepaper && cp ../WHITEPAPER.pdf ../WHITEPAPER.en.pdf dist/whitepaper/
     touch dist/.nojekyll
 
 # Formatting, tests and a build: what CI runs
@@ -38,14 +40,17 @@ ci: content
     gleam format --check src/ptbr_writer_site/app.gleam src/ptbr_writer_site/page.gleam src/ptbr_writer_site/prerender.gleam src/ptbr_writer_site/bipr.gleam test
     gleam test
     just build
-    for id in instalar uso niveis regras saida smart-note limites receitas figuras eli5 awesome roadmap; do grep -q "id=\"$id\"" dist/index.html || { echo "site: no #$id in index.html" >&2; exit 1; }; done
+    for id in instalar whitepaper uso niveis regras saida smart-note limites receitas figuras eli5 awesome roadmap; do grep -q "id=\"$id\"" dist/index.html || { echo "site: no #$id in index.html" >&2; exit 1; }; done
     test -s dist/grafo/graph.html && test -s dist/grafo/picasso.html && test -s dist/grafo/extensao.html || { echo "site: no grafo/graph.html, grafo/picasso.html or grafo/extensao.html" >&2; exit 1; }
     test -s dist/bipr.html && test -s dist/img/bipr-pr49-corpo.png && test -s dist/img/bipr-pr49-rodape.png || { echo "site: no bipr.html or its screenshots" >&2; exit 1; }
     # Each graph page hops to the other: "↗ picasso" on ours, "← ptbr-writer" on picasso.html.
     grep -qF '<a class="hop" href="picasso.html">' dist/grafo/graph.html && grep -qF '<a class="hop back" href="graph.html">' dist/grafo/picasso.html || { echo "site: no hop link between the two graph pages" >&2; exit 1; }
     # The extension graph (TypeScript): its own files, and the way back to ours.
     grep -qF '<a class="hop back" href="graph.html">' dist/grafo/extensao.html && jq -e 'any(.nodes[]; .source_file == "src/background.ts")' ../build/grafo-extensao/graph.json >/dev/null || { echo "site: the extension graph has no src/background.ts or no way back" >&2; exit 1; }
+    # The local provider (Ollama) and the OpenCode plugin are in the graphs.
+    jq -e 'any(.nodes[]; .label == "localPull()")' ../build/grafo-extensao/graph.json >/dev/null && jq -e 'any(.nodes[]; .source_file == "opencode/ptbr-writer.js")' ../build/grafo/graph.json >/dev/null || { echo "site: no localPull() in the extension graph or no opencode/ptbr-writer.js in the code graph" >&2; exit 1; }
     # Every picasso lab this repo pins is a node of its graph that links into picasso's page.
     for lab in gleam-website code-graph ptbr-pdf ptbr-tools; do jq -e --arg l "$lab" 'any(.nodes[]; .external == "picasso" and (.href | test("labs_" + ($l | gsub("-"; "_")))))' ../build/grafo/graph.json >/dev/null || { echo "site: no link to picasso labs/$lab in the code graph" >&2; exit 1; }; done
     for f in ../docs/archify/*.json; do test -s "dist/figuras/$(basename "$f" .json).html" || { echo "site: no page for $f" >&2; exit 1; }; done
     tail -n +2 ../docs/eli5/RESULTS.tsv | cut -f3 | while read -r pdf; do test -s "dist/eli5/$pdf" && grep -qF "eli5/$pdf" dist/index.html || { echo "site: no ELI5 PDF or link for $pdf" >&2; exit 1; }; done
+    for pdf in WHITEPAPER.pdf WHITEPAPER.en.pdf; do test -s "dist/whitepaper/$pdf" && grep -qF "whitepaper/$pdf" dist/index.html || { echo "site: no whitepaper PDF or pill for $pdf" >&2; exit 1; }; done

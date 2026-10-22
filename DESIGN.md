@@ -75,9 +75,12 @@ credited in the footer: the flag of Brazil (`Flag_of_Brazil.svg`) and Machado de
 
 ## Made with
 
-"feito com Gleam e Claude Code" sits on the cover, under the buttons, and again in the footer:
-each name is a pill with its owner's icon, loaded from the owner's site and never stored here (the
-pattern and the two URLs are h0ffmann/closed-source's). The footer says the names and icons are
+"feito com" sits on the cover, under the buttons, and again in the footer. It names the languages
+of the repository (Gleam first; TypeScript left out for now), then Rust after "e, planejado,", then
+"com" the agents and the local model servers: Claude Code, OpenCode, OpenCodeReview, Ollama and
+Ollaya. Each name is a pill with its owner's icon; a language's owner is the body that keeps it (TC39
+for JavaScript, WHATWG for HTML), or its official logo's repository at a pinned commit (the GNU Bash
+logo, the community CSS logo). The icon is loaded from where it is published and never stored here (the pattern is h0ffmann/closed-source's). The footer says the names and icons are
 their owners' marks, not licensed here.
 
 ## Layout

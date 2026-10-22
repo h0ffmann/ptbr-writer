@@ -31,6 +31,7 @@ const stars =
 pub fn view() -> Element(msg) {
   html.main([], [
     cover(),
+    whitepaper(),
     usage(),
     levels(),
     rules(),
@@ -119,6 +120,7 @@ fn cover() -> Element(msg) {
     install(),
     html.nav([attribute.class("jump")], [
       html.a([attribute.href("#instalar")], [html.text("instalar")]),
+      html.a([attribute.href("#whitepaper")], [html.text("whitepaper")]),
       html.a([attribute.href("#uso")], [html.text("uso")]),
       html.a([attribute.href("#niveis")], [html.text("níveis")]),
       html.a([attribute.href("#regras")], [html.text("regras")]),
@@ -154,7 +156,7 @@ fn cover() -> Element(msg) {
       ),
       grafo_pill(
         "grafo/extensao.html",
-        "grafo do código TypeScript da extensão do Chrome (extension/)",
+        "grafo do código TypeScript da extensão de navegador, Chrome e Firefox (extension/)",
         "Grafo da extensão",
       ),
       html.a(
@@ -171,6 +173,33 @@ fn cover() -> Element(msg) {
             attribute.height(20),
           ]),
           html.text("/bipr"),
+        ],
+      ),
+      // The English whitepaper; the pt-BR one is embedded in its own section (whitepaper()).
+      // `just site` copies WHITEPAPER.pdf and WHITEPAPER.en.pdf.
+      pdf_pill(
+        "whitepaper/WHITEPAPER.en.pdf",
+        "the ptbr-writer whitepaper, in English",
+        "Whitepaper (EN)",
+      ),
+      // The Zenodo record, without the DOI's number: Zenodo resolves the repository's latest DOI.
+      html.a(
+        [
+          attribute.class("ghost figure-pill"),
+          attribute.href(zenodo_latest),
+          attribute.title(
+            "o registro no Zenodo, com o DOI da versão mais recente",
+          ),
+        ],
+        [
+          // Zenodo's mark is its name, 220 by 80: it is the pill's label, at its own proportion.
+          html.img([
+            attribute.src(zenodo_icon),
+            attribute.class("wordmark"),
+            attribute.alt("Zenodo"),
+            attribute.width(55),
+            attribute.height(20),
+          ]),
         ],
       ),
       // Each Archify page of docs/archify/, named by its title and marked with Archify's icon,
@@ -207,25 +236,87 @@ const gleam_icon =
 const claude_code_icon =
   "https://code.claude.com/docs/_mintlify/favicons/claude-code/pLsy-mRpNksna2sx/_generated/favicon/favicon-32x32.png"
 
+const just_icon = "https://just.systems/favicon.ico"
+
+// The official GNU Bash logo, at the commit of odb/official-bash-logo it was read from.
+const shell_icon =
+  "https://raw.githubusercontent.com/odb/official-bash-logo/e44dab9f89aadd410ff04825b2692eab16711211/assets/Logos/Icons/PNG/64x64.png"
+
+// JavaScript is an Ecma TC39 standard and HTML a WHATWG one: each body's mark. CSS uses the community
+// CSS logo (CSS-Next/logo.css, CC0), pinned: w3.org's favicon did not always load.
+const css_icon =
+  "https://raw.githubusercontent.com/CSS-Next/logo.css/48f24dccd4e169118d17bab998c3d276e95167df/css.square.small.svg"
+
+const javascript_icon = "https://tc39.es/favicon.ico"
+
+const html_icon = "https://resources.whatwg.org/logo.svg"
+
+const rust_icon = "https://www.rust-lang.org/static/images/favicon.svg"
+
+const nix_icon = "https://nixos.org/favicon.svg"
+
+const opencode_icon = "https://opencode.ai/favicon.svg"
+
+// The site serves its icon under a content hash: a new release may move it.
+const opencodereview_icon = "https://open-codereview.ai/dbd8996c7419925db8e3.svg"
+
+const ollama_icon = "https://ollama.com/public/ollama.png"
+
+const ollaya_icon = "https://ollaya.dev/favicon.svg"
+
 // Archify's mark at the revision vendor/archify pins.
+// Zenodo's mark, from Zenodo's own site, and the concept DOI of ptbr-writer, which always resolves
+// to the newest version (v0.3.0 was 10.5281/zenodo.23554532; CITATION.cff has both). The page shows
+// the mark, never the number.
+const zenodo_icon =
+  "https://about.zenodo.org/static/img/logos/zenodo-gradient-round.svg"
+
+const zenodo_latest = "https://doi.org/10.5281/zenodo.23554531"
+
 const archify_icon =
   "https://raw.githubusercontent.com/tt-a1i/archify/2ab3cae/docs/assets/archify-mark.svg"
 
+/// A pill: the name, with its owner's icon when the owner publishes one (`""`: none).
 fn made_with(name: String, icon: String, href: String) -> Element(msg) {
-  html.a([attribute.href(href), attribute.rel("noopener")], [
-    html.img([
-      attribute.src(icon),
-      attribute.alt(""),
-      attribute.width(18),
-      attribute.height(18),
-    ]),
-    html.text(" " <> name),
-  ])
+  let img = case icon {
+    "" -> []
+    _ -> [
+      html.img([
+        attribute.src(icon),
+        attribute.alt(""),
+        attribute.width(18),
+        attribute.height(18),
+      ]),
+    ]
+  }
+  html.a(
+    [attribute.href(href), attribute.rel("noopener")],
+    list.append(img, [html.text(" " <> name)]),
+  )
 }
 
 /// The code graphs (built by `just site` with picasso's code-graph), beside the Archify pills, with
 /// their own icon: they are not Archify pages. This repository's, then picasso's at the pinned
 /// forks/picasso, which this one's external nodes link into.
+fn pdf_pill(href: String, title: String, name: String) -> Element(msg) {
+  html.a(
+    [
+      attribute.class("ghost figure-pill"),
+      attribute.href(href),
+      attribute.title(title),
+    ],
+    [
+      html.img([
+        attribute.src("pdf.svg"),
+        attribute.alt("PDF"),
+        attribute.width(20),
+        attribute.height(20),
+      ]),
+      html.text(name),
+    ],
+  )
+}
+
 fn grafo_pill(href: String, title: String, name: String) -> Element(msg) {
   html.a(
     [
@@ -245,13 +336,31 @@ fn grafo_pill(href: String, title: String, name: String) -> Element(msg) {
   )
 }
 
-/// "feito com [lucy] Gleam e [claude] Claude Code", on the cover and again in the footer.
+/// "feito com" the languages of this repository, each with its owner's mark, then Rust, planned, then
+/// "com" the agents and the local model servers it runs on. On the cover and again in the footer.
 pub fn made_with_line(class: String) -> Element(msg) {
   html.p([attribute.class(class)], [
     html.text("feito com "),
     made_with("Gleam", gleam_icon, "https://gleam.run"),
-    html.text(" e "),
+    made_with("Just", just_icon, "https://just.systems"),
+    made_with("Shell", shell_icon, "https://www.gnu.org/software/bash/"),
+    made_with("Nix", nix_icon, "https://nixos.org"),
+    made_with("CSS", css_icon, "https://www.w3.org/Style/CSS/"),
+    made_with("JavaScript", javascript_icon, "https://tc39.es"),
+    made_with("HTML", html_icon, "https://html.spec.whatwg.org"),
+    html.text(" e, planejado, "),
+    made_with("Rust", rust_icon, "https://www.rust-lang.org"),
+    html.text("; com "),
     made_with("Claude Code", claude_code_icon, "https://claude.com/claude-code"),
+    made_with("OpenCode", opencode_icon, "https://opencode.ai"),
+    made_with(
+      "OpenCodeReview",
+      opencodereview_icon,
+      "https://github.com/alibaba/open-code-review",
+    ),
+    made_with("Ollama", ollama_icon, "https://ollama.com"),
+    html.text(" e "),
+    made_with("Ollaya", ollaya_icon, "https://github.com/ollaya-dev/ollaya"),
   ])
 }
 
@@ -456,6 +565,43 @@ fn limits() -> Element(msg) {
 
 /// docs/eli5/: PDFs the plugin generated inside this repository, each with its prompt and its tokens
 /// (docs/eli5/RESULTS.tsv); the PDFs are copied to eli5/ by `just site`.
+/// The whitepaper in pt-BR, embedded as closed-source's site embeds its paper: the PDF in a frame,
+/// loaded lazily, with links to open or download it where the frame does not show (some phones).
+/// The English edition is the pill on the cover.
+fn whitepaper() -> Element(msg) {
+  let pdf = "whitepaper/WHITEPAPER.pdf"
+  section(
+    "whitepaper",
+    "whitepaper",
+    "o artigo, em português: a tese, os três pilares, o que se mediu e o que não se mediu.",
+    [
+      html.iframe([
+        attribute.class("preview"),
+        attribute.src(pdf),
+        attribute.title("o whitepaper do ptbr-writer, em português (PDF)"),
+        attribute.attribute("loading", "lazy"),
+      ]),
+      html.p([attribute.class("sub")], [
+        html.text("a prévia não aparece em todo celular. "),
+        html.a([attribute.href(pdf)], [html.text("abra o PDF")]),
+        html.text(" ou "),
+        html.a(
+          [
+            attribute.href(pdf),
+            attribute.download("ptbr-writer-whitepaper.pdf"),
+          ],
+          [html.text("baixe o PDF")],
+        ),
+        html.text(". em inglês: "),
+        html.a([attribute.href("whitepaper/WHITEPAPER.en.pdf")], [
+          html.text("Whitepaper (EN)"),
+        ]),
+        html.text("."),
+      ]),
+    ],
+  )
+}
+
 fn eli5() -> Element(msg) {
   section(
     "eli5",
@@ -620,13 +766,13 @@ fn footer() -> Element(msg) {
       html.a([attribute.href(repo <> "/commit/" <> content.revision)], [
         html.text(content.revision),
       ]),
-      html.text(" · MIT · "),
+      html.text(" · MPL-2.0 · "),
       html.a([attribute.href(repo)], [html.text("h0ffmann/ptbr-writer")]),
     ]),
     made_with_line("made-with"),
     html.p([], [
       html.text(
-        "os nomes e os ícones de Gleam e de Claude Code são marcas dos seus donos, não licenciadas aqui; os ícones carregam dos sites deles. a ",
+        "os nomes e os ícones das linguagens e das ferramentas acima são marcas dos seus donos, não licenciadas aqui; os ícones carregam dos sites deles. a ",
       ),
       html.a([attribute.href(commons <> "Flag_of_Brazil.svg")], [
         html.text("bandeira do Brasil"),

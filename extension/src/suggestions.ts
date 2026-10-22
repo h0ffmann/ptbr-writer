@@ -95,9 +95,11 @@ export function filterSuggestions(
   opts: { rewrite: boolean; neverFix: readonly string[] },
 ): Suggestion[] {
   let l = locate(text, s);
-  if (!opts.rewrite) l = l.filter((x) => x.severity !== 'aviso');
+  // "Só erros" drops rewrites; a detection (Ollaya, no replacement) is not a rewrite and stays.
+  if (!opts.rewrite) l = l.filter((x) => x.severity !== 'aviso' || x.detectOnly);
   l = l.filter((x) => x.severity !== 'aviso' || !text.slice(x.start, x.end).includes('\n'));
-  l = l.filter((x) => !opts.neverFix.some((e) => breaksEntry(x.original, x.replacement, e)));
+  // A detect-only card (Ollaya) changes nothing, so it cannot break a word the person keeps.
+  l = l.filter((x) => x.detectOnly || !opts.neverFix.some((e) => breaksEntry(x.original, x.replacement, e)));
   const avisos = l.filter((x) => x.severity === 'aviso');
   l = l.filter(
     (x) => x.severity === 'aviso' || !avisos.some((a) => x.start >= a.start && x.end <= a.end),

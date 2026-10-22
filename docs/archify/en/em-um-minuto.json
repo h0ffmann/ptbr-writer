@@ -1,0 +1,138 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Claude Code plugin flow: a ptbr request",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "hidden"
+    },
+    "output": "em-um-minuto.html"
+  },
+  "lanes": [
+    {
+      "id": "sempre",
+      "label": "Every request"
+    },
+    {
+      "id": "primeira",
+      "label": "Configuration and files"
+    }
+  ],
+  "mainPath": [
+    "pedido",
+    "skill",
+    "versoes",
+    "resposta"
+  ],
+  "nodes": [
+    {
+      "id": "pedido",
+      "lane": "sempre",
+      "col": 0,
+      "type": "external",
+      "label": "ptbr: …",
+      "sublabel": "your request in Claude Code",
+      "width": 150
+    },
+    {
+      "id": "perguntas",
+      "lane": "primeira",
+      "col": 1,
+      "type": "frontend",
+      "label": "4 questions",
+      "sublabel": "level, format, folder, language",
+      "width": 150
+    },
+    {
+      "id": "toml",
+      "lane": "primeira",
+      "col": 2,
+      "type": "database",
+      "label": "ptbr-writer.toml",
+      "sublabel": "keeps the answers",
+      "width": 150
+    },
+    {
+      "id": "skill",
+      "lane": "sempre",
+      "col": 3,
+      "type": "backend",
+      "label": "skill ptbr-writer",
+      "sublabel": "or cientifico, with sources",
+      "width": 150
+    },
+    {
+      "id": "versoes",
+      "lane": "sempre",
+      "col": 4,
+      "type": "backend",
+      "label": "one text per level",
+      "sublabel": "pt-BR and ASD-STE100",
+      "width": 150
+    },
+    {
+      "id": "resposta",
+      "lane": "sempre",
+      "col": 5,
+      "type": "external",
+      "label": "reply",
+      "sublabel": "in the console",
+      "width": 150
+    },
+    {
+      "id": "arquivos",
+      "lane": "primeira",
+      "col": 5,
+      "type": "external",
+      "label": "files, in the folder",
+      "sublabel": ".txt .md .pdf notes",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "pedido",
+      "to": "perguntas",
+      "label": "no config",
+      "role": "branch"
+    },
+    {
+      "id": "e2",
+      "from": "perguntas",
+      "to": "toml",
+      "label": "saves"
+    },
+    {
+      "id": "e3",
+      "from": "toml",
+      "to": "skill",
+      "label": "reads"
+    },
+    {
+      "id": "e4",
+      "from": "pedido",
+      "to": "skill",
+      "label": "with config"
+    },
+    {
+      "id": "e5",
+      "from": "skill",
+      "to": "versoes"
+    },
+    {
+      "id": "e6",
+      "from": "versoes",
+      "to": "resposta"
+    },
+    {
+      "id": "e7",
+      "from": "versoes",
+      "to": "arquivos",
+      "label": "if asked",
+      "role": "branch"
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Fluxo da extensão de navegador: do campo ao sublinhado",
+    "locale": "pt-BR",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "hidden"
+    },
+    "output": "extensao-fluxo.html"
+  },
+  "lanes": [
+    {
+      "id": "pagina",
+      "label": "Na página (Chrome ou Firefox)"
+    },
+    {
+      "id": "extensao",
+      "label": "Na extensão"
+    },
+    {
+      "id": "modos",
+      "label": "Modos: quem revisa o texto"
+    }
+  ],
+  "mainPath": [
+    "campo",
+    "regras",
+    "provedor",
+    "sublinhados",
+    "aceitar"
+  ],
+  "nodes": [
+    {
+      "id": "campo",
+      "lane": "pagina",
+      "col": 0,
+      "type": "external",
+      "label": "campo de texto",
+      "sublabel": "3 palavras, 1 s parado",
+      "width": 150
+    },
+    {
+      "id": "regras",
+      "lane": "extensao",
+      "col": 1,
+      "type": "backend",
+      "label": "regras do nível",
+      "sublabel": "o nível do site, SKILL.md",
+      "width": 150
+    },
+    {
+      "id": "provedor",
+      "lane": "extensao",
+      "col": 2,
+      "type": "backend",
+      "label": "provider escolhido",
+      "sublabel": "no popup ou nas opções",
+      "width": 150
+    },
+    {
+      "id": "api",
+      "lane": "modos",
+      "col": 2,
+      "type": "cloud",
+      "label": "chave de API",
+      "sublabel": "Claude ou DeepSeek",
+      "width": 150
+    },
+    {
+      "id": "ollama",
+      "lane": "modos",
+      "col": 3,
+      "type": "backend",
+      "label": "Ollama",
+      "sublabel": "LLM local, sem chave",
+      "width": 150
+    },
+    {
+      "id": "ollaya",
+      "lane": "modos",
+      "col": 4,
+      "type": "backend",
+      "label": "Ollaya",
+      "sublabel": "decide, só aponta",
+      "width": 150
+    },
+    {
+      "id": "sublinhados",
+      "lane": "pagina",
+      "col": 3,
+      "type": "frontend",
+      "label": "sublinhados",
+      "sublabel": "um cartão por sugestão",
+      "width": 150
+    },
+    {
+      "id": "aceitar",
+      "lane": "pagina",
+      "col": 4,
+      "type": "external",
+      "label": "Aceitar",
+      "sublabel": "troca o trecho no campo",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "campo",
+      "to": "regras",
+      "label": "pede revisão"
+    },
+    {
+      "id": "e2",
+      "from": "regras",
+      "to": "provedor"
+    },
+    {
+      "id": "e3",
+      "from": "provedor",
+      "to": "api",
+      "label": "um de",
+      "role": "branch"
+    },
+    {
+      "id": "e4",
+      "from": "provedor",
+      "to": "ollama",
+      "label": "um de",
+      "role": "branch"
+    },
+    {
+      "id": "e5",
+      "from": "provedor",
+      "to": "ollaya",
+      "label": "um de",
+      "role": "branch"
+    },
+    {
+      "id": "e6",
+      "from": "provedor",
+      "to": "sublinhados",
+      "label": "sugestões"
+    },
+    {
+      "id": "e7",
+      "from": "sublinhados",
+      "to": "aceitar",
+      "label": "você clica"
+    },
+    {
+      "id": "e8",
+      "from": "ollaya",
+      "to": "ollama",
+      "label": "estilo, se ligado",
+      "role": "branch",
+      "variant": "dashed"
+    }
+  ]
+}
