@@ -76,6 +76,18 @@ describe('renderSuggestions', () => {
     expect(root.querySelector('.ptbr-card')).toBeNull();
   });
 
+  it('a detection (Ollaya) shows the sentence and only Ignorar', () => {
+    const el = editable();
+    renderSuggestions(el, [{ ...aviso, replacement: '', detectOnly: true }], 0, vi.fn(), vi.fn());
+    const root = overlayRoot();
+    (root.querySelector('.ptbr-underline-aviso') as HTMLElement).click();
+    const card = root.querySelector('.ptbr-card') as HTMLElement;
+    expect(card.querySelector('[data-action="accept"]')).toBeNull();
+    expect(card.querySelector('[data-action="ignore"]')).not.toBeNull();
+    expect(card.querySelector('s')).toBeNull();
+    expect(card.textContent).toContain(aviso.original);
+  });
+
   it('calls onIgnore from the card', () => {
     const el = editable();
     const onIgnore = vi.fn();

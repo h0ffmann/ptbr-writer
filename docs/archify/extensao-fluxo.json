@@ -21,7 +21,7 @@
     },
     {
       "id": "modos",
-      "label": "Modos: quem gera o texto"
+      "label": "Modos: quem revisa o texto"
     }
   ],
   "mainPath": [
@@ -73,8 +73,8 @@
       "lane": "modos",
       "col": 3,
       "type": "backend",
-      "label": "Ollama + Qwen",
-      "sublabel": "nesta máquina, sem chave",
+      "label": "Ollama",
+      "sublabel": "LLM local, sem chave",
       "width": 150
     },
     {
@@ -83,7 +83,7 @@
       "col": 4,
       "type": "backend",
       "label": "Ollaya",
-      "sublabel": "planejado, #61",
+      "sublabel": "decide, só aponta",
       "width": 150
     },
     {
@@ -135,9 +135,8 @@
       "id": "e5",
       "from": "provedor",
       "to": "ollaya",
-      "label": "ainda não",
-      "role": "branch",
-      "variant": "dashed"
+      "label": "um de",
+      "role": "branch"
     },
     {
       "id": "e6",
@@ -150,6 +149,14 @@
       "from": "sublinhados",
       "to": "aceitar",
       "label": "você clica"
+    },
+    {
+      "id": "e8",
+      "from": "ollaya",
+      "to": "ollama",
+      "label": "estilo, se ligado",
+      "role": "branch",
+      "variant": "dashed"
     }
   ]
 }

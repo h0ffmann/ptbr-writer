@@ -19,6 +19,11 @@ describe('buildSystemPrompt', () => {
     expect(prompt).not.toContain('## Formato de saída');
   });
 
+  it('o estilo do Ollaya entra no prompt só quando há estilo', () => {
+    expect(buildSystemPrompt('leve', skill, cientifico, 'socrático')).toContain('Estilo da reescrita: `socrático`');
+    expect(buildSystemPrompt('leve', skill, cientifico)).not.toContain('Estilo da reescrita');
+  });
+
   it('científico embute CIE', () => {
     expect(buildSystemPrompt('científico', skill, cientifico)).toContain('### CIE-1');
     expect(buildSystemPrompt('leve', skill, cientifico)).not.toContain('### CIE-1');
