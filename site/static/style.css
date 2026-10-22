@@ -188,3 +188,8 @@ section, .foot { background: transparent; }
 .figures { list-style: none; padding: 0; display: grid; gap: 20px; }
 .figures img { display: block; max-width: 100%; height: auto; margin-bottom: 6px; border: 1px solid var(--rule); border-radius: 6px; }
 .wrap > pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* The whitepaper, embedded as closed-source's site embeds its paper: the PDF in a frame, with a rule
+   above it, and a line for the phones where the frame does not show. */
+.preview { display: block; width: 100%; height: min(80vh, 900px); margin: 16px 0 8px; border: 0; border-top: 3px solid var(--ink); background: var(--sheet); }
+.sub { color: var(--muted); font-size: 0.9rem; margin: 4px 0 0; }
