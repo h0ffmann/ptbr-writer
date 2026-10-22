@@ -91,16 +91,21 @@ scaling ⚠.
 # Portability
 
 The rules live in one file, `SKILL.md`, with 807 words (`wc -w`), and the `cientifico` skill has
-1,087. An agent that reads skills loads these files with no change. ptbr-writer reaches the writer
-by three paths:
+1,087. An agent that reads skills loads these files with no change. ptbr-writer serves two
+audiences, by different paths.
+
+**Developers** use ptbr-writer in the terminal and in the repository, through a coding agent:
 
 - **Claude Code:** a plugin, installed with one command and pinned by tag. A repository pins the
   version in its own `.claude/settings.json`, and everyone who opens it uses the same one.
 - **OpenCode:** a script copies the skills as files and installs a plugin that does what the
   Claude Code hook does. It was tested on OpenCode 1.19.0: the skills load and the instruction
   reaches the model. That the model answers with the `question` tool was not measured ⚠.
-- **Browser:** an extension for Chrome and Firefox 128+ underlines in the text field what the level
-  asks to change. Nothing changes without a click on **Aceitar** (accept).
+
+**Non-developers** use the Chrome extension (and the Firefox 128+ one), in the field where they
+already write: WhatsApp Web, Gmail and GitHub are on by default. The extension underlines what the
+level asks to change, and nothing changes without a click on **Aceitar** (accept). Today it is still
+installed from the source: the roadmap lists it as in progress, not yet on the Chrome Web Store.
 
 What runs on the machine is a static Rust binary, `ptbr`, of 570,112 bytes on `linux-x86_64`, with
 a twin for `linux-aarch64`. `tools.lock` pins the picasso commit that builds it and the sha256 of
