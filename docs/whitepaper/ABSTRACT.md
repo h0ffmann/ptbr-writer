@@ -5,12 +5,13 @@ Zenodo e decide se usa ou cita o ptbr-writer. As marcas são da skill `cientific
 conferido num arquivo deste repositório no commit `dfe86ce` (2026-10-22), e `⚠` é o que não foi
 medido. As marcas saem do PDF.
 
-**Autores:** Matheus Hoffmann e Rôb Klér Soares da Silva Júnior (@robkler), nesta ordem. O registro
-no Zenodo é um preprint.
+**Autores:** Matheus Hoffmann (ORCID 0009-0009-1056-7661) e Rob Kler Soares da Silva Junior
+(@robkler, ORCID 0009-0003-3102-4996), nesta ordem. O nome e o ORCID do Rob vêm do registro do
+marola no Zenodo (v0.2.2, [10.5281/zenodo.23266642](https://doi.org/10.5281/zenodo.23266642)) e
+batem com o registro público dele no ORCID, lidos em 2026-10-22. O registro no Zenodo é um preprint.
 
-**Para você decidir (CIE-9):** o título, a grafia do nome do Rob (sobrenome "Soares da Silva Júnior",
-prenome "Rôb Klér"; ele não tem ORCID no registro), e se a tese "uma sugestão de escrita é uma
-decisão" entra como tese do artigo ou como escolha de projeto.
+**Para você decidir (CIE-9):** o título, e se a tese "uma sugestão de escrita é uma decisão" entra
+como tese do artigo ou como escolha de projeto.
 
 ## Título (proposta)
 
