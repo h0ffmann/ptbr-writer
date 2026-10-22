@@ -232,8 +232,13 @@ pub fn bipr_page_test() {
 // The whitepaper, one PDF pill per language, with the site's own PDF icon.
 pub fn whitepaper_pills_test() {
   let page = prerender.render()
-  assert string.contains(page, "whitepaper/WHITEPAPER.pdf")
+  // The pt-BR edition is embedded in its own section, as closed-source does; English keeps a pill.
+  assert string.contains(page, "id=\"whitepaper\"")
+  assert string.contains(page, "<iframe class=\"preview\"")
+  assert string.contains(page, "src=\"whitepaper/WHITEPAPER.pdf\"")
   assert string.contains(page, "whitepaper/WHITEPAPER.en.pdf")
+  assert string.contains(page, "Whitepaper (EN)")
+  assert !string.contains(page, "Whitepaper (pt-BR)")
   assert string.contains(page, "pdf.svg")
 }
 
