@@ -76,7 +76,7 @@ credited in the footer: the flag of Brazil (`Flag_of_Brazil.svg`) and Machado de
 ## Made with
 
 "feito com" sits on the cover, under the buttons, and again in the footer. It names the languages
-of the repository (Gleam first; TypeScript left out for now), then Rust after "e, planejado,", then
+of the repository (Gleam first, then Rust, the browser extension's), then
 "com" the agents and the local model servers: Claude Code, OpenCode, OpenCodeReview, Ollama and
 Ollaya. Each name is a pill with its owner's icon; a language's owner is the body that keeps it (TC39
 for JavaScript, WHATWG for HTML), or its official logo's repository at a pinned commit (the GNU Bash
