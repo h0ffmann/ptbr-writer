@@ -20,6 +20,11 @@ pub enum Level {
 impl Level {
     pub const ALL: [Level; 4] = [Level::Estrito, Level::Descritivo, Level::Leve, Level::Cientifico];
 
+    /// The value of a `<select>` back as a level.
+    pub fn parse(s: &str) -> Option<Self> {
+        Self::ALL.into_iter().find(|l| l.as_str() == s)
+    }
+
     pub fn as_str(self) -> &'static str {
         match self {
             Level::Estrito => "estrito",
@@ -55,6 +60,11 @@ impl ProviderId {
             ProviderId::Ollama => "ollama",
             ProviderId::Ollaya => "ollaya",
         }
+    }
+
+    /// The value of a `<select>` back as a provider.
+    pub fn parse(s: &str) -> Option<Self> {
+        Self::ALL.into_iter().find(|p| p.as_str() == s)
     }
 
     /// Ollama and Ollaya run on this machine: no key, any model they have installed.

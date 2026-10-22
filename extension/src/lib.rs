@@ -6,6 +6,8 @@
 pub mod background;
 pub mod decisions;
 pub mod hosts;
+pub mod popup;
+pub mod provider_fields;
 pub mod providers;
 pub mod rules;
 pub mod settings;
@@ -19,6 +21,10 @@ pub mod content;
 
 #[cfg(target_arch = "wasm32")]
 pub mod chrome;
+#[cfg(target_arch = "wasm32")]
+pub mod dom;
+#[cfg(target_arch = "wasm32")]
+pub mod options;
 
 #[cfg(test)]
 pub(crate) mod test_util;
@@ -32,23 +38,33 @@ mod entry {
         std::panic::set_hook(Box::new(|info| web_sys::console::error_1(&info.to_string().into())));
     }
 
+    /// The `#app` of options.html and popup.html.
+    fn app() -> web_sys::HtmlElement {
+        use wasm_bindgen::JsCast;
+        crate::dom::document().get_element_by_id("app").expect("#app").unchecked_into()
+    }
+
     #[wasm_bindgen]
     pub fn start_background() {
         install_panic_hook();
+        crate::background::init();
     }
 
     #[wasm_bindgen]
     pub fn start_content() {
         install_panic_hook();
+        crate::content::controller::start();
     }
 
     #[wasm_bindgen]
     pub fn start_options() {
         install_panic_hook();
+        crate::dom::spawn(crate::options::render(app()));
     }
 
     #[wasm_bindgen]
     pub fn start_popup() {
         install_panic_hook();
+        crate::dom::spawn(crate::popup::render(app()));
     }
 }
