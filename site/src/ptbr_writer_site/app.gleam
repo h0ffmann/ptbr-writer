@@ -154,7 +154,7 @@ fn cover() -> Element(msg) {
       ),
       grafo_pill(
         "grafo/extensao.html",
-        "grafo do código TypeScript da extensão do Chrome (extension/)",
+        "grafo do código TypeScript da extensão de navegador, Chrome e Firefox (extension/)",
         "Grafo da extensão",
       ),
       html.a(
