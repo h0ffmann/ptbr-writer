@@ -278,7 +278,11 @@ mod browser {
         };
         (hooks.on_state)(&el, Status::Checking);
         let request = Message::Check(CheckRequest { key, text: sent.text.clone(), level });
-        let result: CheckResult = chrome::send_message(&request).await.unwrap_or(CheckResult::Err(CheckError::Network));
+        // No answer (the worker gone) is the network; an answer that is not a result is the provider.
+        let result = match chrome::send_message_raw(&request).await {
+            Ok(reply) => chrome::from_js(reply).unwrap_or(CheckResult::Err(CheckError::Provider)),
+            Err(_) => CheckResult::Err(CheckError::Network),
+        };
         let Some(inner) = weak.upgrade() else { return };
         if !inner.borrow().fields.contains(&el) {
             return;

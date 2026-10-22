@@ -31,6 +31,7 @@ pub(crate) mod test_util;
 
 #[cfg(target_arch = "wasm32")]
 mod entry {
+    use wasm_bindgen::JsValue;
     use wasm_bindgen::prelude::wasm_bindgen;
 
     // A panic's message goes to the console before the abort; console_error_panic_hook is not needed.
@@ -44,10 +45,20 @@ mod entry {
         crate::dom::document().get_element_by_id("app").expect("#app").unchecked_into()
     }
 
+    /// Once the wasm is loaded; background.js owns the listeners (see `handle_message`).
     #[wasm_bindgen]
     pub fn start_background() {
         install_panic_hook();
-        crate::background::init();
+    }
+
+    #[wasm_bindgen]
+    pub async fn handle_message(msg: JsValue, sender: JsValue) -> Result<JsValue, JsValue> {
+        crate::background::handle_message(msg, sender).await
+    }
+
+    #[wasm_bindgen]
+    pub async fn sync_sites() {
+        crate::background::sync_sites_now().await;
     }
 
     #[wasm_bindgen]

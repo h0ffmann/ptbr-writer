@@ -33,13 +33,6 @@ extern "C" {
     pub fn get_url(path: &str) -> String;
     #[wasm_bindgen(js_namespace = ["chrome", "runtime"], js_name = openOptionsPage)]
     pub fn open_options_page() -> Promise;
-    #[wasm_bindgen(thread_local_v2, js_namespace = ["chrome", "runtime"], js_name = onMessage)]
-    pub static RUNTIME_ON_MESSAGE: ChromeEvent;
-    /// Absent on an event page (Firefox) and in tests.
-    #[wasm_bindgen(thread_local_v2, js_namespace = ["chrome", "runtime"], js_name = onStartup)]
-    pub static RUNTIME_ON_STARTUP: Option<ChromeEvent>;
-    #[wasm_bindgen(thread_local_v2, js_namespace = ["chrome", "runtime"], js_name = onInstalled)]
-    pub static RUNTIME_ON_INSTALLED: Option<ChromeEvent>;
 
     #[wasm_bindgen(js_namespace = ["chrome", "scripting"], js_name = registerContentScripts)]
     fn scripting_register(scripts: &JsValue) -> Promise;
@@ -82,9 +75,14 @@ pub async fn storage_set<T: Serialize>(key: &str, value: &T) -> Result<(), JsVal
     await_js(storage_local_set(&to_js(&items)?)).await.map(|_| ())
 }
 
+/// `chrome.runtime.sendMessage(msg)`, the reply as it came: `Err` when nothing answered.
+pub async fn send_message_raw<M: Serialize>(msg: &M) -> Result<JsValue, JsValue> {
+    await_js(runtime_send_message(&to_js(msg)?)).await
+}
+
 /// `chrome.runtime.sendMessage(msg)`, the reply read as `R`.
 pub async fn send_message<M: Serialize, R: DeserializeOwned>(msg: &M) -> Result<R, JsValue> {
-    from_js(await_js(runtime_send_message(&to_js(msg)?)).await?)
+    from_js(send_message_raw(msg).await?)
 }
 
 /// The ids of the registered content scripts, all or those among `ids`.

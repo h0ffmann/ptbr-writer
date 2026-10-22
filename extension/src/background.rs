@@ -277,6 +277,7 @@ pub async fn sync_sites<S: Scripting>(settings: &Settings, scripting: &S) -> Res
 mod browser {
     use super::*;
     use crate::chrome;
+    use wasm_bindgen::JsValue;
 
     /// chrome.scripting.
     pub struct ChromeScripting;
@@ -295,76 +296,45 @@ mod browser {
         }
     }
 
-    /// The background's listeners: a message answered later through `sendResponse` (the listener
-    /// returns `true`, as the TypeScript did), and the site sync at startup and install. The
-    /// closures are leaked on purpose: they live as long as the worker.
-    pub fn init() {
+    /// A runtime message with its sender; the reply. background.js registers the listener itself,
+    /// synchronously, before the wasm is loaded: a service worker loses the event that woke it
+    /// when the listener comes later. `Err` on a message that is not one of ours: the loader
+    /// answers it `{ok: false, error: "provider"}`.
+    pub async fn handle_message(msg: JsValue, sender: JsValue) -> Result<JsValue, JsValue> {
         use crate::providers::BrowserFetch;
         use crate::settings::load_settings;
         use crate::types::Message;
-        use js_sys::Function;
-        use wasm_bindgen::JsCast;
-        use wasm_bindgen::JsValue;
-        use wasm_bindgen::closure::Closure;
-        use wasm_bindgen_futures::spawn_local;
-
-        let on_message = Closure::<dyn Fn(JsValue, JsValue, Function) -> bool>::new(
-            |msg: JsValue, sender: JsValue, send_response: Function| {
-                let Ok(msg) = chrome::from_js::<Message>(msg) else {
-                    return false;
+        let (host, enable) = match chrome::from_js::<Message>(msg)? {
+            Message::Check(req) => {
+                let sender: Sender = chrome::from_js(sender).unwrap_or_default();
+                let result = match load_settings().await {
+                    Ok(settings) => check_from_sender(&req, &sender, &BrowserFetch, &settings).await,
+                    Err(_) => CheckResult::Err(CheckError::Provider),
                 };
-                let respond = move |reply: &JsValue| drop(send_response.call1(&JsValue::UNDEFINED, reply));
-                let (host, enable) = match msg {
-                    Message::Check(req) => {
-                        let sender: Sender = chrome::from_js(sender).unwrap_or_default();
-                        spawn_local(async move {
-                            let result = match load_settings().await {
-                                Ok(settings) => check_from_sender(&req, &sender, &BrowserFetch, &settings).await,
-                                Err(_) => CheckResult::Err(CheckError::Provider),
-                            };
-                            respond(&chrome::to_js(&result).expect("a CheckResult serializes"));
-                        });
-                        return true;
-                    }
-                    Message::EnableSite { host } => (host, true),
-                    Message::DisableSite { host } => (host, false),
-                };
-                spawn_local(async move {
-                    let done = if enable {
-                        enable_site(&host, &ChromeScripting).await
-                    } else {
-                        disable_site(&host, &ChromeScripting).await
-                    };
-                    respond(&chrome::to_js(&serde_json::json!({ "ok": done.is_ok() })).expect("an object"));
-                });
-                true
-            },
-        );
-        chrome::RUNTIME_ON_MESSAGE.with(|e| e.add_listener(on_message.as_ref().unchecked_ref()));
-        on_message.forget();
+                return chrome::to_js(&result);
+            }
+            Message::EnableSite { host } => (host, true),
+            Message::DisableSite { host } => (host, false),
+        };
+        let done = if enable {
+            enable_site(&host, &ChromeScripting).await
+        } else {
+            disable_site(&host, &ChromeScripting).await
+        };
+        chrome::to_js(&serde_json::json!({ "ok": done.is_ok() }))
+    }
 
-        let sync = Closure::<dyn Fn()>::new(|| {
-            spawn_local(async {
-                // A failed sync is swallowed, as the TypeScript's `.catch(() => {})`.
-                if let Ok(s) = load_settings().await {
-                    let _ = sync_sites(&s, &ChromeScripting).await;
-                }
-            });
-        });
-        // Absent on a Firefox event page and in tests.
-        for event in [&chrome::RUNTIME_ON_STARTUP, &chrome::RUNTIME_ON_INSTALLED] {
-            event.with(|e| {
-                if let Some(e) = e {
-                    e.add_listener(sync.as_ref().unchecked_ref());
-                }
-            });
+    /// Registers every enabled site; at startup and install. A failed sync is swallowed, as the
+    /// TypeScript's `.catch(() => {})`.
+    pub async fn sync_sites_now() {
+        if let Ok(s) = crate::settings::load_settings().await {
+            let _ = sync_sites(&s, &ChromeScripting).await;
         }
-        sync.forget();
     }
 }
 
 #[cfg(target_arch = "wasm32")]
-pub use browser::{ChromeScripting, init};
+pub use browser::{ChromeScripting, handle_message, sync_sites_now};
 
 #[cfg(test)]
 mod tests {
