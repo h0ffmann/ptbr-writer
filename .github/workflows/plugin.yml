@@ -46,6 +46,10 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      # The runner's own node is not pinned and its version is not in the logs (#83): pin it.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.1
       - run: npm install -g "@anthropic-ai/claude-code@$CLAUDE_CODE_VERSION"
       - run: scripts/plugin-smoke.sh
 
@@ -56,6 +60,10 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      # The runner's own node is not pinned and its version is not in the logs (#83): pin it.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.1
       - run: npm install -g "@anthropic-ai/claude-code@$CLAUDE_CODE_VERSION"
       - env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
