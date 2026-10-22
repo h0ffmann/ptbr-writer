@@ -127,9 +127,11 @@ fn manifest(root: &Path, test: bool, firefox: bool) -> Result<Value, String> {
         "action": { "default_popup": "popup.html" },
         // The extension pages run wasm; the content script loads the glue and the wasm through
         // chrome.runtime.getURL, so they must be web accessible on every https site, as the user
-        // enables sites beyond the default three (background: registerContentScripts).
+        // enables sites beyond the default three (background: registerContentScripts). The dynamic
+        // URL (Chrome only; Firefox has no such key) keeps a page from fingerprinting the extension by
+        // its static id; the e2e suite runs the import through it.
         "content_security_policy": { "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'" },
-        "web_accessible_resources": [{ "resources": ["ptbr_ext.js", "ptbr_ext_bg.wasm"], "matches": accessible }],
+        "web_accessible_resources": [{ "resources": ["ptbr_ext.js", "ptbr_ext_bg.wasm"], "matches": accessible, "use_dynamic_url": !firefox }],
         "content_scripts": [{ "matches": matches, "js": ["content.js"], "css": ["content.css"] }],
     });
     // Firefox runs no background service worker: an event page (scripts) and an add-on id instead.
