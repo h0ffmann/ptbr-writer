@@ -86,4 +86,8 @@ A diagram is a ```` ```mermaid ```` fence in the page it illustrates, starting w
 disagree, the figure is the bug. A PNG is drawn with Archify, vendored as the pinned submodule `vendor/archify`
 (`.claude/skills/archify` links to it; it is never part of the plugin, so nothing of it goes under
 `plugins/`): commit `docs/archify/<slug>.json`, `docs/archify/figures.lock` and `docs/img/<slug>.png`,
-never the HTML. `just figure-init`, `just figure`, `just figure-check` (the last runs in `just quality`).
+never the HTML. Every picture has an English twin, `docs/archify/en/<slug>.json` (`meta.locale` `en`, the same
+lanes, nodes and edges, only the words translated) drawn to `docs/img/en/<slug>.png`: `README.md` embeds the
+pt-BR PNG and `README.en.md` the English one, never the other. `just figure-init`, `just figure`,
+`just figure-check` (the last runs in `just quality` and fails on a missing twin, a twin that is not the same
+drawing, or a README that embeds the other language's PNG).

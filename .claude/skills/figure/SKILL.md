@@ -64,6 +64,9 @@ over it and `docs/img/<slug>.png` is taken. `just figure-init` checks the submod
 `just figure-check` fails when a source has no PNG or changed since it.
 
 - Commit the JSON, `docs/archify/figures.lock` and the PNG; never the HTML (`build/`).
+- Write the English twin `docs/archify/en/<slug>.json`: the same JSON with `meta.locale` `en` and only the words
+  translated (title, lanes, labels, sublabels, tags). `README.md` embeds `docs/img/<slug>.png`; `README.en.md`
+  embeds `docs/img/en/<slug>.png`. If a translated label breaks the layout, shorten the label; never move a box.
 - Embed the PNG by its relative path with an alt text that says what it shows, and put the same
   reading card under it, in every language of the page. At most about 10 boxes, short labels, no jargon.
 - Look at the PNG at full size and shrunk to 800 px wide before you commit it: every label must read.
