@@ -1,6 +1,4 @@
 <div align="center">
-| [extensão do Chrome](extension/build.mjs) | in progress | underlines in a field what the level asks to change; local dev, not yet in the Chrome Web Store; also runs on Firefox 128+ |
-| [FOSS (Ollama, Ollaya)](extension/src/providers.ts) | in progress | open-source local providers, no key and no cloud: Ollama writes the replacement and Ollaya points out the rule or picks the style; latency and accuracy on pt-BR not measured ⚠ |
 
 <img alt="A writing quill in a single line: original drawing" src="site/static/favicon.svg" width="120"/>
 
@@ -447,6 +445,8 @@ that the site and the README guard read.
 | [plugin](plugins/ptbr-writer/.claude-plugin/plugin.json) | done | Claude Code plugin, installed with one command at the release version; OpenCode reads `SKILL.md` directly |
 | [distribuição](CHANGELOG.md) | done | release by tag with `just release`; v0.2.0 is the official version, installed by tag |
 | [opencode](scripts/install-opencode.sh) | in progress | skills and the `ask-levels` plugin for OpenCode, installed by tag; tested on OpenCode 1.19.0 (skills and instruction), the `question` tool was not measured ⚠; the script ships in the next release ⚠ |
+| [extensão do Chrome](extension/build.mjs) | in progress | underlines in a field what the level asks to change; local dev, not yet in the Chrome Web Store; also runs on Firefox 128+ |
+| [FOSS (Ollama, Ollaya)](extension/src/providers.ts) | in progress | open-source local providers, no key and no cloud: Ollama writes the replacement and Ollaya points out the rule or picks the style; latency and accuracy on pt-BR not measured ⚠ |
 | [retórica](skills/retorica/SKILL.md) | planned | only the skeleton, no rules |
 
 ## awesome-ptbr-writer

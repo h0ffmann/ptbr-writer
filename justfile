@@ -333,6 +333,9 @@ quality: pins saramago-check plugin-check figure-check ext-test
     jq . .opencode.json >/dev/null
     # The README copies the tables of site/data/ by hand: each repo, roadmap item, rule and planned level must be in it.
     tail -n +2 site/data/awesome.tsv site/data/roadmap.tsv site/data/origins.tsv site/data/planned.tsv | grep -v '^==>' | cut -f1 | grep . | while read -r x; do grep -qF -- "$x" README.md || { echo "quality: README.md lacks $x" >&2; exit 1; }; done
+    # A table row lives in its table: no row before the first heading, and the roadmap table has one row per
+    # site/data/roadmap.tsv item (#74: a bad edit put two rows at the top and the name check above still passed).
+    want=$(($(wc -l < site/data/roadmap.tsv) - 1)); for r in README.md README.en.md; do ! awk '/^## /{exit} /^\| /{f=1} END{exit !f}' "$r" || { echo "quality: $r has a table row before its first heading" >&2; exit 1; }; got=$(awk '/^## roadmap$/{on=1; next} on && /^## /{exit} on && /^\| /{n++} END{print n - 2}' "$r"); [ "$got" = "$want" ] || { echo "quality: $r roadmap table has $got rows, site/data/roadmap.tsv has $want" >&2; exit 1; }; done
     # Every Archify figure is indexed in both READMEs, by its published page.
     for j in docs/archify/*.json; do s=$(basename "$j" .json); for r in README.md README.en.md; do grep -qF "figuras/$s.html" "$r" || { echo "quality: $r does not index the figure $s" >&2; exit 1; }; done; done
     # Each README carries its own reading time, from the plugin's calculator: just reading-time writes it.
