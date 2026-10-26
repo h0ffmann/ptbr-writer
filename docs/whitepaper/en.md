@@ -200,8 +200,8 @@ The default decision model comes from a survey in the repository itself
 
 `decima` is the default because it is the CPU candidate whose card lists Portuguese and that has
 the lowest calibration error. None of these numbers was measured on pt-BR or on the PTW rules ⚠.
-The extension has 169 unit tests (Vitest, on 22 October 2026) and end-to-end tests in Chromium,
-with a fake server and no real API.
+The extension, Rust compiled to WebAssembly, has 113 unit tests (`cargo test`, on 22 October 2026)
+and 32 end-to-end tests in Chromium, with a fake server and no real API.
 
 # A harness that improves itself
 

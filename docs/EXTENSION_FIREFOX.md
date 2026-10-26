@@ -45,18 +45,23 @@ Os valores vêm dos comandos da última coluna, rodados na máquina do teste.
 ### 1. O build para o Firefox
 
 O Firefox não roda o `background.service_worker` do manifesto MV3 do Chrome. O
-`node build.mjs --firefox` gera o mesmo pacote com duas diferenças no manifesto:
+`cargo xtask build --firefox` (em 2026-10-21, `node build.mjs --firefox`, do build em TypeScript
+que a reescrita em Rust substituiu) gera o mesmo pacote com duas diferenças no manifesto:
 
 - `background.scripts: ["background.js"]` no lugar do service worker;
 - `browser_specific_settings.gecko`: o id `ptbr-writer@h0ffmann` e o Firefox mínimo 128.0.
 
-O comando `just ext-build-firefox` gerou `extension/dist-firefox/` com 8 arquivos: `manifest.json`,
-`background.js`, `content.js`, `content.css`, `popup.html`, `popup.js`, `options.html` e
-`options.js`.
+O comando `just ext-build-firefox` gera `extension/dist-firefox/` com 13 arquivos: `manifest.json`,
+`background.js`, `content.js`, `content.css`, `popup.html`, `popup.js`, `options.html`, `options.js`,
+o wasm e sua cola (`ptbr_ext_bg.wasm`, `ptbr_ext.js`) e o mesmo módulo em JavaScript para o content
+script (`ptbr_ext_js.js`, `ptbr_ext_js_bg.js`, `ptbr_ext_js_bg.wasm.js`).
 
-O `npx web-ext@8.3.0 lint --source-dir extension/dist-firefox` deu 0 erros, 0 notices e 1
-aviso: `UNSAFE_VAR_ASSIGNMENT` (atribuição a `innerHTML`) em `options.js`. O aviso não impede a
-carga da extensão.
+Em 2026-10-21, o `npx web-ext@8.3.0 lint --source-dir extension/dist-firefox` deu 0 erros, 0 notices
+e 1 aviso: `UNSAFE_VAR_ASSIGNMENT` (atribuição a `innerHTML`) em `options.js`. O aviso não impede a
+carga da extensão. Em 2026-10-22, o build em Rust foi carregado no Firefox pelo MCP do repositório
+(`install_extension`, `extension/dist-firefox`) e, em `github.com/login`, um campo de texto com três
+palavras mostrou o selo "sem chave": o content script roda sob a CSP do GitHub e o background
+responde. ⚠ O lint não foi repetido com o build em Rust.
 
 ### 2. A carga manual
 

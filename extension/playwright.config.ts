@@ -1,6 +1,6 @@
 import { defineConfig } from '@playwright/test';
 
-// The extension is loaded from dist-test (`node build.mjs --test`); each test launches its own Chromium.
+// The extension is loaded from dist-test (`cargo xtask build --test`); each test launches its own Chromium.
 export default defineConfig({
   testDir: 'e2e',
   globalSetup: './e2e/global-setup.ts',

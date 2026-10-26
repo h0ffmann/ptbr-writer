@@ -18,4 +18,5 @@ extension/dist-test/
 extension/dist-firefox/
 extension/test-results/
 extension/playwright-report/
+extension/target/
 extension/e2e/pages/lexical.js
