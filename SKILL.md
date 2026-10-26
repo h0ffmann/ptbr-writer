@@ -85,6 +85,22 @@ No nível `científico`, número sem unidade, ou sem comando ou fonte, é sinali
 
 Cada frase é fato com fonte ou leitura do autor, e diz qual. `A fonte não diz` não é `não é assim`.
 
+### PTW-14: Palavras inteiras e por extenso
+
+Separe e junte palavras (`bomd ia` vira `bom dia`). Troque abreviação de internet pela palavra (`vc` vira `você`, `pq` vira `porque`). O Acordo de 1990 fica com a PTW-8.
+
+### PTW-15: Pontuação
+
+Vírgula depois de vocativo e de saudação. Ponto final no fim da frase. `?` em pergunta. Vírgula antes de `mas`. Nunca vírgula entre sujeito e verbo.
+
+### PTW-16: Maiúsculas e concordância
+
+Maiúscula no início da frase e em nome próprio. Concordância verbal e nominal (`os relatórios estão prontos`).
+
+### PTW-17: Frase reorganizada
+
+Reescreva inteira a frase confusa, longa ou ambígua, no tom pedido. Não mude o sentido nem acrescente informação. A frase reescrita já leva as correções das PTW-8 e PTW-14 a 16. Não reescreva a frase que já está correta e clara.
+
 ## Limites
 
 A skill não muda tese, autoria nem conclusões: quem decide é o humano. Ela não busca fontes; marca o que não foi checado.

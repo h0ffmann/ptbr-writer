@@ -35,6 +35,7 @@ mod browser {
         LEVELS, ProviderFields as Saved, disable_site_flow, enable_site_flow, save_provider_fields, set_enabled,
         set_level,
     };
+    use crate::text_fields::mount_text_fields;
     use crate::types::Level;
     use std::cell::RefCell;
     use std::rc::Rc;
@@ -110,6 +111,8 @@ mod browser {
                 )?;
             }
         }
+
+        mount_text_fields(&section(&root), &s.borrow());
 
         let provider = section(&root);
         {

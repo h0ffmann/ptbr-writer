@@ -16,6 +16,14 @@ export interface Suggestion {
 
 export const SUGGESTION: Suggestion = { original: 'Foi decidido', replacement: 'A equipe decidiu', rule: 'PTW-1', severity: 'erro' };
 
+// One sentence, rewritten (aviso) with an erro inside it: the screen must show only the aviso.
+export const REWRITE_TYPED = 'Foi decidido que o deploy vai ser na sexta.';
+export const REWRITE_FIXED = 'O deploy será na sexta, como a equipe decidiu.';
+export const REWRITE: Suggestion[] = [
+  SUGGESTION,
+  { original: REWRITE_TYPED, replacement: REWRITE_FIXED, rule: 'PTW-17', severity: 'aviso' },
+];
+
 export interface Call {
   path: string;
   host: string;
@@ -104,8 +112,10 @@ export async function startFakeServer(): Promise<FakeServer> {
       }
     }
     try {
-      const html = await readFile(join(PAGES, basename(path)));
-      const headers: Record<string, string> = { 'content-type': 'text/html; charset=utf-8' };
+      const file = basename(path);
+      const html = await readFile(join(PAGES, file));
+      const type = file.endsWith('.js') ? 'text/javascript' : 'text/html';
+      const headers: Record<string, string> = { 'content-type': `${type}; charset=utf-8` };
       // A page under /csp/ forbids every script and style of its own: the extension must still run.
       if (path.startsWith('/csp/')) headers['content-security-policy'] = "default-src 'none'; script-src 'none'; style-src 'none'";
       res.writeHead(200, headers);

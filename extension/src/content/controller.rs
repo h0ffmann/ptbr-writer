@@ -9,7 +9,9 @@ use crate::content::apply::accept_suggestion;
 use crate::content::overlay::{Action, Overlay};
 use crate::content::text::text_model;
 use crate::content::watcher::{Hooks, Status, Watcher};
+use crate::never_fix::add_never_fix;
 use crate::settings::{level_for, load_settings};
+use crate::sites::save_text_settings;
 use crate::suggestions::apply_to_string;
 use crate::types::{Level, Located};
 use crate::utf16::len16;
@@ -74,6 +76,7 @@ struct Inner {
     win: Window,
     fields: ElMap<FieldState>,
     level: Option<Level>,
+    delay_ms: Option<u32>,
     watcher: Option<Watcher>,
     overlay: Overlay,
     frame: Option<i32>,
@@ -119,6 +122,7 @@ impl Content {
                 win: win.clone(),
                 fields: ElMap::new(),
                 level: None,
+                delay_ms: None,
                 watcher: None,
                 overlay,
                 frame: None,
@@ -208,18 +212,21 @@ impl Inner {
     }
 }
 
-// Reads the settings and starts over when this site's level changed.
+// Reads the settings and starts over when this site's level or the wait changed. Tone, rewrite, the
+// never-fix list and the provider are read at send time, so a save of those keeps the suggestions
+// on screen.
 async fn follow(weak: &Weak<RefCell<Inner>>) -> Result<(), JsValue> {
     let settings = load_settings().await?;
     let Some(inner) = weak.upgrade() else { return Ok(()) };
     let host = inner.borrow().win.location().hostname()?;
     let next = level_for(&host, &settings);
     let mut i = inner.borrow_mut();
-    if next == i.level {
+    if next == i.level && Some(settings.delay_ms) == i.delay_ms {
         return Ok(());
     }
     i.stop();
     i.level = next;
+    i.delay_ms = Some(settings.delay_ms);
     let Some(level) = next else { return Ok(()) };
     let w = weak.clone();
     let on_result = Box::new(move |el: &HtmlElement, located: Vec<Located>, offset: u32| {
@@ -239,7 +246,7 @@ async fn follow(weak: &Weak<RefCell<Inner>>) -> Result<(), JsValue> {
             i.render(el);
         }
     });
-    i.watcher = Some(Watcher::new(level, Hooks { on_result, on_state }));
+    i.watcher = Some(Watcher::new(level, settings.delay_ms, Hooks { on_result, on_state }));
     // The focused field gets no new focusin: before the script ran, or when the site was switched on.
     let active = i.doc.active_element().map_or(JsValue::UNDEFINED, JsValue::from);
     i.attach(&active);
@@ -250,8 +257,18 @@ async fn follow(weak: &Weak<RefCell<Inner>>) -> Result<(), JsValue> {
 // by the change in length, and the API is not called again until the user types.
 fn act(weak: &Weak<RefCell<Inner>>, el: &HtmlElement, l: &Located, action: Action) {
     let Some(inner) = weak.upgrade() else { return };
-    if action == Action::Ignore {
-        return inner.borrow_mut().drop_suggestion(el, l);
+    match action {
+        Action::Ignore => return inner.borrow_mut().drop_suggestion(el, l),
+        // "Sempre ignorar" saves the phrase and drops the underline; the API is not called again.
+        Action::NeverFix => {
+            inner.borrow_mut().drop_suggestion(el, l);
+            let phrase = l.suggestion.original.clone();
+            spawn_local(async move {
+                let _ = save_text_settings(|s| s.never_fix = add_never_fix(&s.never_fix, &phrase)).await;
+            });
+            return;
+        }
+        Action::Accept => {}
     }
     let offset = {
         let mut i = inner.borrow_mut();

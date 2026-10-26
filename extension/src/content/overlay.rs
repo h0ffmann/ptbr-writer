@@ -1,14 +1,18 @@
 //! Everything drawn for an editor, in one shadow root outside it: the underlines, the badge and
-//! the card (Aceitar / Ignorar). The editor's DOM is never touched. One listener each on the
-//! shadow root (a click, a mousedown) serves every underline, badge and card button; three on the
-//! document close the card and find the hovered word.
+//! the card (Aceitar / Ignorar / Sempre ignorar). The editor's DOM is never touched. One listener
+//! each on the shadow root (a click, a mousedown) serves every underline, badge and card button;
+//! three on the document close the card and find the hovered word.
 
+use crate::content::card::{card_heading, offers_never_fix};
 use crate::content::text::{TextModel, field_value, is_field, range_for, text_model};
 use crate::content::watcher::Status;
 use crate::content::{ElMap, Timer, same};
+use crate::rules::rule_titles;
+use crate::skills::{CIENTIFICO, SKILL};
 use crate::types::{CheckError, Located, Severity};
 use crate::utf16::len16;
 use std::cell::RefCell;
+use std::collections::BTreeMap;
 use std::fmt::Write as _;
 use std::rc::{Rc, Weak};
 use wasm_bindgen::prelude::Closure;
@@ -101,6 +105,7 @@ fn badge_label(e: CheckError) -> &'static str {
         CheckError::Provider | CheckError::Network => "erro do provider",
         CheckError::Local => "Ollama inacessível",
         CheckError::LocalOllaya => "Ollaya inacessível",
+        CheckError::Reload => "recarregue a página",
     }
 }
 
@@ -109,6 +114,8 @@ fn badge_label(e: CheckError) -> &'static str {
 pub enum Action {
     Accept,
     Ignore,
+    /// "Sempre ignorar": drop it and add the original to the never-fix list.
+    NeverFix,
 }
 
 /// Called with no borrow of the overlay held: it may render again.
@@ -189,6 +196,8 @@ struct Inner {
     drawn: ElMap<Drawn>,
     card: Option<Card>,
     on_action: OnAction,
+    // The rule titles of both skills, by code.
+    titles: BTreeMap<String, String>,
     // The word under the mouse, to open when HOVER_MS pass.
     pending_open: Option<(HtmlElement, usize)>,
     open_timer: Option<Timer>,
@@ -244,6 +253,7 @@ impl Overlay {
                 drawn: ElMap::new(),
                 card: None,
                 on_action,
+                titles: rule_titles(SKILL).into_iter().chain(rule_titles(CIENTIFICO)).collect(),
                 pending_open: None,
                 open_timer: None,
                 close_timer: None,
@@ -478,7 +488,7 @@ impl Inner {
         let node = self.div("ptbr-card");
         let _ = node.set_attribute("role", "dialog");
         let rule = self.p("ptbr-rule");
-        rule.set_text_content(Some(&l.suggestion.rule));
+        rule.set_text_content(Some(&card_heading(l, &self.titles)));
         let change = self.p("ptbr-change");
         // A detection (Ollaya) has no replacement: the card names the rule and the sentence, with
         // only Ignorar.
@@ -499,6 +509,9 @@ impl Inner {
             let _ = actions.append_child(&self.button("accept", "Aceitar"));
         }
         let _ = actions.append_child(&self.button("ignore", "Ignorar"));
+        if offers_never_fix(l) {
+            let _ = actions.append_child(&self.button("never", "Sempre ignorar"));
+        }
         let _ = node.append_with_node_3(&rule, &change, &actions);
         let _ = self.root().append_child(&node);
         self.card = Some(Card { el: el.clone(), node, idx, hover, start, end });
@@ -623,6 +636,7 @@ impl Inner {
             let action = match b.get_attribute("data-action").as_deref() {
                 Some("accept") => Action::Accept,
                 Some("ignore") => Action::Ignore,
+                Some("never") => Action::NeverFix,
                 _ => return None,
             };
             let c = self.card.take()?;

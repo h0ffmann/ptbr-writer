@@ -1,6 +1,7 @@
 //! The model's answer: the JSON array in it, where each item sits in the text (in UTF-16 units,
 //! matched in NFC), and the edits.
 
+use crate::never_fix::breaks_entry;
 use crate::types::{Located, Severity, Suggestion};
 use crate::utf16::{byte_at, slice16};
 use serde_json::Value;
@@ -135,6 +136,28 @@ pub fn span<'a>(text: &'a str, l: &Located) -> Option<&'a str> {
     slice16(text, l.start, l.end)
 }
 
+/// The service worker's filters, on positions `locate` finds in the sent text, in this order:
+/// (1) without `rewrite` every aviso goes; (2) an aviso across a line break goes, as in the watcher,
+/// so its erros stay; (3) a suggestion that would change a never-fix entry goes; (4) an erro inside a
+/// remaining aviso goes (one sentence, one color); (5) `drop_overlaps` settles the rest.
+pub fn filter_suggestions(text: &str, s: &[Suggestion], rewrite: bool, never_fix: &[String]) -> Vec<Suggestion> {
+    let aviso = |x: &Located| x.suggestion.severity == Severity::Aviso;
+    let mut l = locate(text, s);
+    // "Só erros" drops rewrites; a detection (Ollaya, no replacement) is not a rewrite and stays.
+    if !rewrite {
+        l.retain(|x| !aviso(x) || x.suggestion.detect_only);
+    }
+    l.retain(|x| !aviso(x) || !span(text, x).is_some_and(|t| t.contains('\n')));
+    // A detect-only card (Ollaya) changes nothing, so it cannot break a word the person keeps.
+    l.retain(|x| {
+        let s = &x.suggestion;
+        s.detect_only || !never_fix.iter().any(|e| breaks_entry(&s.original, &s.replacement, e))
+    });
+    let avisos: Vec<(u32, u32)> = l.iter().filter(|x| aviso(x)).map(|x| (x.start, x.end)).collect();
+    l.retain(|x| aviso(x) || !avisos.iter().any(|&(a, b)| x.start >= a && x.end <= b));
+    drop_overlaps(l).into_iter().map(|x| x.suggestion).collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -246,5 +269,84 @@ mod tests {
         assert_eq!(apply_to_string("Foi decidido hoje", &l), "A equipe decidiu hoje");
         let l = Located { suggestion: sug("ção", 1, "cao"), start: 4, end: 7 };
         assert_eq!(apply_to_string("👋 ação!", &l), "👋 acao!");
+    }
+
+    mod filter {
+        use super::*;
+
+        const TEXT: &str = "bomd ia tudo bem com vc. O relatório está pronto";
+
+        fn mk(original: &str, replacement: &str, severity: Severity) -> Suggestion {
+            Suggestion { severity, ..sug(original, 1, replacement) }
+        }
+
+        fn aviso() -> Suggestion {
+            mk("bomd ia tudo bem com vc.", "Bom dia, tudo bem com você.", Severity::Aviso)
+        }
+
+        fn erro() -> Suggestion {
+            mk("vc", "você", Severity::Erro)
+        }
+
+        fn keep(list: &[&str]) -> Vec<String> {
+            list.iter().map(|s| s.to_string()).collect()
+        }
+
+        #[test]
+        fn erro_dentro_de_aviso_fica_so_o_aviso() {
+            assert_eq!(filter_suggestions(TEXT, &[aviso(), erro()], true, &[]), [aviso()]);
+        }
+
+        #[test]
+        fn so_erros_fica_so_o_erro() {
+            assert_eq!(filter_suggestions(TEXT, &[aviso(), erro()], false, &[]), [erro()]);
+        }
+
+        #[test]
+        fn aviso_nao_achado_o_erro_fica() {
+            let lost = mk("bomd  ia", "Bom dia", Severity::Aviso);
+            assert_eq!(filter_suggestions(TEXT, &[lost, erro()], true, &[]), [erro()]);
+        }
+
+        #[test]
+        fn lista_some_o_erro_e_o_aviso_que_trocam_a_entrada() {
+            let kept = mk("O relatório está pronto", "O relatório está pronto, vc", Severity::Aviso);
+            let drop = mk("bomd ia tudo bem com vc.", "Bom dia, tudo bem.", Severity::Aviso);
+            let vc = keep(&["vc"]);
+            assert_eq!(filter_suggestions(TEXT, &[erro()], true, &vc), []);
+            assert_eq!(filter_suggestions(TEXT, &[drop], true, &vc), []);
+            assert_eq!(filter_suggestions(TEXT, std::slice::from_ref(&kept), true, &vc), [kept]);
+        }
+
+        #[test]
+        fn lista_troca_so_de_maiuscula_tambem_some_com_a_entrada_intacta_fica() {
+            let t = "falei com maria ontem";
+            let up = mk("maria", "Maria", Severity::Erro);
+            let comma = mk("maria", "maria,", Severity::Erro);
+            let maria = keep(&["maria"]);
+            assert_eq!(filter_suggestions(t, &[up], true, &maria), []);
+            assert_eq!(filter_suggestions(t, std::slice::from_ref(&comma), true, &maria), [comma]);
+        }
+
+        #[test]
+        fn aviso_descartado_pela_lista_devolve_os_seus_erros() {
+            let bomd = mk("bomd ia", "bom dia", Severity::Erro);
+            assert_eq!(filter_suggestions(TEXT, &[aviso(), bomd.clone()], true, &keep(&["vc"])), [bomd]);
+        }
+
+        #[test]
+        fn aviso_que_atravessa_uma_quebra_de_linha_some_e_devolve_os_seus_erros() {
+            let t = "bomd ia tudo\nbem com vc.";
+            let across = mk("bomd ia tudo\nbem com vc.", "Bom dia, tudo bem com você?", Severity::Aviso);
+            let bomd = mk("bomd ia", "bom dia", Severity::Erro);
+            assert_eq!(filter_suggestions(t, &[across, bomd.clone()], true, &[]), [bomd]);
+        }
+
+        #[test]
+        fn sobreposicao_parcial_fica_so_o_primeiro_sem_erro() {
+            let a = mk(&TEXT[..10], "A", Severity::Aviso);
+            let e = mk(&TEXT[5..15], "E", Severity::Erro);
+            assert_eq!(filter_suggestions(TEXT, &[a.clone(), e], true, &[]), [a]);
+        }
     }
 }

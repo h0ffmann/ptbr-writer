@@ -27,8 +27,9 @@ extern "C" {
     #[wasm_bindgen(thread_local_v2, js_namespace = ["chrome", "storage"], js_name = onChanged)]
     pub static STORAGE_ON_CHANGED: Option<ChromeEvent>;
 
-    #[wasm_bindgen(js_namespace = ["chrome", "runtime"], js_name = sendMessage)]
-    fn runtime_send_message(message: &JsValue) -> Promise;
+    // `catch`: after the extension reloads, a script left in an open tab throws here, synchronously.
+    #[wasm_bindgen(catch, js_namespace = ["chrome", "runtime"], js_name = sendMessage)]
+    fn runtime_send_message(message: &JsValue) -> Result<Promise, JsValue>;
     #[wasm_bindgen(js_namespace = ["chrome", "runtime"], js_name = getURL)]
     pub fn get_url(path: &str) -> String;
     #[wasm_bindgen(js_namespace = ["chrome", "runtime"], js_name = openOptionsPage)]
@@ -77,7 +78,7 @@ pub async fn storage_set<T: Serialize>(key: &str, value: &T) -> Result<(), JsVal
 
 /// `chrome.runtime.sendMessage(msg)`, the reply as it came: `Err` when nothing answered.
 pub async fn send_message_raw<M: Serialize>(msg: &M) -> Result<JsValue, JsValue> {
-    await_js(runtime_send_message(&to_js(msg)?)).await
+    await_js(runtime_send_message(&to_js(msg)?)?).await
 }
 
 /// `chrome.runtime.sendMessage(msg)`, the reply read as `R`.

@@ -6,6 +6,7 @@
 pub mod background;
 pub mod decisions;
 pub mod hosts;
+pub mod never_fix;
 pub mod popup;
 pub mod provider_fields;
 pub mod providers;
@@ -14,6 +15,7 @@ pub mod settings;
 pub mod sites;
 pub mod skills;
 pub mod suggestions;
+pub mod text_fields;
 pub mod types;
 pub mod utf16;
 

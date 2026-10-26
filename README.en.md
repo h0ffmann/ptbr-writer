@@ -73,7 +73,10 @@ change.
 2. In `chrome://extensions`, turn on **Developer mode** and load `extension/dist/`.
 3. In the popup, choose the provider and the model, and click **Salvar** (save).
 
-Nothing in the text changes without your click on **Aceitar** (accept). Firefox 128+ uses
+Nothing in the text changes without your click on **Aceitar** (accept). Red marks spelling,
+punctuation, agreement and the other rules; yellow, a reorganized sentence (a **Reescrita** card,
+"rewrite"). In the settings: the tone, how much to fix, the wait and the "never fix" list (**Sempre
+ignorar**, "always ignore"). Firefox 128+ uses
 `just ext-build-firefox` ([guide](docs/EXTENSION_FIREFOX.md), pt-BR). The providers:
 
 - **Claude or DeepSeek:** with your key.
@@ -124,7 +127,7 @@ leve: ...` uses `leve`. The files are named `ptbr-writer-<date>-<goal>-<level>.<
 
 ## rules
 
-Rules PTW-1 to PTW-13 are in [`SKILL.md`](SKILL.md). The `cientifico` skill adds the CIE rules. The
+Rules PTW-1 to PTW-17 are in [`SKILL.md`](SKILL.md). The `cientifico` skill adds the CIE rules. The
 [site](https://h0ffmann.github.io/ptbr-writer/) shows each rule with its origin, the roadmap, the
 related projects and the figures:
 
@@ -156,6 +159,7 @@ just quality     # everything CI checks
 - PTW-1 to PTW-8: the PTC by @kayquer (MIT).
 - PTW-9 to PTW-13: the `ouro-paper` skill of marola-dev/marola-research and "Audience and evidence"
   of h0ffmann/ww3-gpu.
+- PTW-14 to PTW-17: requested by @robkler.
 - Scientific skill: `scientific-writing` of K-Dense-AI/scientific-agent-skills (MIT, Copyright (c)
   2025 K-Dense Inc.) and `artigo` of labdaps/labskills (MIT, Copyright (c) 2026 LABDAPS), in our own
   words. Requested citation: Kassis, T. et al. (2026), *Scientific Agent Skills*, arXiv:2609.00065.

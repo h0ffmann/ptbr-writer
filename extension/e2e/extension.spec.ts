@@ -1,3 +1,4 @@
+import { REWRITE, REWRITE_FIXED } from './fake-server';
 import { accept, expect, FIXED, SETTLE, test, TYPED, typeAndWait, UI_TIMEOUT } from './helpers';
 
 // The four providers, end to end: a textarea, the underline, Aceitar, the field changed.
@@ -28,7 +29,7 @@ test('ollaya: uma pergunta por frase, só aponta', async ({ ext, server }) => {
   ]);
   await page.locator('.ptbr-underline[data-i="0"] .ptbr-hit').first().click();
   const card = page.locator('.ptbr-card');
-  await expect(card.locator('.ptbr-rule')).toHaveText('PTW-1 (90%)');
+  await expect(card.locator('.ptbr-rule')).toHaveText('PTW-1 (90%) · Quem faz, aparece');
   await expect(card.locator('button')).toHaveText(['Ignorar']);
 });
 
@@ -81,4 +82,32 @@ test('uma página com CSP estrita roda a extensão', async ({ ext, server }) => 
   await accept(page);
   await expect(page.locator('#field')).toHaveValue(FIXED);
   expect(server.calls.length).toBe(1);
+});
+
+test('frase reorganizada mostra só o amarelo', async ({ ext, server }) => {
+  server.reply = REWRITE;
+  await ext.launch();
+  const page = await ext.open('textarea.html');
+  await typeAndWait(page);
+  const aviso = page.locator('.ptbr-underline-aviso');
+  await expect(aviso).toHaveCount(1);
+  await expect(page.locator('.ptbr-underline-erro')).toHaveCount(0);
+  await aviso.locator('.ptbr-hit').first().click();
+  await expect(page.locator('.ptbr-card')).toContainText('Reescrita');
+  await page.locator('.ptbr-card [data-action=accept]').click();
+  await expect(page.locator('#field')).toHaveValue(REWRITE_FIXED);
+});
+
+test('editor Lexical (como o do WhatsApp) aceita a correção e não chama a API de novo', async ({ ext, server }) => {
+  await ext.launch();
+  const page = await ext.open('lexical.html');
+  await typeAndWait(page, TYPED, '#editor');
+  await accept(page);
+  const lexicalText = () => page.evaluate(() => (window as unknown as { lexicalText: () => string }).lexicalText());
+  await expect.poll(lexicalText).toBe(FIXED);
+  await expect(page.locator('#editor')).toHaveText(FIXED);
+  const calls = server.calls.length;
+  await page.waitForTimeout(SETTLE + 500);
+  expect(await lexicalText()).toBe(FIXED);
+  expect(server.calls.length).toBe(calls);
 });
