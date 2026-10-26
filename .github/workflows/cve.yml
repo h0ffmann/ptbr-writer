@@ -1,7 +1,8 @@
 # cve — known vulnerabilities in what this repository uses (#83). Runs on main after each merge, on
 # each pull request and every Monday, so an advisory published after a merge still turns main red.
 #
-# - osv: OSV-Scanner reads this repository's lock files (extension/package-lock.json) against
+# - osv: OSV-Scanner reads this repository's lock files (extension/package-lock.json and
+#   extension/Cargo.lock) against
 #   osv.dev. The checkout has no submodules: forks/picasso and vendor/archify are scanned by their
 #   own repositories.
 # - node: the node of the dev shell (nix/nodejs-bin.nix). `just node-check` fails below the fixed

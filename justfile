@@ -1,5 +1,9 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
+# The extension recipes run in the dev shell (cargo, wasm-bindgen, binaryen); outside it they enter it.
+_cargo := `command -v cargo || true`
+dev := if _cargo == "" { "nix develop " + justfile_directory() + " --no-update-lock-file -c" } else { "" }
+
 # ptbr-writer — recipes for developing and running the skill with OpenCode + local Qwen.
 
 default:
@@ -357,13 +361,13 @@ quality: pins saramago-check plugin-check figure-check whitepaper-check node-che
 labels:
     grep -E '^\| `[^`]+` \| `#[0-9A-Fa-f]{6}` \|' ISSUE_LABELS.md | while IFS='|' read -r _ n c d _; do n=${n//\`/}; c=${c//\`/}; n=${n// /}; c=${c// /}; d=${d# }; d=${d% }; gh label create "$n" --color "${c#\#}" --description "$d" --force; done
 
-# Chrome extension: build into extension/dist.
+# Chrome extension (Rust, wasm): build into extension/dist.
 ext-build:
-    cd extension && npm ci && node build.mjs
+    cd extension && {{ dev }} cargo xtask build
 
 # The same extension for Firefox (128+), into extension/dist-firefox.
 ext-build-firefox:
-    cd extension && npm ci && node build.mjs --firefox
+    cd extension && {{ dev }} cargo xtask build --firefox
 
 # Serve a model with Ollama for the extension's provider "Ollama (local)", at 127.0.0.1:11434.
 # Ollama answers 403 to an extension's origin unless started with OLLAMA_ORIGINS; this sets it.
@@ -440,13 +444,13 @@ ext-ollaya model="decima":
     echo "ext-ollaya: serving {{ model }} at $OLLAYA_HOST for the extension; Ctrl-C stops it"
     wait $srv
 
-# Chrome extension: type check (tsconfig has noEmit) and unit tests.
-ext-test: ext-build
-    cd extension && npx tsc -p . && npx vitest run
+# Chrome extension: format, clippy (host and wasm32, with and without the test build) and unit tests.
+ext-test:
+    cd extension && {{ dev }} bash -euo pipefail -c 'cargo fmt --all -- --check && cargo clippy --all-targets -- -D warnings && cargo clippy --target wasm32-unknown-unknown -- -D warnings && cargo clippy --target wasm32-unknown-unknown --features test-build -- -D warnings && cargo test && cargo test --features test-build'
 
 # Chrome extension: end-to-end tests (Playwright) against extension/dist-test.
 ext-e2e:
-    cd extension && npx playwright install chromium && node build.mjs --test && npx playwright test
+    cd extension && {{ dev }} bash -euo pipefail -c 'npm ci && npx playwright install chromium && cargo xtask build --test && npx playwright test'
 
 # The whitepaper, in pt-BR and English: docs/whitepaper/{pt-BR,en}.md -> pandoc (docs/whitepaper/template.tex,
 # the Paper Fabric template of h0ffmann/closed-source) -> XeLaTeX twice -> WHITEPAPER.pdf and WHITEPAPER.en.pdf.

@@ -1,0 +1,3 @@
+[alias]
+# `cargo xtask build [--test] [--firefox]`: the extension into dist, dist-test or dist-firefox.
+xtask = "run --quiet --package xtask --"

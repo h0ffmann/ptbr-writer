@@ -22,6 +22,15 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 - O site embute o whitepaper em pt-BR numa seção própria (`#whitepaper`), como o site do closed-source
   embute o artigo dele: o PDF num quadro, carregado sob demanda, com links para abrir e baixar onde o
   quadro não aparece. A pílula do pt-BR sai da capa; a do inglês fica.
+- A extensão de navegador é reescrita em Rust, compilado para WebAssembly (wasm-bindgen); o
+  TypeScript, o esbuild e o Vitest saem. `cargo xtask build [--test] [--firefox]` gera a extensão;
+  o service worker e as páginas rodam o wasm, e o content script roda o mesmo módulo em JavaScript
+  (wasm2js, do binaryen), porque a CSP da página vale para compilar wasm no mundo do content script
+  e o github.com a proíbe. `just ext-test` roda fmt, clippy (host e wasm32) e os 113 testes de
+  unidade; `just ext-e2e` roda os 32 testes Playwright, que agora cobrem também o modelo de texto,
+  o watcher, o overlay, as páginas de opções e popup, os quatro providers e uma página com CSP
+  estrita. O CI da extensão roda dentro do shell do flake. O "feito com" do site passa a listar o
+  Rust como linguagem do repositório, e o grafo da extensão é o do código Rust.
 - A v0.3.0 tem DOI no Zenodo, como preprint. O `CITATION.cff` traz o DOI de conceito, que sempre leva
   à versão mais recente, e o da v0.3.0. Os READMEs ganham um selo do Zenodo, e a pílula do site leva
   ao DOI de conceito; nenhum dos dois mostra o número.
