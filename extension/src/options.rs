@@ -1,13 +1,16 @@
-//! The options page: the main switch, provider, model and key, and the list of every site.
+//! The options page: the main switch, provider, model and key, tone, rewrite and wait, the
+//! never-fix list, and the list of every site.
 
-use crate::dom::{button, create, on, option, query, spawn};
+use crate::dom::{Build, button, create, el, on, option, query, spawn};
 use crate::hosts::normalize_host;
+use crate::never_fix::{NEVER_FIX_MAX_WORDS, add_never_fix, word_count};
 use crate::provider_fields::mount;
 use crate::settings::load_settings;
 use crate::sites::{
     LEVELS, ProviderFields as Saved, disable_site_flow, enable_site_flow, is_default_host, remove_site_flow,
-    save_provider_fields, set_level,
+    save_provider_fields, save_text_settings, set_level,
 };
+use crate::text_fields::mount_text_fields;
 use crate::types::Level;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -22,6 +25,11 @@ const PAGE: &str = r#"
     <p><label><input id="enabled" type="checkbox"> Ativado</label></p>
     <div id="provider-fields"></div>
     <p><button id="save" type="button">Salvar</button> <span id="status" role="status"></span></p>
+    <div id="text-fields"></div>
+    <h2>Nunca corrigir</h2>
+    <ul id="never-fix"></ul>
+    <p><input id="new-never-fix" type="text" placeholder="até 3 palavras"> <button id="add-never-fix" type="button">Adicionar</button>
+    <span id="never-fix-error" role="alert"></span></p>
     <h2>Sites</h2>
     <table id="sites"><thead><tr><th>Site</th><th>Nível</th><th>Ativo</th><th></th></tr></thead><tbody></tbody></table>
     <p><input id="new-host" type="text" placeholder="exemplo.com"> <button id="add-site" type="button">Adicionar site</button>
@@ -32,6 +40,37 @@ pub async fn render(root: HtmlElement) -> Result<(), JsValue> {
     root.set_inner_html(PAGE);
     query::<HtmlInputElement>(&root, "#enabled").set_checked(s.borrow().enabled);
     let fields = mount(&query(&root, "#provider-fields"), s.clone(), |_| {});
+    mount_text_fields(&query(&root, "#text-fields"), &s.borrow());
+    let list: HtmlElement = query(&root, "#never-fix");
+    for entry in &s.borrow().never_fix {
+        let li = el("li").text(&format!("{entry} "));
+        let (entry, root) = (entry.clone(), root.clone());
+        li.append_child(&button("Remover", move || {
+            let (entry, root) = (entry.clone(), root.clone());
+            spawn(async move {
+                // Reloaded in save_text_settings: another tab may have changed the list since.
+                save_text_settings(|s| s.never_fix.retain(|e| *e != entry)).await?;
+                render(root).await
+            })
+        }))?;
+        list.append_child(&li)?;
+    }
+    on(&query::<HtmlButtonElement>(&root, "#add-never-fix"), "click", {
+        let root = root.clone();
+        move || {
+            let root = root.clone();
+            spawn(async move {
+                let typed = query::<HtmlInputElement>(&root, "#new-never-fix").value();
+                let typed = typed.trim();
+                if typed.is_empty() || word_count(typed) > NEVER_FIX_MAX_WORDS {
+                    query::<HtmlElement>(&root, "#never-fix-error").set_text_content(Some("Use de 1 a 3 palavras."));
+                    return Ok(());
+                }
+                save_text_settings(|s| s.never_fix = add_never_fix(&s.never_fix, typed)).await?;
+                render(root).await
+            })
+        }
+    });
     let body: HtmlTableSectionElement = query(&root, "#sites tbody");
     for (host, cfg) in &s.borrow().sites {
         let row: HtmlTableRowElement = body.insert_row()?.unchecked_into();

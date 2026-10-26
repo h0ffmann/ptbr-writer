@@ -31,6 +31,10 @@ export interface Settings {
   models: Partial<Record<ProviderId, string>>;
   ollayaStyle: boolean;
   sites: Record<string, SiteConfig>;
+  tone: 'informal' | 'neutro' | 'formal';
+  rewrite: boolean;
+  neverFix: string[];
+  delayMs: 1000 | 2000 | 3000;
   apiBase: Partial<Record<ProviderId, string>>;
 }
 

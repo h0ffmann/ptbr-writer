@@ -7,7 +7,6 @@ use crate::suggestions::{drop_overlaps, locate, span};
 use crate::types::{CheckError, CheckResult, Located};
 
 pub const MIN_WORDS: usize = 3;
-pub const DELAY_MS: i32 = 1000;
 
 /// What a field's badge shows.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -16,6 +15,13 @@ pub enum Status {
     Idle,
     Checking,
     Failed(CheckError),
+}
+
+/// A message to the background that failed. After the extension reloads, a tab opened before it
+/// keeps the old script, which can no longer reach the service worker: say so instead of a provider
+/// error, since nothing left the browser. Anything else is no answer: the network.
+pub fn send_error(e: &str) -> CheckError {
+    if e.to_lowercase().contains("context invalidated") { CheckError::Reload } else { CheckError::Network }
 }
 
 /// What a check sends for a field with `text` and the caret at `caret`; `None` skips it: a
@@ -68,6 +74,15 @@ pub fn own_edit(expected: &mut Option<String>, now: impl FnOnce() -> String) -> 
 mod tests {
     use super::*;
     use crate::types::{Severity, Suggestion};
+
+    #[test]
+    fn a_reloaded_extension_is_reload_any_other_failure_the_network() {
+        assert_eq!(send_error("JsValue(Error: Extension context invalidated.)"), CheckError::Reload);
+        assert_eq!(
+            send_error("Error: Could not establish connection. Receiving end does not exist."),
+            CheckError::Network
+        );
+    }
 
     fn suggestion(original: &str, replacement: &str) -> Suggestion {
         Suggestion {
@@ -153,7 +168,7 @@ mod tests {
 
 #[cfg(target_arch = "wasm32")]
 mod browser {
-    use super::{DELAY_MS, Outcome, Status, outcome, own_edit, plan};
+    use super::{Outcome, Status, outcome, own_edit, plan, send_error};
     use crate::chrome;
     use crate::content::text::{caret_offset, text_model};
     use crate::content::{ElMap, Timer};
@@ -176,12 +191,13 @@ mod browser {
     pub type OnResult = Box<dyn Fn(&HtmlElement, Vec<Located>, u32)>;
     pub type OnState = Box<dyn Fn(&HtmlElement, Status)>;
 
-    /// Checks the attached fields: an input event clears their suggestions and, DELAY_MS after
-    /// the last one, sends the text. Dropping it detaches every field.
+    /// Checks the attached fields: an input event clears their suggestions and, `delay_ms` after
+    /// the last one (the setting's wait), sends the text. Dropping it detaches every field.
     pub struct Watcher(Rc<RefCell<Inner>>);
 
     struct Inner {
         level: Level,
+        delay_ms: i32,
         seq: u32,
         fields: ElMap<Field>,
         hooks: Rc<Hooks>,
@@ -197,8 +213,15 @@ mod browser {
     }
 
     impl Watcher {
-        pub fn new(level: Level, hooks: Hooks) -> Watcher {
-            Watcher(Rc::new(RefCell::new(Inner { level, seq: 0, fields: ElMap::new(), hooks: Rc::new(hooks) })))
+        pub fn new(level: Level, delay_ms: u32, hooks: Hooks) -> Watcher {
+            let delay_ms = i32::try_from(delay_ms).unwrap_or(i32::MAX);
+            Watcher(Rc::new(RefCell::new(Inner {
+                level,
+                delay_ms,
+                seq: 0,
+                fields: ElMap::new(),
+                hooks: Rc::new(hooks),
+            })))
         }
 
         pub fn attach(&self, el: &HtmlElement) {
@@ -255,10 +278,11 @@ mod browser {
         };
         (hooks.on_result)(el, vec![], 0);
         let mut i = inner.borrow_mut();
+        let delay = i.delay_ms;
         let Some(f) = i.fields.get_mut(el) else { return };
         let (weak, target) = (weak.clone(), el.clone());
         // Replacing the timer clears the pending one.
-        f.timer = Some(Timer::new(DELAY_MS, move || spawn_local(check(weak.clone(), target.clone()))));
+        f.timer = Some(Timer::new(delay, move || spawn_local(check(weak.clone(), target.clone()))));
     }
 
     async fn check(weak: Weak<RefCell<Inner>>, el: HtmlElement) {
@@ -278,10 +302,11 @@ mod browser {
         };
         (hooks.on_state)(&el, Status::Checking);
         let request = Message::Check(CheckRequest { key, text: sent.text.clone(), level });
-        // No answer (the worker gone) is the network; an answer that is not a result is the provider.
+        // No answer is the network (or a reload, send_error); an answer that is not a result is the provider.
         let result = match chrome::send_message_raw(&request).await {
             Ok(reply) => chrome::from_js(reply).unwrap_or(CheckResult::Err(CheckError::Provider)),
-            Err(_) => CheckResult::Err(CheckError::Network),
+            // JsValue's Debug is the JS String(e): "Error: Extension context invalidated."
+            Err(e) => CheckResult::Err(send_error(&format!("{e:?}"))),
         };
         let Some(inner) = weak.upgrade() else { return };
         if !inner.borrow().fields.contains(&el) {

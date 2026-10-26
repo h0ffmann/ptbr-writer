@@ -79,6 +79,32 @@ impl fmt::Display for ProviderId {
     }
 }
 
+/// The register a correction keeps (Settings.tone).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Tone {
+    Informal,
+    Neutro,
+    Formal,
+}
+
+impl Tone {
+    pub const ALL: [Tone; 3] = [Tone::Informal, Tone::Neutro, Tone::Formal];
+
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Tone::Informal => "informal",
+            Tone::Neutro => "neutro",
+            Tone::Formal => "formal",
+        }
+    }
+
+    /// The value of a `<select>` back as a tone.
+    pub fn parse(s: &str) -> Option<Self> {
+        Self::ALL.into_iter().find(|t| t.as_str() == s)
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Severity {
@@ -205,6 +231,15 @@ pub struct Settings {
     pub ollaya_style: bool,
     /// By hostname.
     pub sites: BTreeMap<String, SiteConfig>,
+    pub tone: Tone,
+    /// true: errors and rewrites; false: errors only.
+    pub rewrite: bool,
+    /// Phrases a correction must keep as written: 1 to 3 words each, at most 200 (never_fix.rs).
+    #[serde(rename = "neverFix")]
+    pub never_fix: Vec<String>,
+    /// The wait after the last keystroke, in ms: one of settings::DELAYS.
+    #[serde(rename = "delayMs")]
+    pub delay_ms: u32,
     /// Honored only in a test build (the `test-build` feature).
     #[serde(rename = "apiBase", default, skip_serializing_if = "BTreeMap::is_empty")]
     pub api_base: BTreeMap<ProviderId, String>,
@@ -226,6 +261,9 @@ pub enum CheckError {
     Provider,
     #[serde(rename = "network")]
     Network,
+    /// The extension reloaded under an open tab: its old content script can no longer reach the background.
+    #[serde(rename = "reload")]
+    Reload,
 }
 
 /// What a content script asks the background: `{type: "check", key, text, level}`.
@@ -297,6 +335,8 @@ mod tests {
         assert_eq!(serde_json::to_value(CheckError::RateLimit).unwrap(), json!("rate-limit"));
         assert_eq!(serde_json::to_value(CheckError::LocalOllaya).unwrap(), json!("local-ollaya"));
         assert_eq!(serde_json::to_value(CheckError::NoKey).unwrap(), json!("no-key"));
+        assert_eq!(serde_json::to_value(CheckError::Reload).unwrap(), json!("reload"));
+        assert_eq!(serde_json::to_value(Tone::Neutro).unwrap(), json!("neutro"));
         assert_eq!(serde_json::from_value::<ProviderId>(json!("deepseek")).unwrap(), ProviderId::Deepseek);
     }
 

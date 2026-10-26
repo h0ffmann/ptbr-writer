@@ -6,11 +6,11 @@ use crate::providers::{
     Abort, Failed, Fetch, HttpRequest, HttpResponse, build_request, classify_error, decide_requests, is_truncated,
     read_text, style_request,
 };
-use crate::rules::build_system_prompt;
+use crate::rules::{PromptOptions, build_system_prompt};
 use crate::settings::level_for;
 use crate::sites::is_default_host;
 use crate::skills::{CIENTIFICO, SKILL};
-use crate::suggestions::parse_suggestions;
+use crate::suggestions::{filter_suggestions, parse_suggestions};
 use crate::types::{CheckError, CheckRequest, CheckResult, ProviderId, Settings, Style, Suggestion};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -70,7 +70,8 @@ async fn check<F: Fetch>(req: &CheckRequest, fetch: &F, settings: &Settings, abo
     if abort.aborted() {
         return NOTHING;
     }
-    let Ok(system) = build_system_prompt(req.level, SKILL, CIENTIFICO, style) else {
+    let opts = PromptOptions { tone: settings.tone, rewrite: settings.rewrite, never_fix: &settings.never_fix, style };
+    let Ok(system) = build_system_prompt(req.level, SKILL, CIENTIFICO, &opts) else {
         return CheckResult::Err(CheckError::Provider);
     };
     let json = match fetch_json(fetch, build_request(provider, settings, &system, &req.text), abort, provider).await {
@@ -84,7 +85,8 @@ async fn check<F: Fetch>(req: &CheckRequest, fetch: &F, settings: &Settings, abo
     if is_truncated(provider, &json) {
         return CheckResult::Err(CheckError::Provider);
     }
-    let mut suggestions = parse_suggestions(&read_text(provider, &json));
+    let parsed = parse_suggestions(&read_text(provider, &json));
+    let mut suggestions = filter_suggestions(&req.text, &parsed, settings.rewrite, &settings.never_fix);
     // The card says which style Ollaya chose, so the rewrite's tone has a visible reason.
     if let Some(style) = style {
         for s in &mut suggestions {
@@ -126,7 +128,7 @@ async fn check_decisions<F: Fetch>(req: &CheckRequest, fetch: &F, settings: &Set
             Ok(None) => {}
         }
     }
-    CheckResult::Ok(found)
+    CheckResult::Ok(filter_suggestions(&req.text, &found, settings.rewrite, &settings.never_fix))
 }
 
 /// Every future at once, their outputs in order; a Promise.all without a runtime.
@@ -340,7 +342,7 @@ pub use browser::{ChromeScripting, handle_message, sync_sites_now};
 mod tests {
     use super::*;
     use crate::test_util::{block_on, poll_once};
-    use crate::types::{Level, PerProvider, Severity, SiteConfig};
+    use crate::types::{Level, PerProvider, Severity, SiteConfig, Tone};
     use serde_json::json;
     use std::cell::RefCell;
     use std::rc::Rc;
@@ -357,8 +359,12 @@ mod tests {
         }
     }
 
+    fn prompt_options(s: &Settings) -> PromptOptions<'_> {
+        PromptOptions { tone: s.tone, rewrite: s.rewrite, never_fix: &s.never_fix, style: None }
+    }
+
     fn req() -> CheckRequest {
-        CheckRequest { key: "k1".into(), text: "texto de teste aqui".into(), level: Level::Estrito }
+        CheckRequest { key: "k1".into(), text: "texto a nível de teste aqui".into(), level: Level::Estrito }
     }
 
     fn suggestion() -> Value {
@@ -412,6 +418,37 @@ mod tests {
     fn status_200_returns_suggestions() {
         let r = block_on(handle_check(&req(), &ok_fetch(claude_body(), 200), &settings()));
         assert_eq!(ok(&r).len(), 1);
+    }
+
+    #[test]
+    fn aviso_with_an_erro_inside_it_returns_1_suggestion() {
+        let erro = json!({ "original": "nível", "replacement": "nivel", "rule": "PTW-2", "severity": "erro", "occurrence": 1 });
+        let body = json!({ "content": [{ "type": "text", "text": json!({ "suggestions": [suggestion(), erro] }).to_string() }] });
+        let r = block_on(handle_check(&req(), &ok_fetch(body, 200), &settings()));
+        assert_eq!(ok(&r).iter().map(|s| s.original.as_str()).collect::<Vec<_>>(), ["a nível de"]);
+    }
+
+    #[test]
+    fn ollama_and_ollaya_replies_pass_through_filter_suggestions() {
+        let ollama = Settings { provider: ProviderId::Ollama, never_fix: vec!["nível".into()], ..Settings::default() };
+        let chat = json!({ "message": { "content": json!([suggestion()]).to_string() }, "done_reason": "stop" });
+        assert_eq!(block_on(handle_check(&req(), &ok_fetch(chat, 200), &ollama)), CheckResult::Ok(vec![]));
+        let mut gone = suggestion();
+        gone["original"] = json!("não está no texto");
+        let missing = json!({ "message": { "content": json!([gone]).to_string() }, "done_reason": "stop" });
+        let plain = Settings { provider: ProviderId::Ollama, ..Settings::default() };
+        assert_eq!(block_on(handle_check(&req(), &ok_fetch(missing, 200), &plain)), CheckResult::Ok(vec![]));
+        // A detection is not a rewrite: "só erros" and the never-fix list keep it.
+        let ollaya = Settings {
+            provider: ProviderId::Ollaya,
+            rewrite: false,
+            never_fix: vec!["deploy".into()],
+            ..Settings::default()
+        };
+        let text = "Foi decidido que o deploy será feito.";
+        let body = json!({ "answers": { "regra": { "type": "choice", "choice": "PTW-1", "probabilities": { "PTW-1": 0.9 } } }, "state_truncated": false });
+        let r = block_on(handle_check(&CheckRequest { text: text.into(), ..req() }, &ok_fetch(body, 200), &ollaya));
+        assert_eq!(ok(&r).iter().map(|s| s.original.as_str()).collect::<Vec<_>>(), [text]);
     }
 
     #[test]
@@ -541,7 +578,8 @@ mod tests {
 
     #[test]
     fn a_missing_skill_section_is_a_provider_error_not_a_panic() {
-        let e = build_system_prompt(Level::Cientifico, SKILL, "# x", None).unwrap_err();
+        let e =
+            build_system_prompt(Level::Cientifico, SKILL, "# x", &prompt_options(&Settings::default())).unwrap_err();
         assert_eq!(e.to_string(), "cientifico/SKILL.md: seção Regras não encontrada");
     }
 
@@ -707,7 +745,22 @@ mod tests {
         let f = ok_fetch(claude_body(), 200);
         block_on(check_from_sender(&CheckRequest { level: Level::Estrito, ..req() }, &tab(1), &f, &site(true)));
         let sent: Value = serde_json::from_str(&f.calls.borrow()[0].0.body).unwrap();
-        assert_eq!(sent["system"], build_system_prompt(Level::Leve, SKILL, CIENTIFICO, None).unwrap());
+        assert_eq!(
+            sent["system"],
+            build_system_prompt(Level::Leve, SKILL, CIENTIFICO, &prompt_options(&site(true))).unwrap()
+        );
+    }
+
+    #[test]
+    fn passes_the_tone_rewrite_and_never_fix_settings_into_the_prompt() {
+        let f = ok_fetch(claude_body(), 200);
+        let s = Settings { tone: Tone::Informal, rewrite: false, never_fix: vec!["Kafka".into()], ..site(true) };
+        block_on(check_from_sender(&req(), &tab(1), &f, &s));
+        let sent: Value = serde_json::from_str(&f.calls.borrow()[0].0.body).unwrap();
+        let system = sent["system"].as_str().unwrap();
+        assert!(system.contains("mantenha a voz e as gírias"));
+        assert!(system.contains("não devolva nenhum aviso"));
+        assert!(system.contains("nunca troque estas palavras, nem dentro de uma frase reescrita: Kafka"));
     }
 
     #[test]

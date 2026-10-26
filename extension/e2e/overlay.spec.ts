@@ -15,16 +15,16 @@ test('um sublinhado por sugestão no shadow root, nada dentro do editor', async 
   expect(await page.evaluate(() => document.getElementById('ptbr-writer-root')?.parentElement?.tagName)).toBe('HTML');
 });
 
-test('o cartão de um clique: regra, troca, Aceitar e Ignorar; Ignorar tira a sugestão', async ({ ext, server }) => {
+test('o cartão de um clique: regra com título, troca, Aceitar, Ignorar e Sempre ignorar; Ignorar tira a sugestão', async ({ ext, server }) => {
   await ext.launch();
   const page = await ext.open('textarea.html');
   await typeAndWait(page);
   await page.locator('.ptbr-hit').first().click();
   const card = page.locator('.ptbr-card');
-  await expect(card.locator('.ptbr-rule')).toHaveText('PTW-1');
+  await expect(card.locator('.ptbr-rule')).toHaveText('PTW-1 · Quem faz, aparece');
   await expect(card.locator('.ptbr-change s')).toHaveText('Foi decidido');
   await expect(card.locator('.ptbr-change strong')).toHaveText('A equipe decidiu');
-  await expect(card.locator('button')).toHaveText(['Aceitar', 'Ignorar']);
+  await expect(card.locator('button')).toHaveText(['Aceitar', 'Ignorar', 'Sempre ignorar']);
   await card.locator('[data-action=ignore]').click();
   await expect(card).toHaveCount(0);
   await expect(page.locator('.ptbr-underline')).toHaveCount(0);
@@ -56,7 +56,20 @@ test('o selo abre o cartão da primeira sugestão', async ({ ext }) => {
   const page = await ext.open('textarea.html');
   await typeAndWait(page);
   await page.locator('.ptbr-badge').click();
-  await expect(page.locator('.ptbr-card .ptbr-rule')).toHaveText('PTW-1');
+  await expect(page.locator('.ptbr-card .ptbr-rule')).toHaveText('PTW-1 · Quem faz, aparece');
+});
+
+test('Sempre ignorar tira a sugestão e guarda o trecho na lista nunca corrigir', async ({ ext, server }) => {
+  await ext.launch();
+  const page = await ext.open('textarea.html');
+  await typeAndWait(page);
+  await page.locator('.ptbr-hit').first().click();
+  await page.locator('.ptbr-card [data-action=never]').click();
+  await expect(page.locator('.ptbr-underline')).toHaveCount(0);
+  await expect(page.locator('#field')).toHaveValue(TYPED);
+  await expect.poll(async () => (await ext.settings()).neverFix).toEqual(['Foi decidido']);
+  await page.waitForTimeout(SETTLE);
+  expect(server.calls.length).toBe(1);
 });
 
 test('o cartão fica acima do texto quando não cabe abaixo', async ({ ext }) => {

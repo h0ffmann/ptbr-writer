@@ -147,10 +147,10 @@ mod tests {
         "Foi decidido que o deploy será feito. A equipe valida o build hoje.\nFoi decidido que o deploy será feito.";
 
     #[test]
-    fn reads_ptw_1_to_13_with_their_titles() {
+    fn reads_ptw_1_to_17_with_their_titles() {
         let r = rules_of(SKILL, "## Regras (em desenvolvimento)", "SKILL.md").unwrap();
         let codes: Vec<&str> = r.iter().map(|(c, _)| c.as_str()).collect();
-        assert_eq!(codes, (1..=13).map(|i| format!("PTW-{i}")).collect::<Vec<_>>());
+        assert_eq!(codes, (1..=17).map(|i| format!("PTW-{i}")).collect::<Vec<_>>());
         assert_eq!(r[0].1, "Quem faz, aparece");
     }
 
@@ -182,7 +182,7 @@ mod tests {
         assert_eq!(body["questions"]["regra"]["type"], "choice");
         let criteria = body["questions"]["regra"]["criteria"].as_object().unwrap();
         assert_eq!(criteria.keys().next().unwrap(), "nenhuma");
-        assert_eq!(criteria.len(), 14);
+        assert_eq!(criteria.len(), 18);
     }
 
     #[test]

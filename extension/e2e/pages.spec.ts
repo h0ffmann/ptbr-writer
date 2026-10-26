@@ -85,6 +85,40 @@ test.describe('opções', () => {
   });
 });
 
+test.describe('opções: o texto', () => {
+  test('tom, o quanto corrigir e espera salvam na hora', async ({ ext }) => {
+    await ext.launch();
+    const page = await ext.page('options.html');
+    await expect(page.locator('#tone option')).toHaveText(['Informal', 'Neutro', 'Formal']);
+    await expect(page.locator('#rewrite option')).toHaveText(['Só erros', 'Erros e reescrita']);
+    await expect(page.locator('#delay option')).toHaveText(['1 s', '2 s', '3 s']);
+    await page.locator('#tone').selectOption('formal');
+    await page.locator('#rewrite').selectOption('false');
+    await page.locator('#delay').selectOption('3000');
+    await expect
+      .poll(async () => {
+        const s = await ext.settings();
+        return [s.tone, s.rewrite, s.delayMs];
+      })
+      .toEqual(['formal', false, 3000]);
+  });
+
+  test('nunca corrigir: mais de 3 palavras avisa; adicionar e remover', async ({ ext }) => {
+    await ext.launch();
+    const page = await ext.page('options.html');
+    await page.locator('#new-never-fix').fill('um dois três quatro');
+    await page.locator('#add-never-fix').click();
+    await expect(page.locator('#never-fix-error')).toHaveText('Use de 1 a 3 palavras.');
+    await page.locator('#new-never-fix').fill('  Kafka ');
+    await page.locator('#add-never-fix').click();
+    await expect(page.locator('#never-fix li')).toHaveText(['Kafka Remover']);
+    expect((await ext.settings()).neverFix).toEqual(['Kafka']);
+    await page.locator('#never-fix li button').click();
+    await expect(page.locator('#never-fix li')).toHaveCount(0);
+    expect((await ext.settings()).neverFix).toEqual([]);
+  });
+});
+
 test.describe('popup', () => {
   test('o site da aba: nível, Desativar e Ativar; a chave geral', async ({ ext }) => {
     await ext.launch({ sites: { 'exemplo.test': { enabled: true, level: 'leve' } } });

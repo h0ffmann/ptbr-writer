@@ -2,6 +2,7 @@
 //! `watcher` the decisions of a check; their DOM parts, `overlay`, `apply` and `controller` come
 //! with the content entry point, wasm only.
 
+pub mod card;
 pub mod text;
 pub mod watcher;
 

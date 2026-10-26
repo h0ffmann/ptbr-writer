@@ -1,7 +1,7 @@
 //! The settings: defaults, the model lists, the level of a site, and what chrome.storage.local
 //! holds merged over the defaults.
 
-use crate::types::{Level, PerProvider, ProviderId, Settings, SiteConfig};
+use crate::types::{Level, PerProvider, ProviderId, Settings, SiteConfig, Tone};
 use serde_json::Value;
 use std::collections::BTreeMap;
 
@@ -37,10 +37,17 @@ impl Default for Settings {
                 ("mail.google.com".to_string(), SiteConfig { enabled: true, level: Level::Descritivo }),
                 ("github.com".to_string(), SiteConfig { enabled: true, level: Level::Descritivo }),
             ]),
+            tone: Tone::Neutro,
+            rewrite: true,
+            never_fix: Vec::new(),
+            delay_ms: 1000,
             api_base: BTreeMap::new(),
         }
     }
 }
+
+/// The waits the settings offer, in ms.
+pub const DELAYS: [u32; 3] = [1000, 2000, 3000];
 
 /// The models the options page offers; the first of each list is the default.
 pub fn models(p: ProviderId) -> &'static [&'static str] {
@@ -93,6 +100,20 @@ impl Settings {
             if let Some(base) = field("apiBase").and_then(|b| b.get(p.as_str())).and_then(Value::as_str) {
                 s.api_base.insert(p, base.into());
             }
+        }
+        if let Some(tone) = field("tone").and_then(|v| serde_json::from_value(v.clone()).ok()) {
+            s.tone = tone;
+        }
+        if let Some(rewrite) = field("rewrite").and_then(Value::as_bool) {
+            s.rewrite = rewrite;
+        }
+        if let Some(list) = field("neverFix").and_then(Value::as_array) {
+            s.never_fix = list.iter().filter_map(Value::as_str).map(String::from).collect();
+        }
+        if let Some(delay) = field("delayMs").and_then(Value::as_u64).and_then(|d| u32::try_from(d).ok())
+            && DELAYS.contains(&delay)
+        {
+            s.delay_ms = delay;
         }
         for (host, cfg) in field("sites").and_then(Value::as_object).into_iter().flatten() {
             if let Ok(cfg) = serde_json::from_value::<SiteConfig>(cfg.clone()) {
@@ -243,5 +264,28 @@ mod tests {
         assert!(!s.enabled);
         assert!(!s.sites.contains_key("a.com"));
         assert_eq!(s.sites["b.com"], SiteConfig { enabled: true, level: Level::Leve });
+    }
+
+    #[test]
+    fn tone_rewrite_never_fix_and_wait_defaults() {
+        let d = Settings::from_stored(&json!({}));
+        assert_eq!((d.tone, d.rewrite, d.never_fix.len(), d.delay_ms), (Tone::Neutro, true, 0, 1000));
+    }
+
+    #[test]
+    fn tone_rewrite_never_fix_and_wait_outside_the_list_fall_back_to_the_defaults() {
+        let s =
+            Settings::from_stored(&json!({ "tone": "gritado", "delayMs": 5000, "rewrite": "sim", "neverFix": "x" }));
+        assert_eq!((s.tone, s.rewrite, s.never_fix.len(), s.delay_ms), (Tone::Neutro, true, 0, 1000));
+    }
+
+    #[test]
+    fn valid_tone_rewrite_never_fix_and_wait_are_kept() {
+        let s = Settings::from_stored(
+            &json!({ "tone": "formal", "delayMs": 3000, "rewrite": false, "neverFix": ["Kafka", 3, "Pix"] }),
+        );
+        assert_eq!((s.tone, s.rewrite, s.delay_ms), (Tone::Formal, false, 3000));
+        assert_eq!(s.never_fix, ["Kafka", "Pix"]);
+        assert_eq!(Settings::from_stored(&serde_json::to_value(&s).unwrap()), s);
     }
 }

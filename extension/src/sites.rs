@@ -32,7 +32,7 @@ mod browser {
     use super::*;
     use crate::chrome;
     use crate::settings::{known_model, load_settings, save_settings};
-    use crate::types::{Message, ProviderId, SiteConfig};
+    use crate::types::{Message, ProviderId, Settings, SiteConfig};
     use wasm_bindgen::JsValue;
 
     fn origin(host: &str) -> String {
@@ -103,6 +103,14 @@ mod browser {
     pub async fn set_enabled(enabled: bool) -> Result<(), JsValue> {
         let mut s = load_settings().await?;
         s.enabled = enabled;
+        save_settings(&s).await
+    }
+
+    /// Saves tone, rewrite, wait or the never-fix list, as `change` sets them on the settings stored
+    /// now; every other setting stays.
+    pub async fn save_text_settings(change: impl FnOnce(&mut Settings)) -> Result<(), JsValue> {
+        let mut s = load_settings().await?;
+        change(&mut s);
         save_settings(&s).await
     }
 

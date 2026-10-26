@@ -94,7 +94,7 @@ pub fn build_request(p: ProviderId, s: &Settings, system: &str, user: &str) -> H
             ],
             &json!({
                 "model": s.models.claude,
-                "max_tokens": 1024,
+                "max_tokens": 2048,
                 "temperature": 0,
                 "system": system,
                 "messages": [{ "role": "user", "content": user }],
@@ -106,8 +106,11 @@ pub fn build_request(p: ProviderId, s: &Settings, system: &str, user: &str) -> H
             vec![("Authorization", format!("Bearer {}", s.keys.deepseek))],
             &json!({
                 "model": s.models.deepseek,
-                "max_tokens": 1024,
+                "max_tokens": 2048,
                 "temperature": 0,
+                // Both DeepSeek models think by default, and the thinking counts against max_tokens: it left the
+                // answer empty. A correction needs no chain of thought.
+                "thinking": { "type": "disabled" },
                 "messages": [{ "role": "system", "content": system }, { "role": "user", "content": user }],
             }),
         ),
@@ -361,7 +364,7 @@ mod tests {
         );
         assert_eq!(
             body(&r),
-            json!({ "model": base().models.claude, "max_tokens": 1024, "temperature": 0, "system": "SYS", "messages": [{ "role": "user", "content": "USER" }] })
+            json!({ "model": base().models.claude, "max_tokens": 2048, "temperature": 0, "system": "SYS", "messages": [{ "role": "user", "content": "USER" }] })
         );
     }
 
@@ -374,7 +377,9 @@ mod tests {
         let b = body(&r);
         assert_eq!(b["model"], base().models.deepseek);
         assert_eq!(b["temperature"], 0);
-        assert_eq!(b["max_tokens"], 1024);
+        assert_eq!(b["max_tokens"], 2048);
+        // deepseek-flash and deepseek-v4-pro think by default, and the thinking counts against max_tokens.
+        assert_eq!(b["thinking"], json!({ "type": "disabled" }));
         assert_eq!(b["messages"][0], json!({ "role": "system", "content": "SYS" }));
         assert_eq!(b["messages"][1], json!({ "role": "user", "content": "USER" }));
     }
