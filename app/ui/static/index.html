@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ptbr-writer</title>
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" src="main.js"></script>
+  </head>
+  <body>
+    <header class="top">
+      <h1>ptbr-writer</h1>
+      <span id="version" class="mono muted"></span>
+    </header>
+    <main>
+      <section class="editor">
+        <textarea id="text" spellcheck="false" placeholder="Escreva ou cole um texto em português…"></textarea>
+        <div class="bar">
+          <label>Nível <select id="level"></select></label>
+          <button id="check" type="button" class="primary">Revisar</button>
+          <span class="mono muted hint">⌘↩ · Ctrl+Enter</span>
+          <span id="status" role="status"></span>
+        </div>
+        <div id="preview" class="preview" aria-label="texto revisado"></div>
+      </section>
+      <aside>
+        <h2>Correções <span id="count" class="pill mono">0</span></h2>
+        <div id="cards"></div>
+        <details id="settings">
+          <summary>Configurações</summary>
+          <label>Provider <select id="provider"></select></label>
+          <label>Modelo <select id="model"></select></label>
+          <label id="key-row">Chave <input id="key" type="password" autocomplete="off" placeholder="cole a chave do provider" /></label>
+          <label>Tom <select id="tone"></select></label>
+          <label class="check"><input id="rewrite" type="checkbox" /> Erros e reescrita (desligado: só erros)</label>
+          <button id="save" type="button">Salvar</button>
+        </details>
+      </aside>
+    </main>
+  </body>
+</html>
