@@ -87,7 +87,12 @@ async fn check(app: State<'_, App>, text: String, level: String) -> Result<View,
         CheckResult::Ok(suggestions) => {
             let mut session = app.session.lock().expect("session");
             *session = Session::new(text, suggestions);
-            Ok(session.view())
+            let view = session.view();
+            // scripts/app-capture.sh waits for this line: the window ran its check end to end.
+            if cfg!(feature = "demo") {
+                eprintln!("ptbr-app demo: {} cards", view.cards.len());
+            }
+            Ok(view)
         }
         CheckResult::Err(e) => Err(message(e).into()),
     }

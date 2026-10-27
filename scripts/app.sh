@@ -120,7 +120,7 @@ screenshot() {
     (cd "$app" && cargo build -p ptbr-app --features demo --bins)
     local bin="$app/target/debug" exe="" port=11999 out="$root/docs/img/app/$os.png"
     [ "$os" = windows ] && exe=.exe
-    local cfg
+    # Globals, not locals: the EXIT trap runs after this function returns.
     cfg="$(mktemp -d)"
     printf '{"provider":"ollama","apiBase":{"ollama":"http://127.0.0.1:%s"},"level":"descritivo"}\n' "$port" >"$cfg/settings.json"
     "$bin/fake-provider$exe" "$port" 2>/dev/null &

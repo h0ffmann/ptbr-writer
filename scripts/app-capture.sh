@@ -4,12 +4,13 @@
 set -euo pipefail
 os="$1" bin="$2" out="$3"
 
-"$bin" &
+log="$(mktemp)"
+"$bin" 2>"$log" &
 pid=$!
 # Git Bash numbers its own processes: PowerShell wants the Windows one.
 winpid="$pid"
 [ "$os" = windows ] && winpid="$(cat /proc/$pid/winpid)"
-trap 'kill "$pid" 2>/dev/null || true' EXIT
+trap 'kill "$pid" 2>/dev/null || true; rm -f "$log"' EXIT
 
 # The window's id on macOS: CoreGraphics' window list, by owner process (no permission to list).
 mac_window() {
@@ -28,8 +29,12 @@ for _ in $(seq 60); do
     esac
     sleep 0.5
 done
-# The wasm loads and the first check returns from the fake provider at once; this covers a slow runner.
-sleep "${APP_CAPTURE_WAIT:-4}"
+# The window loads its wasm, then checks the demo text against the fake provider: the Rust side
+# logs the cards (lib.rs). No line in 30 s is a window that did not start.
+for _ in $(seq 60); do grep -q "ptbr-app demo: " "$log" && break; sleep 0.5; done
+grep "ptbr-app demo: " "$log" || { echo "app-capture: the window never checked the demo text" >&2; cat "$log" >&2; exit 1; }
+# The cards render right after the reply; this covers a slow runner.
+sleep "${APP_CAPTURE_WAIT:-2}"
 
 case "$os" in
     macos) screencapture -x -o -l"$(mac_window)" "$out" ;;
