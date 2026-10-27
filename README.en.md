@@ -89,6 +89,19 @@ ignorar**, "always ignore"). Firefox 128+ uses
 
 ⚠ The local providers were not measured on pt-BR.
 
+### Desktop
+
+An app, not yet released, for Linux, macOS and Windows (Tauri 2, Rust in the window and the core):
+you paste a text, pick the level and click **Revisar** (review). It runs the extension's review, with
+the same providers, underlines and cards.
+
+1. Run `just app-bootstrap`: it installs the pinned Rust, `tauri-cli` and `wasm-bindgen-cli` in `app/.tools`.
+2. Run `just app-dev` to open the app, or `just app-build` to build this system's installer.
+3. In **Configurações** (settings), pick the provider and the model and click **Salvar** (save).
+
+The key stays in the `settings.json` of the app's config folder, as the extension keeps it in the browser.
+`just app-screenshot` takes the window's picture with a fake provider, no key and no network.
+
 ## use
 
 | Command | Does |

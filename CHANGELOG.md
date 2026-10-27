@@ -5,6 +5,11 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- O app de desktop (`app/`, Tauri 2.12): Linux, macOS e Windows, Rust na janela (wasm) e no núcleo, que
+  roda a revisão da extensão (`ptbr_ext::background::handle_check`) sobre reqwest. `just app-bootstrap`,
+  `app-dev`, `app-build`, `app-test` e `app-screenshot`; o `app.yml` testa, empacota e fotografa a janela
+  nos três sistemas.
+
 - O shell do site (`.#site`) passa ao Node 24.22.1: o picasso fixado vai de `b919f9e` a `5da5237`
   (h0ffmann/picasso#143) no `flake.lock`, no submódulo `forks/picasso`, no `tools.lock` e no `to-pdf.sh`. Os
   binários `ptbr` refeitos nesse rev têm o mesmo sha256 (#83).

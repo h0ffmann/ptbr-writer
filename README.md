@@ -85,6 +85,19 @@ O Firefox 128+ usa `just ext-build-firefox`
 
 ⚠ Os providers locais não foram medidos em pt-BR.
 
+### Desktop
+
+Um app, ainda sem release, para Linux, macOS e Windows (Tauri 2, Rust na janela e no núcleo): você
+cola um texto, escolhe o nível e clica em **Revisar**. Ele usa a revisão da extensão, com os mesmos
+providers, sublinhados e cartões.
+
+1. Rode `just app-bootstrap`: instala o Rust, o `tauri-cli` e o `wasm-bindgen-cli` fixados em `app/.tools`.
+2. Rode `just app-dev` para abrir o app, ou `just app-build` para gerar o instalador deste sistema.
+3. Em **Configurações**, escolha o provider e o modelo e clique em **Salvar**.
+
+A chave fica no `settings.json` da pasta de configuração do app, como a extensão a guarda no navegador.
+`just app-screenshot` tira a foto da janela com um provider falso, sem chave e sem rede.
+
 ## usar
 
 | Comando | Faz |

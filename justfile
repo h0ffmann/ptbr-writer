@@ -452,6 +452,31 @@ ext-test:
 ext-e2e:
     cd extension && {{ dev }} bash -euo pipefail -c 'npm ci && npx playwright install chromium && cargo xtask build --test && npx playwright test'
 
+# Desktop app (app/, Tauri 2, Rust on both sides): the pinned Rust, tauri-cli and wasm-bindgen-cli in
+# app/.tools, and a check of the system's webview libraries. Once per clone; scripts/app.sh does the work.
+app-bootstrap:
+    bash scripts/app.sh bootstrap
+
+# Desktop app: the window, Rust to wasm, into app/ui/dist.
+app-ui:
+    bash scripts/app.sh ui
+
+# Desktop app: run it with Tauri's dev loop.
+app-dev *args:
+    bash scripts/app.sh dev {{ args }}
+
+# Desktop app: this system's installers, into app/target/release/bundle (dmg and .app, deb, rpm and AppImage, msi and nsis).
+app-build *args:
+    bash scripts/app.sh build {{ args }}
+
+# Desktop app: format, clippy (host and wasm32), unit tests and the version check.
+app-test:
+    bash scripts/app.sh test
+
+# Desktop app: the demo build against a fake provider (no key, no network), its window to docs/img/app/<os>.png.
+app-screenshot:
+    bash scripts/app.sh screenshot
+
 # The whitepaper, in pt-BR and English: docs/whitepaper/{pt-BR,en}.md -> pandoc (docs/whitepaper/template.tex,
 # the Paper Fabric template of h0ffmann/closed-source) -> XeLaTeX twice -> WHITEPAPER.pdf and WHITEPAPER.en.pdf.
 # The marola and ouroboric logos are their projects' marks, not licensed here: each is fetched at the commit

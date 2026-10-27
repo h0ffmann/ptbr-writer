@@ -1,0 +1,4 @@
+target/
+.tools/
+ui/dist/
+src-tauri/gen/
