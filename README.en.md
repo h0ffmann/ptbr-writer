@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=version&style=flat-square)](CHANGELOG.md)
 [![license: MPL-2.0](https://img.shields.io/badge/license-MPL--2.0-1682D4?style=flat-square)](#license)
-[![estimated reading time: ~8 min](https://img.shields.io/badge/reading%20time-~8%20min-1682D4?style=flat-square)](#reading-time)
+[![estimated reading time: ~9 min](https://img.shields.io/badge/reading%20time-~9%20min-1682D4?style=flat-square)](#reading-time)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 [![browser extension (Chrome): local dev (WIP)](https://img.shields.io/badge/browser%20extension-local%20dev%20(WIP)-1682D4?style=flat-square&logo=googlechrome&logoColor=white)](#chrome)
 [![browser extension (Firefox): local dev (WIP)](https://img.shields.io/badge/browser%20extension-local%20dev%20(WIP)-1682D4?style=flat-square&logo=firefoxbrowser&logoColor=white)](docs/EXTENSION_FIREFOX.md)
@@ -88,6 +88,19 @@ ignorar**, "always ignore"). Firefox 128+ uses
   makes Ollaya pick the tone (concise, Socratic, friendly) that Ollama writes in.
 
 ⚠ The local providers were not measured on pt-BR.
+
+### Desktop
+
+An app, not yet released, for Linux, macOS and Windows (Tauri 2, Rust in the window and the core):
+you paste a text, pick the level and click **Revisar** (review). It runs the extension's review, with
+the same providers, underlines and cards.
+
+1. Run `just app-bootstrap`: it installs the pinned Rust, `tauri-cli` and `wasm-bindgen-cli` in `app/.tools`.
+2. Run `just app-dev` to open the app, or `just app-build` to build this system's installer.
+3. In **Configurações** (settings), pick the provider and the model and click **Salvar** (save).
+
+The key stays in the `settings.json` of the app's config folder, as the extension keeps it in the browser.
+`just app-screenshot` takes the window's picture with a fake provider, no key and no network.
 
 ## use
 

@@ -1,0 +1,10 @@
+[package]
+name = "ptbr-app-wire"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "What the desktop app's window and its Rust side send each other"
+
+[dependencies]
+serde = { version = "=1.0.229", features = ["derive"] }

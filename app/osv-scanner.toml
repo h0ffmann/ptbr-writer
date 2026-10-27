@@ -1,0 +1,25 @@
+# OSV-Scanner (cve.yml) over app/Cargo.lock: the findings this lock cannot fix, each in a crate that
+# Tauri 2.12.3 pulls and this repo does not choose. Read on 2026-10-27 at osv.dev; drop an entry
+# when Tauri moves past it (re-run `nix run nixpkgs#osv-scanner -- scan source --recursive .`).
+
+# glib 0.18.5 (gtk 0.18 ← muda, wry, tauri; Linux only): gtk-rs 0.18 is the last gtk3 binding, the
+# fix is in glib 0.20 (gtk4 only). The unsound code is VariantStrIter, which neither Tauri's menu nor
+# this app iterates. ⚠ That Tauri never reaches it was not checked in Tauri's source.
+[[IgnoredVulns]]
+id = "RUSTSEC-2024-0429"
+reason = "glib 0.18 via Tauri's gtk3 stack; fixed only in glib 0.20 (gtk4), which Tauri 2 does not use"
+
+[[IgnoredVulns]]
+id = "GHSA-wrw7-89jp-8q8g"
+reason = "alias of RUSTSEC-2024-0429"
+
+# proc-macro-error 1.0.4 (glib-macros 0.18): unmaintained, not a vulnerability; build time only.
+[[IgnoredVulns]]
+id = "RUSTSEC-2024-0370"
+reason = "unmaintained proc macro under glib-macros 0.18, build time only, through Tauri's gtk3 stack"
+
+# block-buffer 0.10.4 (digest 0.10 ← sha2 0.10 ← tauri-codegen, wry): a caught panic inside its
+# buffer corrupts the position. No 0.10 release fixes it; sha2 0.10 pins block-buffer 0.10.
+[[IgnoredVulns]]
+id = "GHSA-qwgh-2vcv-g2f7"
+reason = "block-buffer 0.10 via sha2 0.10 in tauri-codegen and wry; no fixed 0.10 release"

@@ -1,0 +1,37 @@
+[package]
+name = "ptbr-app-ui"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "The desktop app's window: Rust compiled to wasm, drawing what the Rust side returns"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+ptbr-app-wire = { path = "../wire" }
+serde = { version = "=1.0.229", features = ["derive"] }
+# The extension's pins (extension/Cargo.toml), so one wasm-bindgen-cli builds both.
+wasm-bindgen = "=0.2.129"
+wasm-bindgen-futures = "=0.4.79"
+js-sys = "=0.3.106"
+serde-wasm-bindgen = "=0.6.5"
+web-sys = { version = "=0.3.106", features = [
+  "Document",
+  "DomTokenList",
+  "Element",
+  "Event",
+  "EventTarget",
+  "HtmlButtonElement",
+  "HtmlElement",
+  "HtmlInputElement",
+  "HtmlOptionElement",
+  "HtmlSelectElement",
+  "HtmlTextAreaElement",
+  "KeyboardEvent",
+  "Node",
+  "NodeList",
+  "Window",
+  "console",
+] }

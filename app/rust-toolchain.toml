@@ -1,0 +1,5 @@
+# Tauri 2.12's MSRV; rustup installs it on the first cargo call here (`just app-bootstrap`).
+[toolchain]
+channel = "1.90.0"
+components = ["clippy", "rustfmt"]
+targets = ["wasm32-unknown-unknown"]
