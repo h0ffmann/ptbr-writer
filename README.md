@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![versão](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=vers%C3%A3o&style=flat-square)](CHANGELOG.md)
 [![license: MPL-2.0](https://img.shields.io/badge/license-MPL--2.0-1682D4?style=flat-square)](#licença)
-[![leitura estimada: ~8 min](https://img.shields.io/badge/leitura%20estimada-~8%20min-1682D4?style=flat-square)](#tempo-de-leitura)
+[![leitura estimada: ~9 min](https://img.shields.io/badge/leitura%20estimada-~9%20min-1682D4?style=flat-square)](#tempo-de-leitura)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#instalar)
 [![extensão de navegador (Chrome): dev local (WIP)](https://img.shields.io/badge/extens%C3%A3o%20de%20navegador-dev%20local%20(WIP)-1682D4?style=flat-square&logo=googlechrome&logoColor=white)](#chrome)
 [![extensão de navegador (Firefox): dev local (WIP)](https://img.shields.io/badge/extens%C3%A3o%20de%20navegador-dev%20local%20(WIP)-1682D4?style=flat-square&logo=firefoxbrowser&logoColor=white)](docs/EXTENSION_FIREFOX.md)
