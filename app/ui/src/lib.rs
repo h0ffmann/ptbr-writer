@@ -294,6 +294,39 @@ fn wire(ui: &Shared) {
     });
 }
 
+/// `window.ptbrAndroid`, the Android app's bridge (gen/android MainActivity); absent on the desktop.
+fn android() -> Option<JsValue> {
+    let w = web_sys::window()?;
+    js_sys::Reflect::get(&w, &"ptbrAndroid".into()).ok().filter(|b| b.is_object())
+}
+
+fn call(bridge: &JsValue, method: &str) -> Option<JsValue> {
+    let f: js_sys::Function = js_sys::Reflect::get(bridge, &method.into()).ok()?.dyn_into().ok()?;
+    f.call0(bridge).ok()
+}
+
+/// Whether the overlay is on, read again whenever the window comes back (from Android's settings).
+fn show_overlay(bridge: &JsValue) {
+    let on = call(bridge, "overlayOn").and_then(|v| v.as_bool()).unwrap_or(false);
+    let state: HtmlElement = by_id("overlay-state");
+    state.set_text_content(Some(if on { "Sobreposição ligada." } else { "Sobreposição desligada." }));
+    state.class_list().toggle_with_force("on", on).expect("classList");
+    by_id::<HtmlElement>("overlay").set_hidden(on);
+}
+
+fn wire_android() {
+    let Some(bridge) = android() else { return };
+    by_id::<HtmlElement>("android").set_hidden(false);
+    show_overlay(&bridge);
+    on(&by_id::<HtmlElement>("overlay"), "click", {
+        let bridge = bridge.clone();
+        move |_: web_sys::Event| {
+            call(&bridge, "openSettings");
+        }
+    });
+    on(&document(), "visibilitychange", move |_: web_sys::Event| show_overlay(&bridge));
+}
+
 async fn start() -> Result<(), String> {
     let boot: Boot = invoke("boot", &NoArgs {}).await?;
     let pairs = |v: &[String]| v.iter().map(|x| (x.clone(), x.clone())).collect::<Vec<_>>();
@@ -312,6 +345,7 @@ async fn start() -> Result<(), String> {
     show_provider(&ui.borrow());
     render(&View::default());
     wire(&ui);
+    wire_android();
     if let Some(text) = demo {
         by_id::<HtmlTextAreaElement>("text").set_value(&text);
         run_check(ui).await;

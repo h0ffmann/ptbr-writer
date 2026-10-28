@@ -145,3 +145,7 @@ summary { font: 600 1rem var(--display); cursor: pointer; }
   main { grid-template-columns: 1fr; }
   aside { border-left: 0; border-top: 1px solid var(--rule); }
 }
+/* Android: the overlay's section (window.ptbrAndroid, gen/android MainActivity). */
+.android { border-top: 1px solid var(--rule); padding-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.android p { margin: 0; }
+#overlay-state.on { color: var(--pen); }

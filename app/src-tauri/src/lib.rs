@@ -1,9 +1,14 @@
-//! The ptbr-writer desktop app: the browser extension's check (`ptbr_ext::background::handle_check`)
-//! behind five Tauri commands. The window (../ui, Rust compiled to wasm) only draws what they return.
+//! The ptbr-writer app: the browser extension's check (`ptbr_ext::background::handle_check`) behind
+//! five Tauri commands. The window (../ui, Rust compiled to wasm) only draws what they return. On
+//! Android the same library also serves the overlay service (overlay.rs, through android.rs), and
+//! both go to Claude only.
 
+#[cfg(target_os = "android")]
+mod android;
 #[cfg(any(test, feature = "demo"))]
 pub mod fake;
 pub mod fetch;
+pub mod overlay;
 pub mod store;
 pub mod view;
 
@@ -17,6 +22,9 @@ use std::sync::Mutex;
 use store::Stored;
 use tauri::{Manager, State};
 use view::Session;
+
+/// Android: the window offers Claude alone, and every check goes to Claude.
+const ANDROID: bool = cfg!(target_os = "android");
 
 struct App {
     dir: PathBuf,
@@ -53,6 +61,7 @@ fn boot(app: State<'_, App>) -> Boot {
         tones: Tone::ALL.iter().map(|t| t.as_str().into()).collect(),
         providers: ProviderId::ALL
             .iter()
+            .filter(|&&p| !ANDROID || p == ProviderId::Claude)
             .map(|&p| ProviderInfo {
                 id: p.as_str().into(),
                 name: provider_name(p).into(),
@@ -69,7 +78,10 @@ fn boot(app: State<'_, App>) -> Boot {
 #[tauri::command]
 fn save_prefs(app: State<'_, App>, prefs: Prefs) -> Result<Prefs, String> {
     let mut stored = app.stored.lock().expect("settings");
-    let next = stored.with_prefs(&prefs);
+    let mut next = stored.with_prefs(&prefs);
+    if ANDROID {
+        next.settings = overlay::claude_only(next.settings);
+    }
     next.save(&app.dir).map_err(|e| format!("Não salvou {}: {e}", app.dir.join(store::FILE).display()))?;
     *stored = next;
     Ok(stored.prefs())
@@ -78,7 +90,10 @@ fn save_prefs(app: State<'_, App>, prefs: Prefs) -> Result<Prefs, String> {
 #[tauri::command]
 async fn check(app: State<'_, App>, text: String, level: String) -> Result<View, String> {
     let level = Level::parse(&level).ok_or("Nível desconhecido.")?;
-    let settings = app.stored.lock().expect("settings").settings.clone();
+    let mut settings = app.stored.lock().expect("settings").settings.clone();
+    if ANDROID {
+        settings = overlay::claude_only(settings);
+    }
     let sent = text.clone();
     let result = tauri::async_runtime::spawn_blocking(move || run_check(&sent, level, &settings))
         .await
@@ -118,6 +133,7 @@ fn config_dir(app: &tauri::App) -> PathBuf {
     demo.map(PathBuf::from).unwrap_or_else(|| app.path().app_config_dir().expect("a config folder"))
 }
 
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {

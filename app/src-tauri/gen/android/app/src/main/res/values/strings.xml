@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">"ptbr-writer"</string>
+    <string name="main_activity_title">"ptbr-writer"</string>
+    <string name="overlay_label">ptbr-writer: revisão em todos os apps</string>
+    <string name="overlay_description">Lê o texto do campo em que você digita, em qualquer app (nunca um campo de senha), e o envia à Claude com a sua chave da Anthropic, do seu celular. Sublinha o que uma regra pede para mudar; o selo no canto do campo abre as correções. Pause um app pelo painel.</string>
+</resources>

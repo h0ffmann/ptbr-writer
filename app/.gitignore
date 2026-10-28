@@ -1,4 +1,5 @@
 target/
 .tools/
 ui/dist/
-src-tauri/gen/
+# The schemas are build output; gen/android is the Android project, kept (Tauri's advice).
+src-tauri/gen/schemas/

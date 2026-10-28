@@ -1,5 +1,5 @@
-//! A stand-in for Ollama's /api/chat, for the screenshot build and the tests: every check gets the
-//! same two suggestions on `DEMO_TEXT`. No request leaves the machine.
+//! A stand-in for Ollama's /api/chat and Claude's /v1/messages, for the screenshot builds and the
+//! tests: every check gets the same two suggestions on `DEMO_TEXT`. No request leaves the machine.
 
 use std::io::{BufRead, BufReader, Read, Write};
 use std::net::TcpListener;
@@ -7,7 +7,7 @@ use std::net::TcpListener;
 pub const DEMO_TEXT: &str = "Foi decidido que o deploy vai ser na sexta. A gente vai fazer a migração do banco de dados de forma a garantir que nenhum dado se perca no processo.";
 
 /// The model's answer: an erro in the first sentence, the second rewritten (aviso).
-pub fn reply() -> String {
+fn suggestions() -> String {
     let suggestions = serde_json::json!([
         { "original": "Foi decidido", "replacement": "A equipe decidiu", "rule": "PTW-1", "severity": "erro" },
         {
@@ -17,8 +17,18 @@ pub fn reply() -> String {
             "severity": "aviso"
         }
     ]);
-    serde_json::json!({ "message": { "role": "assistant", "content": suggestions.to_string() }, "done_reason": "stop" })
+    suggestions.to_string()
+}
+
+/// The answer in Ollama's shape.
+pub fn reply() -> String {
+    serde_json::json!({ "message": { "role": "assistant", "content": suggestions() }, "done_reason": "stop" })
         .to_string()
+}
+
+/// The answer in Claude's shape.
+pub fn claude_reply() -> String {
+    serde_json::json!({ "content": [{ "type": "text", "text": suggestions() }], "stop_reason": "end_turn" }).to_string()
 }
 
 /// Answers each connection, one at a time, until the process ends.
@@ -44,8 +54,13 @@ pub fn serve(listener: TcpListener) {
         }
         let mut body = vec![0; len];
         let _ = r.read_exact(&mut body);
-        let (status, out) =
-            if first.starts_with("POST /api/chat ") { ("200 OK", reply()) } else { ("404 Not Found", "{}".into()) };
+        let (status, out) = if first.starts_with("POST /api/chat ") {
+            ("200 OK", reply())
+        } else if first.starts_with("POST /v1/messages ") {
+            ("200 OK", claude_reply())
+        } else {
+            ("404 Not Found", "{}".into())
+        };
         let _ = write!(
             &stream,
             "HTTP/1.1 {status}\r\ncontent-type: application/json\r\ncontent-length: {}\r\nconnection: close\r\n\r\n{out}",

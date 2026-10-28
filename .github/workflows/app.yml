@@ -2,7 +2,8 @@
 # (the extension's pure modules, the two skills they embed, the plugin version it must equal): on
 # Linux, macOS and Windows, bootstrap the pinned tools (scripts/app.sh), run the Rust gates, build
 # the installers of that system, and capture the demo build's window against the fake provider (no
-# key, no network). The installers and the screenshot are this run's artifacts.
+# key, no network). The installers and the screenshot are this run's artifacts. The android job builds
+# the APK and runs the overlay in an emulator, over Messages, against the fake Claude.
 name: app
 
 on:
@@ -16,6 +17,7 @@ on:
       - plugins/ptbr-writer/.claude-plugin/plugin.json
       - scripts/app.sh
       - scripts/app-capture.*
+      - scripts/app-android-capture.sh
       - .github/workflows/app.yml
   push:
     branches: [main]
@@ -28,6 +30,7 @@ on:
       - plugins/ptbr-writer/.claude-plugin/plugin.json
       - scripts/app.sh
       - scripts/app-capture.*
+      - scripts/app-android-capture.sh
       - .github/workflows/app.yml
   workflow_dispatch:
 
@@ -76,4 +79,52 @@ jobs:
           path: |
             app/target/release/bundle/
             docs/img/app/
+          if-no-files-found: warn
+
+  android:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # The emulator needs /dev/kvm, which the runner's user cannot open by default.
+      - name: KVM for the emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            app/target
+            app/.tools
+          key: app-android-${{ hashFiles('app/Cargo.lock', 'app/rust-toolchain.toml', 'scripts/app.sh', 'app/src-tauri/gen/android/**/*.kts') }}
+          restore-keys: app-android-
+      - run: bash scripts/app.sh android-bootstrap
+      - run: bash scripts/app.sh android-test
+      - run: bash scripts/app.sh android-build
+      - uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: bash scripts/app.sh android-screenshot
+        env:
+          APP_CAPTURE_WAIT: "10"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: ptbr-writer-app-Android
+          path: |
+            app/target/android/
+            docs/img/app/android-*
           if-no-files-found: warn

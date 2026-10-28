@@ -1,4 +1,5 @@
-//! A stand-in for Ollama's /api/chat on 127.0.0.1:PORT (first argument), for the screenshot build.
+//! A stand-in for Ollama's /api/chat and Claude's /v1/messages on 127.0.0.1:PORT (first argument),
+//! for the screenshot builds.
 
 fn main() {
     let port = std::env::args().nth(1).unwrap_or_else(|| "11999".into());
