@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
-# The desktop app (app/, Tauri 2): bootstrap, ui, dev, build, test, icons, screenshot. The `just app-*`
-# recipes and .github/workflows/app.yml call it, on Linux, macOS and Windows (Git Bash).
+# The desktop app (app/, Tauri 2): bootstrap, ui, dev, build, release-files, test, icons, screenshot.
+# The `just app-*` recipes, .github/workflows/app.yml and release.yml call it, on Linux, macOS and
+# Windows (Git Bash).
 #
 #   bootstrap    the pinned Rust (app/rust-toolchain.toml), tauri-cli and wasm-bindgen-cli in
 #                app/.tools, and a check of the system's webview libraries
 #   ui           the window, Rust to wasm, into app/ui/dist
 #   dev          the app with Tauri's dev loop
-#   build        the installers of this system (dmg/app, deb/rpm/AppImage, msi/nsis)
+#   build        the installers of this system (dmg/app, deb/rpm/AppImage, msi/nsis); on macOS arm64,
+#                ad-hoc signed
+#   release-files
+#                after build: each installer's .sha256, and their paths (release.yml attaches them)
 #   test         fmt, clippy (host and wasm32), unit tests, the version check
 #   icons        app/src-tauri/icons from icons/icon.svg (the site's favicon on paper), desktop sizes only
 #   screenshot   the demo build against the fake provider, its window to docs/img/app/<os>.png
@@ -238,6 +242,31 @@ android_screenshot() {
     bash "$root/scripts/app-android-capture.sh" "$app/src-tauri/gen/android/app/build/outputs/apk/universal/debug/app-universal-debug.apk" "$port" "$text" "$root/docs/img/app"
 }
 
+# The installers of this system, after build. On macOS the bundle's signature is checked first: an
+# ad-hoc signature (tauri.conf.json's signingIdentity "-") that seals the bundle, or a downloaded copy is
+# "damaged". Each installer gets its .sha256; their paths, from the repo's root, one per line.
+build() {
+    ui
+    (cd "$app/src-tauri" && cargo-tauri tauri build "$@")
+    if [ "$os" = macos ]; then
+        codesign --verify --deep --strict "$app/target/release/bundle/macos/ptbr-writer.app"
+        echo "app-build: the bundle's signature is valid ($(codesign -dv "$app/target/release/bundle/macos/ptbr-writer.app" 2>&1 | sed -n 's/^Signature=//p'))"
+    fi
+}
+
+release_files() {
+    local f found=0
+    cd "$app/target/release/bundle"
+    for f in dmg/*.dmg deb/*.deb rpm/*.rpm appimage/*.AppImage msi/*.msi nsis/*.exe; do
+        [ -f "$f" ] || continue
+        { sha256sum "$f" 2>/dev/null || shasum -a 256 "$f"; } | sed 's|  .*/|  |' >"$f.sha256"
+        echo "app/target/release/bundle/$f"
+        echo "app/target/release/bundle/$f.sha256"
+        found=1
+    done
+    [ "$found" = 1 ] || die "no installer in app/target/release/bundle: run build first"
+}
+
 icons() {
     need_tools
     cd "$app/src-tauri"
@@ -253,7 +282,8 @@ case "$cmd" in
     bootstrap) bootstrap ;;
     ui) ui ;;
     dev) ui && cd "$app/src-tauri" && cargo-tauri tauri dev "$@" ;;
-    build) ui && cd "$app/src-tauri" && cargo-tauri tauri build "$@" ;;
+    build) build "$@" ;;
+    release-files) release_files ;;
     test) test_all ;;
     icons) icons ;;
     screenshot) screenshot ;;
@@ -262,5 +292,5 @@ case "$cmd" in
     android-test) android_test ;;
     android-build) android_build "$@" ;;
     android-screenshot) android_screenshot ;;
-    *) die "usage: scripts/app.sh bootstrap|ui|dev|build|test|icons|screenshot|android-bootstrap|android-dev|android-test|android-build|android-screenshot" ;;
+    *) die "usage: scripts/app.sh bootstrap|ui|dev|build|release-files|test|icons|screenshot|android-bootstrap|android-dev|android-test|android-build|android-screenshot" ;;
 esac

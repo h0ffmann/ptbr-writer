@@ -69,6 +69,8 @@ jobs:
       - run: bash scripts/app.sh bootstrap
       - run: bash scripts/app.sh test
       - run: bash scripts/app.sh build
+      # What release.yml attaches to a release: the installers and their .sha256.
+      - run: bash scripts/app.sh release-files
       - run: bash scripts/app.sh screenshot
         env:
           APP_CAPTURE_WAIT: "8"
