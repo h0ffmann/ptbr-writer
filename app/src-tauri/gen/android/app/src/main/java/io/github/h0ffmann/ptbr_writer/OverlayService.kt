@@ -262,6 +262,11 @@ class OverlayService : AccessibilityService() {
                 p.height = max
                 wm.updateViewLayout(scroll, p)
             }
+            // scripts/app-android-capture.sh taps the first Aceitar here, for the demo video.
+            scroll.findViewWithTag<View>("accept")?.let { b ->
+                val at = IntArray(2).also { b.getLocationOnScreen(it) }
+                Log.i(TAG, "overlay: accept at ${at[0] + b.width / 2},${at[1] + b.height / 2}")
+            }
         }
         panel = scroll
     }
@@ -276,7 +281,7 @@ class OverlayService : AccessibilityService() {
         v.addView(text(SpannableString(card.original).apply { setSpan(StrikethroughSpan(), 0, length, 0) }, 14f, REVIEW))
         if (!card.detectOnly) v.addView(text(card.replacement.ifEmpty { "(remover)" }, 14f, PEN))
         val actions = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-        if (!card.detectOnly) actions.addView(button("Aceitar", primary = true) { act(Ptbr.accept(card.id), writes = true) })
+        if (!card.detectOnly) actions.addView(button("Aceitar", primary = true) { act(Ptbr.accept(card.id), writes = true) }.apply { tag = "accept" })
         actions.addView(button("Ignorar", primary = false) { act(Ptbr.ignore(card.id), writes = false) })
         v.addView(actions)
         return v.also {
