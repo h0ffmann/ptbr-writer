@@ -121,6 +121,8 @@ jobs:
           api-level: 34
           target: google_apis
           arch: x86_64
+          # A phone's screen (1080 × 2400) for the pictures.
+          profile: pixel_6
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: bash scripts/app.sh android-screenshot

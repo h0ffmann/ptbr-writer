@@ -215,7 +215,6 @@ class OverlayService : AccessibilityService() {
         val head = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         head.addView(text(if (c == null) "ptbr-writer" else "ptbr-writer · ${c.cards.size} correções", 15f, INK, bold = true),
             LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        head.addView(button("Pausar neste app", primary = false) { pauseHere() })
         head.addView(button("×", primary = false) { closePanel() })
         list.addView(head)
         if (c == null) {
@@ -226,23 +225,27 @@ class OverlayService : AccessibilityService() {
             })
         }
         c?.cards?.forEach { list.addView(cardView(it)) }
+        list.addView(button("Pausar neste app", primary = false) { pauseHere() })
         val scroll = ScrollView(this).apply {
             addView(list)
             background = GradientDrawable().apply { setColor(PAPER); cornerRadius = dp(14).toFloat(); setStroke(dp(1), RULE) }
         }
         val screen = resources.displayMetrics
         val bounds = Rect().also { field?.getBoundsInScreen(it) }
-        // Away from the field: on top when it is in the lower half (a chat's box), else at the bottom.
+        // Away from the field: above it when it is in the lower half (a chat's box), else below it, in
+        // the room between the field and the screen's edge.
         val p = params(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT, touch = true)
-        p.gravity = if (bounds.centerY() > screen.heightPixels / 2) Gravity.TOP else Gravity.BOTTOM
+        val above = bounds.centerY() > screen.heightPixels / 2
+        p.gravity = if (above) Gravity.TOP else Gravity.BOTTOM
         p.y = dp(32)
+        val room = (if (above) bounds.top else screen.heightPixels - bounds.bottom) - p.y - dp(8)
         p.horizontalMargin = 0.03f
         closePanel()
         scroll.isVerticalScrollBarEnabled = true
         wm.addView(scroll, p)
-        // At most 45% of the screen: the rest scrolls.
+        // At most 45% of the screen, and never over the field: the rest scrolls.
         scroll.post {
-            val max = (screen.heightPixels * 0.45).toInt()
+            val max = minOf((screen.heightPixels * 0.45).toInt(), room).coerceAtLeast(dp(120))
             if (scroll.height > max) {
                 p.height = max
                 wm.updateViewLayout(scroll, p)
@@ -361,6 +364,8 @@ class OverlayService : AccessibilityService() {
         setTextColor(if (primary) Color.WHITE else PEN)
         minHeight = 0
         minimumHeight = 0
+        minWidth = 0
+        minimumWidth = 0
         setPadding(dp(12), dp(6), dp(12), dp(6))
         background = GradientDrawable().apply {
             cornerRadius = dp(8).toFloat()
