@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Installs the demo APK on the emulator adb sees, gives it the fake Claude (adb reverse) and a
 # placeholder key, turns its overlay on, opens Messages with the demo text, waits for the overlay's
-# check, and saves three pictures: the window, the underlines with the badge, the cards.
+# check, and saves three pictures: the underlines with the badge, the cards, the window.
 # Called by `scripts/app.sh android-screenshot`: app-android-capture.sh APK PORT TEXT OUTDIR
 set -euo pipefail
 apk="$1" port="$2" text="$3" out="$4"
@@ -32,11 +32,6 @@ printf '{"provider":"claude","keys":{"claude":"placeholder"},"apiBase":{"claude"
     adb shell "run-as $pkg sh -c 'cat > settings.json'"
 adb logcat -c
 
-# The window first, with the overlay still off: the section that turns it on.
-adb shell am start -W -n "$pkg/.MainActivity" >/dev/null
-sleep "${APP_CAPTURE_WAIT:-6}"
-shot android-window.png
-
 # Only the user turns an accessibility service on; on an emulator, adb may.
 adb shell settings put secure enabled_accessibility_services "$pkg/$pkg.OverlayService"
 adb shell settings put secure accessibility_enabled 1
@@ -57,3 +52,11 @@ xy="$(adb logcat -d -s ptbr:I | sed -n 's/.*overlay: badge at \([0-9]*\),\([0-9]
 adb shell input tap $xy
 sleep 2
 shot android-cards.png
+
+# The window last, once the emulator has settled (a launcher still starting shows a dialog): its
+# overlay section, now on; the window in front puts the overlay away.
+adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >/dev/null || true
+adb shell am start -W -n "$pkg/.MainActivity" >/dev/null
+sleep "${APP_CAPTURE_WAIT:-6}"
+adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >/dev/null || true
+shot android-window.png

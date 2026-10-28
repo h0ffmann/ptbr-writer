@@ -89,8 +89,13 @@ class OverlayService : AccessibilityService() {
     override fun onInterrupt() {}
 
     override fun onAccessibilityEvent(e: AccessibilityEvent) {
-        // The overlay's own windows and the app's window are not someone's text.
-        if (e.packageName?.toString() == packageName) return
+        // The overlay's own windows and the app's window are not someone's text; the app's window in
+        // front puts the overlay away.
+        if (e.packageName?.toString() == packageName) {
+            val window = e.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+            if (window && e.className?.toString() == MainActivity::class.java.name) forget()
+            return
+        }
         when (e.eventType) {
             AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, AccessibilityEvent.TYPE_VIEW_FOCUSED -> onField(e)
             AccessibilityEvent.TYPE_VIEW_SCROLLED, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> {
@@ -240,12 +245,13 @@ class OverlayService : AccessibilityService() {
         val bounds = Rect().also { field?.getBoundsInScreen(it) }
         // Away from the field: above it when it is in the lower half (a chat's box), else below it, in
         // the room between the field and the screen's edge.
-        val p = params(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT, touch = true)
+        val margin = dp(10)
+        val p = params(screen.widthPixels - 2 * margin, WindowManager.LayoutParams.WRAP_CONTENT, touch = true)
+        p.x = margin
         val above = bounds.centerY() > screen.heightPixels / 2
-        p.gravity = if (above) Gravity.TOP else Gravity.BOTTOM
+        p.gravity = (if (above) Gravity.TOP else Gravity.BOTTOM) or Gravity.START
         p.y = dp(32)
         val room = (if (above) bounds.top else screen.heightPixels - bounds.bottom) - p.y - dp(8)
-        p.horizontalMargin = 0.03f
         closePanel()
         scroll.isVerticalScrollBarEnabled = true
         wm.addView(scroll, p)
