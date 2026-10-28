@@ -48,9 +48,11 @@ box="$(adb shell cat /sdcard/ui.xml | grep -o 'class="android.widget.EditText"[^
 read -r x1 y1 x2 y2 <<<"$box"
 adb shell input tap $(((x1 + x2) / 2)) $(((y1 + y2) / 2))
 sleep 1
-adb shell input keyevent KEYCODE_MOVE_END
+# Ctrl+End: the end of the whole text (End alone stops at the line the tap hit).
+adb shell input keycombination KEYCODE_CTRL_LEFT KEYCODE_MOVE_END
 adb shell input text '%s'
-wait_log "overlay: [1-9][0-9]* cards" 60
+# The fake answers two suggestions (fake.rs): one card fewer is a text the typing changed.
+wait_log "overlay: 2 cards" 60
 sleep 2
 shot android-overlay.png
 
