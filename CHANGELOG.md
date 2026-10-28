@@ -18,6 +18,9 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
   AppImage, msi e exe, cada um com o seu `.sha256`, de `scripts/app.sh release-files`). O `settings.json`, que
   guarda a chave, passa a ser gravado com modo `0600`; no Android, fica fora do backup e da cópia para um
   celular novo. A janela diz quanto tempo a revisão levou, e o log da sobreposição também.
+- `just release X.Y.Z` leva a versão também ao `.zenodo.json` e ao `app/` (`Cargo.toml` e `Cargo.lock`), e o
+  `release-check` confere a do app: antes, o PR da versão quebrava o `app-test` e a tag falhava no
+  `release-check`.
 
 - O shell do site (`.#site`) passa ao Node 24.22.1: o picasso fixado vai de `b919f9e` a `5da5237`
   (h0ffmann/picasso#143) no `flake.lock`, no submódulo `forks/picasso`, no `tools.lock` e no `to-pdf.sh`. Os
