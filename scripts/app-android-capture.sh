@@ -5,6 +5,8 @@
 # window) and a low-resolution video of it all (android-demo.mp4, and .gif when ffmpeg is here).
 # Called by `scripts/app.sh android-screenshot`: app-android-capture.sh APK PORT TEXT OUTDIR
 set -euo pipefail
+# A step that fails says which one: adb often exits non-zero without a word.
+trap 'echo "app-android-capture: line $LINENO failed: $BASH_COMMAND" >&2' ERR
 apk="$1" port="$2" text="$3" out="$4"
 pkg=io.github.h0ffmann.ptbr_writer
 mkdir -p "$out"
