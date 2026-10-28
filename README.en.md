@@ -102,6 +102,24 @@ the same providers, underlines and cards.
 The key stays in the `settings.json` of the app's config folder, as the extension keeps it in the browser.
 `just app-screenshot` takes the window's picture with a fake provider, no key and no network.
 
+### Android
+
+The same app on Android, not yet released, with an overlay: in any app, it reviews the field you type
+in, underlines what a rule asks to change, and opens the fixes from a badge at the field's corner
+(**Aceitar**, **Ignorar**, **Pausar neste app**: accept, ignore, pause in this app). Android has Claude
+only: the text goes from the phone to Anthropic, with your key. Password fields are never read.
+
+1. Run `just app-android-bootstrap`: it needs the Android SDK (`ANDROID_HOME`) and a JDK 17 or newer.
+2. Run `just app-android-build` and install the APK from `app/target/android` with `adb install`.
+3. In the app, paste the Claude key in **Configurações** and tap **Ativar nas configurações do Android**.
+
+![The overlay over Messages, on the emulator](docs/img/app/android-overlay.png)
+
+`just app-android-screenshot` takes the pictures on an emulator, with a fake Claude. ⚠ Not yet tested on
+a real phone with a real key. For the Play Store, an accessibility service that is not for
+accessibility needs a Google declaration (⚠ the policy was not checked here); the APK is a debug one, to
+install by hand.
+
 ## use
 
 | Command | Does |

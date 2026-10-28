@@ -98,6 +98,24 @@ providers, sublinhados e cartões.
 A chave fica no `settings.json` da pasta de configuração do app, como a extensão a guarda no navegador.
 `just app-screenshot` tira a foto da janela com um provider falso, sem chave e sem rede.
 
+### Android
+
+O mesmo app no Android, ainda sem release, com uma sobreposição: em qualquer app, ela revisa o campo
+em que você digita, sublinha o que uma regra pede para mudar e abre as correções por um selo no canto
+do campo (**Aceitar**, **Ignorar**, **Pausar neste app**). No Android só há a Claude: o texto vai do
+celular à Anthropic, com a sua chave. Campos de senha nunca são lidos.
+
+1. Rode `just app-android-bootstrap`: precisa do Android SDK (`ANDROID_HOME`) e de um JDK 17 ou mais novo.
+2. Rode `just app-android-build` e instale o APK de `app/target/android` com `adb install`.
+3. No app, cole a chave da Claude em **Configurações** e toque em **Ativar nas configurações do Android**.
+
+![A sobreposição sobre o Mensagens, no emulador](docs/img/app/android-overlay.png)
+
+`just app-android-screenshot` tira as fotos num emulador, com uma Claude falsa. ⚠ Num celular de
+verdade, com uma chave real, ainda não foi testado. Para a Play Store, um serviço de acessibilidade que
+não é para acessibilidade precisa de uma declaração do Google (⚠ a política não foi conferida aqui); o APK é
+de debug, para instalar à mão.
+
 ## usar
 
 | Comando | Faz |

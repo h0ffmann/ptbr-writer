@@ -9,6 +9,11 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
   roda a revisão da extensão (`ptbr_ext::background::handle_check`) sobre reqwest. `just app-bootstrap`,
   `app-dev`, `app-build`, `app-test` e `app-screenshot`; o `app.yml` testa, empacota e fotografa a janela
   nos três sistemas.
+- O app no Android (`app/src-tauri/gen/android`): a mesma janela, só com a Claude, e uma sobreposição
+  (AccessibilityService) que revisa o campo em que se digita em qualquer app, sublinha e abre as correções
+  por um selo. A revisão e a sessão são do Rust, via JNI (`overlay.rs`, `android.rs`). `just
+  app-android-bootstrap`, `app-android-test`, `app-android-dev`, `app-android-build` e
+  `app-android-screenshot`; o job `android` do `app.yml` roda a sobreposição num emulador.
 
 - O shell do site (`.#site`) passa ao Node 24.22.1: o picasso fixado vai de `b919f9e` a `5da5237`
   (h0ffmann/picasso#143) no `flake.lock`, no submódulo `forks/picasso`, no `tools.lock` e no `to-pdf.sh`. Os
