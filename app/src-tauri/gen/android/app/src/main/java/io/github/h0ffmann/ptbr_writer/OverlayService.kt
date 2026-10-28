@@ -62,6 +62,8 @@ class OverlayService : AccessibilityService() {
     private var panel: View? = null
 
     private var field: AccessibilityNodeInfo? = null
+    // The field's text at its last change: a spell checker's spans fire changes with the same text.
+    private var seen: String? = null
     private var checked: Checked? = null
     private var error: String? = null
     // A reply for an older text than the field's is dropped.
@@ -114,9 +116,13 @@ class OverlayService : AccessibilityService() {
         field = n
         // Aceitar's own change, or the focus back on a checked field: the cards still hold.
         if (same && checked?.text == text) {
+            seen = text
             redraw()
             return
         }
+        // Not a change of the text: the wait (or the check under way) goes on.
+        if (same && seen == text) return
+        seen = text
         drop()
         main.removeCallbacks(checkLater)
         if (words(text) >= MIN_WORDS && text.length <= MAX_CHARS) main.postDelayed(checkLater, PAUSE_MS)
@@ -300,6 +306,7 @@ class OverlayService : AccessibilityService() {
     private fun forget() {
         main.removeCallbacks(checkLater)
         field = null
+        seen = null
         drop()
     }
 
