@@ -1,6 +1,8 @@
 # release — a pushed v* tag becomes a GitHub release, once its version agrees with plugin.json and
 # CHANGELOG.md (`just release-check`). Claude Code installs the plugin from the tag a repo pins as
-# the marketplace `ref`; the site deploys from main on its own (site.yml).
+# the marketplace `ref`; the site deploys from main on its own (site.yml). The app job then builds the
+# desktop app on the three systems (scripts/app.sh, as app.yml does; macOS on Apple Silicon, arm64)
+# and attaches its installers, each with its .sha256, to that release.
 name: release
 
 on:
@@ -24,3 +26,39 @@ jobs:
       - env:
           GH_TOKEN: ${{ github.token }}
         run: gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes --title "ptbr-writer $GITHUB_REF_NAME"
+
+  app:
+    needs: release
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: webview libraries (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libsoup-3.0-dev librsvg2-dev \
+            libayatana-appindicator3-dev patchelf
+      # No cache: a release builds from the tag alone.
+      - run: bash scripts/app.sh bootstrap
+      - run: bash scripts/app.sh build
+      - name: attach the installers
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          files=()
+          while IFS= read -r f; do files+=("$f"); done < <(bash scripts/app.sh release-files)
+          [ ${#files[@]} -gt 0 ]
+          printf '%s\n' "${files[@]}"
+          gh release upload "$GITHUB_REF_NAME" "${files[@]}" --repo "$GITHUB_REPOSITORY" --clobber

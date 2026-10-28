@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![versão](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=vers%C3%A3o&style=flat-square)](CHANGELOG.md)
 [![license: MPL-2.0](https://img.shields.io/badge/license-MPL--2.0-1682D4?style=flat-square)](#licença)
-[![leitura estimada: ~9 min](https://img.shields.io/badge/leitura%20estimada-~9%20min-1682D4?style=flat-square)](#tempo-de-leitura)
+[![leitura estimada: ~10 min](https://img.shields.io/badge/leitura%20estimada-~10%20min-1682D4?style=flat-square)](#tempo-de-leitura)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#instalar)
 [![extensão de navegador (Chrome): dev local (WIP)](https://img.shields.io/badge/extens%C3%A3o%20de%20navegador-dev%20local%20(WIP)-1682D4?style=flat-square&logo=googlechrome&logoColor=white)](#chrome)
 [![extensão de navegador (Firefox): dev local (WIP)](https://img.shields.io/badge/extens%C3%A3o%20de%20navegador-dev%20local%20(WIP)-1682D4?style=flat-square&logo=firefoxbrowser&logoColor=white)](docs/EXTENSION_FIREFOX.md)
@@ -87,16 +87,36 @@ O Firefox 128+ usa `just ext-build-firefox`
 
 ### Desktop
 
-Um app, ainda sem release, para Linux, macOS e Windows (Tauri 2, Rust na janela e no núcleo): você
-cola um texto, escolhe o nível e clica em **Revisar**. Ele usa a revisão da extensão, com os mesmos
-providers, sublinhados e cartões.
+Um app para Linux, macOS e Windows (Tauri 2, Rust na janela e no núcleo): você cola um texto, escolhe o
+nível e clica em **Revisar**. Ele usa a revisão da extensão, com os mesmos providers, sublinhados e
+cartões. A release traz os instaladores, com o `.sha256` de cada um (⚠ ainda não rodou numa tag); o do
+macOS é arm64, sem notarização: abra por **Privacidade e Segurança** → **Abrir Mesmo Assim**.
 
 1. Rode `just app-bootstrap`: instala o Rust, o `tauri-cli` e o `wasm-bindgen-cli` fixados em `app/.tools`.
 2. Rode `just app-dev` para abrir o app, ou `just app-build` para gerar o instalador deste sistema.
 3. Em **Configurações**, escolha o provider e o modelo e clique em **Salvar**.
 
-A chave fica no `settings.json` da pasta de configuração do app, como a extensão a guarda no navegador.
+A chave fica no `settings.json` da pasta de configuração do app, com modo `0600`.
 `just app-screenshot` tira a foto da janela com um provider falso, sem chave e sem rede.
+
+### Android
+
+O mesmo app no Android, ainda sem release, com uma sobreposição: em qualquer app, ela revisa o campo
+em que você digita, sublinha o que uma regra pede para mudar e abre as correções por um selo no canto
+do campo (**Aceitar**, **Ignorar**, **Pausar neste app**). No Android só há a Claude: o texto vai do
+celular à Anthropic, com a sua chave. Campos de senha nunca são lidos. A chave fica fora do backup; num
+APK de debug, `adb shell run-as` a lê.
+
+1. Rode `just app-android-bootstrap`: precisa do Android SDK (`ANDROID_HOME`) e de um JDK 17 ou mais novo.
+2. Rode `just app-android-build` e instale o APK de `app/target/android` com `adb install`.
+3. No app, cole a chave da Claude em **Configurações** e toque em **Ativar nas configurações do Android**.
+
+![A sobreposição sobre o Mensagens, no emulador](docs/img/app/android-overlay.png)
+
+`just app-android-screenshot` tira as fotos num emulador, com uma Claude falsa. ⚠ Num celular de
+verdade, com uma chave real, ainda não foi testado. Para a Play Store, um serviço de acessibilidade que
+não é para acessibilidade precisa de uma declaração do Google (⚠ a política não foi conferida aqui); o APK é
+de debug, para instalar à mão.
 
 ## usar
 

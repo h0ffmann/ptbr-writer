@@ -477,6 +477,28 @@ app-test:
 app-screenshot:
     bash scripts/app.sh screenshot
 
+# Android app (app/src-tauri/gen/android): the desktop tools, the Android Rust targets and the pinned NDK and
+# platform (sdkmanager). Needs the Android SDK (ANDROID_HOME) and a JDK 17 or newer.
+app-android-bootstrap:
+    bash scripts/app.sh android-bootstrap
+
+# Android app: clippy for aarch64-linux-android, where the overlay's JNI code (android.rs) builds.
+app-android-test:
+    bash scripts/app.sh android-test
+
+# Android app: on a running emulator or a phone (adb), with Tauri's dev loop.
+app-android-dev *args:
+    bash scripts/app.sh android-dev {{ args }}
+
+# Android app: the phones' debug APK (arm64), into app/target/android; install it with adb install.
+app-android-build *args:
+    bash scripts/app.sh android-build {{ args }}
+
+# Android app: the demo APK on a running emulator, its overlay over Messages against a fake Claude (no key, no
+# network), to docs/img/app/android-{window,overlay,cards}.png.
+app-android-screenshot:
+    bash scripts/app.sh android-screenshot
+
 # The whitepaper, in pt-BR and English: docs/whitepaper/{pt-BR,en}.md -> pandoc (docs/whitepaper/template.tex,
 # the Paper Fabric template of h0ffmann/closed-source) -> XeLaTeX twice -> WHITEPAPER.pdf and WHITEPAPER.en.pdf.
 # The marola and ouroboric logos are their projects' marks, not licensed here: each is fetched at the commit

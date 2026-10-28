@@ -9,6 +9,8 @@ default-run = "ptbr-app"
 
 [lib]
 name = "ptbr_app"
+# cdylib: the Android app loads it (libptbr_app.so), from the window and from the overlay service.
+crate-type = ["cdylib", "rlib"]
 
 [[bin]]
 name = "fake-provider"
@@ -33,3 +35,10 @@ serde_json = { version = "=1.0.154", features = ["preserve_order"] }
 reqwest = { version = "=0.13.5", default-features = false, features = ["rustls-no-provider", "http2", "charset"] }
 rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
 tokio = { version = "1", features = ["rt"] }
+
+[target.'cfg(target_os = "android")'.dependencies]
+# The overlay service calls the check through JNI (src/android.rs); Tauri's own jni.
+jni = { version = "=0.21.1", default-features = false }
+# Android has no root store reqwest's platform verifier reaches without its Kotlin half: Mozilla's
+# roots, pinned with the lock.
+webpki-roots = "=1.0.11"

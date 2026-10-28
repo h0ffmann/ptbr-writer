@@ -11,8 +11,22 @@ impl Default for Http {
         // reqwest is built without a crypto provider (Cargo.toml): ring is the one, installed once.
         let _ = rustls::crypto::ring::default_provider().install_default();
         // A local model on a CPU can take minutes for a long text.
-        Http(reqwest::Client::builder().timeout(Duration::from_secs(300)).build().expect("an HTTP client"))
+        let b = reqwest::Client::builder().timeout(Duration::from_secs(300));
+        #[cfg(target_os = "android")]
+        let b = b.tls_backend_preconfigured(android_tls());
+        Http(b.build().expect("an HTTP client"))
     }
+}
+
+/// rustls over Mozilla's roots (webpki-roots): the platform verifier needs a JNI setup and a Kotlin
+/// library that the overlay service, started without the window, would not have.
+#[cfg(target_os = "android")]
+fn android_tls() -> rustls::ClientConfig {
+    let mut roots = rustls::RootCertStore::empty();
+    roots.extend(webpki_roots::TLS_SERVER_ROOTS.iter().cloned());
+    let mut c = rustls::ClientConfig::builder().with_root_certificates(roots).with_no_client_auth();
+    c.alpn_protocols = vec![b"h2".to_vec(), b"http/1.1".to_vec()];
+    c
 }
 
 impl Fetch for Http {

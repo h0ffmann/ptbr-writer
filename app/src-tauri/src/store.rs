@@ -67,10 +67,24 @@ impl Stored {
             .map_or_else(Stored::default, |v| Stored::from_value(&v))
     }
 
+    /// The file holds the keys: on Unix only its owner reads it (0600; a Linux ~/.config is often
+    /// world-readable), and it is written whole to a temporary file, then renamed over the old one.
     pub fn save(&self, dir: &Path) -> std::io::Result<()> {
+        use std::io::Write;
         std::fs::create_dir_all(dir)?;
         let body = serde_json::to_string_pretty(&self.to_value()).expect("JSON");
-        std::fs::write(dir.join(FILE), body)
+        let tmp = dir.join(format!("{FILE}.tmp"));
+        let mut open = std::fs::OpenOptions::new();
+        open.write(true).create(true).truncate(true);
+        #[cfg(unix)]
+        std::os::unix::fs::OpenOptionsExt::mode(&mut open, 0o600);
+        let mut f = open.open(&tmp)?;
+        // A file left by an older version keeps its mode through open: set it again.
+        #[cfg(unix)]
+        f.set_permissions(std::os::unix::fs::PermissionsExt::from_mode(0o600))?;
+        f.write_all(body.as_bytes())?;
+        f.sync_all()?;
+        std::fs::rename(&tmp, dir.join(FILE))
     }
 }
 
@@ -115,6 +129,13 @@ mod tests {
         let s = Stored { level: Level::Leve, ..Stored::default() };
         s.save(&dir).unwrap();
         assert_eq!(Stored::load(&dir), s);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            let mode = std::fs::metadata(dir.join(FILE)).unwrap().permissions().mode();
+            assert_eq!(mode & 0o777, 0o600, "the keys file is its owner's only");
+            assert!(!dir.join(format!("{FILE}.tmp")).exists());
+        }
         std::fs::remove_dir_all(&dir).unwrap();
     }
 }

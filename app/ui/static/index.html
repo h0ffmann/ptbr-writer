@@ -26,6 +26,12 @@
       <aside>
         <h2>Correções <span id="count" class="pill mono">0</span></h2>
         <div id="cards"></div>
+        <section id="android" class="android" hidden>
+          <h2>Em todos os apps</h2>
+          <p class="muted">A sobreposição lê o texto do campo em que você digita, em qualquer app (nunca um campo de senha), e o envia à Claude com a sua chave, do celular. Ela sublinha o que uma regra pede para mudar, e o selo no canto do campo abre as correções.</p>
+          <p id="overlay-state" class="mono"></p>
+          <button id="overlay" type="button" class="primary">Ativar nas configurações do Android</button>
+        </section>
         <details id="settings">
           <summary>Configurações</summary>
           <label>Provider <select id="provider"></select></label>
