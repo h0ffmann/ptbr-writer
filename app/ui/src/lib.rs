@@ -239,12 +239,15 @@ async fn run_check(ui: Shared) {
     let provider = ui.borrow().prefs.provider.clone();
     let name = ui.borrow().boot.providers.iter().find(|p| p.id == provider).map(|p| p.name.clone()).unwrap_or(provider);
     status(&format!("Revisando com {name}, nível {level}…"), false);
+    let started = js_sys::Date::now();
     match invoke::<_, View>("check", &CheckArgs { text: &text, level: &level }).await {
         Ok(view) => {
+            // The time a check took, start to end: what a "slow" report needs to say where.
+            let took = format!("{:.1}", (js_sys::Date::now() - started) / 1000.0).replace('.', ",");
             let said = match view.cards.len() {
-                0 => "Nada a corrigir.".to_string(),
-                1 => "1 correção.".to_string(),
-                n => format!("{n} correções."),
+                0 => format!("Nada a corrigir ({took} s)."),
+                1 => format!("1 correção ({took} s)."),
+                n => format!("{n} correções ({took} s)."),
             };
             status(&said, false);
             render(&view);

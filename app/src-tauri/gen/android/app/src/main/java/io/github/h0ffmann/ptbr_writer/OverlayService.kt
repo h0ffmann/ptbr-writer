@@ -16,6 +16,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.provider.Settings
 import android.text.SpannableString
 import android.text.style.StrikethroughSpan
@@ -141,12 +142,14 @@ class OverlayService : AccessibilityService() {
         val gen = ++generation
         val dir = applicationContext.dataDir.absolutePath
         worker.execute {
+            val started = SystemClock.elapsedRealtime()
             val reply = parseReply(Ptbr.check(dir, text))
-            main.post { if (gen == generation) shown(reply, text) }
+            val ms = SystemClock.elapsedRealtime() - started
+            main.post { if (gen == generation) shown(reply, text, ms) }
         }
     }
 
-    private fun shown(reply: Reply, sent: String) {
+    private fun shown(reply: Reply, sent: String, ms: Long) {
         val n = field ?: return
         n.refresh()
         if (textOf(n) != sent) return
@@ -154,13 +157,14 @@ class OverlayService : AccessibilityService() {
             is Reply.Err -> {
                 checked = null
                 error = reply.message
-                Log.i(TAG, "overlay: error ${reply.message}")
+                Log.i(TAG, "overlay: error ${reply.message} ($ms ms)")
             }
             is Reply.Ok -> {
                 checked = reply.checked
                 error = null
-                // scripts/app-android.sh waits for this line: the overlay ran its check end to end.
-                Log.i(TAG, "overlay: ${reply.checked.cards.size} cards")
+                // scripts/app-android-capture.sh waits for this line: the overlay ran its check end to end, in
+                // ms (the time a "slow" report needs).
+                Log.i(TAG, "overlay: ${reply.checked.cards.size} cards in $ms ms")
             }
         }
         redraw()
