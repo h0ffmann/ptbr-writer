@@ -87,15 +87,21 @@ O Firefox 128+ usa `just ext-build-firefox`
 
 ### Desktop
 
-Um app, ainda sem release, para Linux, macOS e Windows (Tauri 2, Rust na janela e no núcleo): você
-cola um texto, escolhe o nível e clica em **Revisar**. Ele usa a revisão da extensão, com os mesmos
-providers, sublinhados e cartões.
+Um app para Linux, macOS e Windows (Tauri 2, Rust na janela e no núcleo): você cola um texto, escolhe o
+nível e clica em **Revisar**. Ele usa a revisão da extensão, com os mesmos providers, sublinhados e
+cartões, e diz quanto tempo a revisão levou.
+
+A partir da próxima versão (`just release`), o `release.yml` anexa à release os instaladores dos três
+sistemas, cada um com o seu `.sha256` (⚠ o job ainda não rodou numa tag). O do macOS é para Apple Silicon
+(arm64), com assinatura ad hoc e sem notarização: na primeira vez, abra em **Ajustes do Sistema** →
+**Privacidade e Segurança** → **Abrir Mesmo Assim**. Para compilar aqui:
 
 1. Rode `just app-bootstrap`: instala o Rust, o `tauri-cli` e o `wasm-bindgen-cli` fixados em `app/.tools`.
 2. Rode `just app-dev` para abrir o app, ou `just app-build` para gerar o instalador deste sistema.
 3. Em **Configurações**, escolha o provider e o modelo e clique em **Salvar**.
 
-A chave fica no `settings.json` da pasta de configuração do app, como a extensão a guarda no navegador.
+A chave fica no `settings.json` da pasta de configuração do app, que no Linux e no macOS só o seu usuário
+lê (modo `0600`), e vai só para a API do provider escolhido.
 `just app-screenshot` tira a foto da janela com um provider falso, sem chave e sem rede.
 
 ### Android
@@ -103,7 +109,9 @@ A chave fica no `settings.json` da pasta de configuração do app, como a extens
 O mesmo app no Android, ainda sem release, com uma sobreposição: em qualquer app, ela revisa o campo
 em que você digita, sublinha o que uma regra pede para mudar e abre as correções por um selo no canto
 do campo (**Aceitar**, **Ignorar**, **Pausar neste app**). No Android só há a Claude: o texto vai do
-celular à Anthropic, com a sua chave. Campos de senha nunca são lidos.
+celular à Anthropic, com a sua chave. Campos de senha nunca são lidos. A chave não entra no backup do
+Android nem na cópia para um celular novo; num APK de debug, porém, quem tem o celular com a depuração USB
+ligada a lê com `adb shell run-as`.
 
 1. Rode `just app-android-bootstrap`: precisa do Android SDK (`ANDROID_HOME`) e de um JDK 17 ou mais novo.
 2. Rode `just app-android-build` e instale o APK de `app/target/android` com `adb install`.

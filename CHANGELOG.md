@@ -14,6 +14,10 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
   por um selo. A revisão e a sessão são do Rust, via JNI (`overlay.rs`, `android.rs`). `just
   app-android-bootstrap`, `app-android-test`, `app-android-dev`, `app-android-build` e
   `app-android-screenshot`; o job `android` do `app.yml` roda a sobreposição num emulador.
+- A release anexa os instaladores do app (`release.yml`, job `app`: dmg arm64 com assinatura ad hoc, deb, rpm,
+  AppImage, msi e exe, cada um com o seu `.sha256`, de `scripts/app.sh release-files`). O `settings.json`, que
+  guarda a chave, passa a ser gravado com modo `0600`; no Android, fica fora do backup e da cópia para um
+  celular novo. A janela diz quanto tempo a revisão levou, e o log da sobreposição também.
 
 - O shell do site (`.#site`) passa ao Node 24.22.1: o picasso fixado vai de `b919f9e` a `5da5237`
   (h0ffmann/picasso#143) no `flake.lock`, no submódulo `forks/picasso`, no `tools.lock` e no `to-pdf.sh`. Os
