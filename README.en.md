@@ -9,7 +9,7 @@
 [![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
 [![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=version&style=flat-square)](CHANGELOG.md)
 [![license: MPL-2.0](https://img.shields.io/badge/license-MPL--2.0-1682D4?style=flat-square)](#license)
-[![estimated reading time: ~9 min](https://img.shields.io/badge/reading%20time-~9%20min-1682D4?style=flat-square)](#reading-time)
+[![estimated reading time: ~10 min](https://img.shields.io/badge/reading%20time-~10%20min-1682D4?style=flat-square)](#reading-time)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
 [![browser extension (Chrome): local dev (WIP)](https://img.shields.io/badge/browser%20extension-local%20dev%20(WIP)-1682D4?style=flat-square&logo=googlechrome&logoColor=white)](#chrome)
 [![browser extension (Firefox): local dev (WIP)](https://img.shields.io/badge/browser%20extension-local%20dev%20(WIP)-1682D4?style=flat-square&logo=firefoxbrowser&logoColor=white)](docs/EXTENSION_FIREFOX.md)
@@ -93,19 +93,14 @@ ignorar**, "always ignore"). Firefox 128+ uses
 
 An app for Linux, macOS and Windows (Tauri 2, Rust in the window and the core): you paste a text, pick
 the level and click **Revisar** (review). It runs the extension's review, with the same providers,
-underlines and cards, and says how long the review took.
-
-From the next version on (`just release`), `release.yml` attaches the three systems' installers to the
-release, each with its `.sha256` (⚠ the job has not run on a tag yet). The macOS one is for Apple Silicon
-(arm64), ad-hoc signed and not notarized: the first time, open it in **System Settings** → **Privacy &
-Security** → **Open Anyway**. To build it here:
+underlines and cards. The release carries the installers, each with its `.sha256` (⚠ not yet run on a
+tag); the macOS one is arm64, not notarized: open it through **Privacy & Security** → **Open Anyway**.
 
 1. Run `just app-bootstrap`: it installs the pinned Rust, `tauri-cli` and `wasm-bindgen-cli` in `app/.tools`.
 2. Run `just app-dev` to open the app, or `just app-build` to build this system's installer.
 3. In **Configurações** (settings), pick the provider and the model and click **Salvar** (save).
 
-The key stays in the `settings.json` of the app's config folder, which on Linux and macOS only your user
-reads (mode `0600`), and goes only to the chosen provider's API.
+The key stays in the `settings.json` of the app's config folder, with mode `0600`.
 `just app-screenshot` takes the window's picture with a fake provider, no key and no network.
 
 ### Android
@@ -113,9 +108,8 @@ reads (mode `0600`), and goes only to the chosen provider's API.
 The same app on Android, not yet released, with an overlay: in any app, it reviews the field you type
 in, underlines what a rule asks to change, and opens the fixes from a badge at the field's corner
 (**Aceitar**, **Ignorar**, **Pausar neste app**: accept, ignore, pause in this app). Android has Claude
-only: the text goes from the phone to Anthropic, with your key. Password fields are never read. The key
-is not in Android's backup nor in the copy to a new phone; on a debug APK, though, whoever has the phone
-with USB debugging on reads it with `adb shell run-as`.
+only: the text goes from the phone to Anthropic, with your key. Password fields are never read. The key stays out of the
+backup; on a debug APK, `adb shell run-as` reads it.
 
 1. Run `just app-android-bootstrap`: it needs the Android SDK (`ANDROID_HOME`) and a JDK 17 or newer.
 2. Run `just app-android-build` and install the APK from `app/target/android` with `adb install`.
