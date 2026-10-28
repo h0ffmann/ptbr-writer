@@ -21,6 +21,8 @@ Instructions for AI agents working on `ptbr-writer`.
 - **No credits in a skill's body.** A skill file (`SKILL.md`, `skills/*/SKILL.md`) holds instructions only: no credits, sources, links, commit pins, author names or history. They are loaded into other people's context. Credits go to `README.md` and `site/data/origins.tsv`.
 - **No Python.** Python is not allowed in this repository. The plugin's runtime tools are static Rust binaries built by h0ffmann/picasso's `labs/ptbr-tools` and pinned by `plugins/ptbr-writer/bin/tools.lock`; the site and its generators are Gleam.
 - **No paid resources** without explicit human confirmation.
+- **No competitors.** No product or project that competes with ptbr-writer is named or compared to in code,
+  docs, data, commits, PRs or issues: describe what ptbr-writer does on its own terms.
 
 ## Setup
 
