@@ -40,7 +40,15 @@ adb shell input keyevent KEYCODE_HOME
 
 adb shell "am start -W -a android.intent.action.SENDTO -d sms:5550100 --es sms_body '$text'" >/dev/null
 sleep 3
-# The compose box got its text from the intent: a space typed in it is the change the overlay waits for.
+# The compose box got its text from the intent, but may not have the focus: a tap in it (its bounds
+# from uiautomator), then a space typed in it, the change the overlay waits for.
+adb shell uiautomator dump /sdcard/ui.xml >/dev/null
+box="$(adb shell cat /sdcard/ui.xml | grep -o 'class="android.widget.EditText"[^>]*bounds="[^"]*"' | sed -n 's/.*bounds="\[\([0-9]*\),\([0-9]*\)\]\[\([0-9]*\),\([0-9]*\)\]".*/\1 \2 \3 \4/p' | head -1)"
+[ -n "$box" ] || { echo "app-android-capture: no text field in Messages" >&2; shot android-failed.png; exit 1; }
+read -r x1 y1 x2 y2 <<<"$box"
+adb shell input tap $(((x1 + x2) / 2)) $(((y1 + y2) / 2))
+sleep 1
+adb shell input keyevent KEYCODE_MOVE_END
 adb shell input text '%s'
 wait_log "overlay: [1-9][0-9]* cards" 60
 sleep 2
