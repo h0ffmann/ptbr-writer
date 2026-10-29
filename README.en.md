@@ -48,15 +48,15 @@ the figure.
 
 ## install
 
-The official version is [v0.3.0](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.3.0). In a
+The official version is [v0.4.0](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.4.0). In a
 terminal:
 
 ```console
-claude plugin install ptbr-writer --marketplace h0ffmann/ptbr-writer#v0.3.0
+claude plugin install ptbr-writer --marketplace h0ffmann/ptbr-writer#v0.4.0
 ```
 
 To pin the version in a repository, put in its `.claude/settings.json` the marketplace
-`h0ffmann/ptbr-writer` with `"ref": "v0.3.0"` under `extraKnownMarketplaces`, and enable
+`h0ffmann/ptbr-writer` with `"ref": "v0.4.0"` under `extraKnownMarketplaces`, and enable
 `ptbr-writer@ptbr-writer` under `enabledPlugins`. To update, change the tag.
 
 ### OpenCode
