@@ -129,6 +129,11 @@ export class Ext {
     await tab.goto(url).catch(() => {});
     const popup = await this.page('popup.html');
     await tab.bringToFront();
+    // The popup reads the active tab: wait until Chrome reports this one, or it may render for itself.
+    const host = new URL(url).host;
+    await expect
+      .poll(() => this.worker.evaluate(async () => (await chrome.tabs.query({ active: true, currentWindow: true }))[0]?.url ?? ''))
+      .toContain(host);
     await popup.reload();
     return popup;
   }
