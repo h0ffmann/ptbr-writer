@@ -3,7 +3,7 @@
 Uma versão só: a tag `vX.Y.Z`, o `version` de `plugins/ptbr-writer/.claude-plugin/plugin.json` e o
 cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, depois do merge, cria a tag; `release.yml` publica a release.
 
-## Unreleased
+## v0.4.1 — 2026-10-29
 
 - A Claude volta a revisar no app e na extensão: o pedido mandava `temperature: 0`, que os três modelos
   oferecidos (`claude-haiku-5-5`, `claude-sonnet-5-5`, `claude-opus-5-5`) recusam com 400, e a janela só dizia
