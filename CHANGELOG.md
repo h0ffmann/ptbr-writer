@@ -3,7 +3,7 @@
 Uma versão só: a tag `vX.Y.Z`, o `version` de `plugins/ptbr-writer/.claude-plugin/plugin.json` e o
 cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, depois do merge, cria a tag; `release.yml` publica a release.
 
-## Unreleased
+## v0.4.0 — 2026-10-29
 
 - O app de desktop (`app/`, Tauri 2.12): Linux, macOS e Windows, Rust na janela (wasm) e no núcleo, que
   roda a revisão da extensão (`ptbr_ext::background::handle_check`) sobre reqwest. `just app-bootstrap`,

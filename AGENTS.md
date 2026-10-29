@@ -102,11 +102,11 @@ Facts that left the README when it was cut to 10 minutes. They stay true only wh
 so; check the file before you repeat one.
 
 **Install.**
-- Inside Claude Code: `/plugin marketplace add h0ffmann/ptbr-writer#v0.3.0`, then
+- Inside Claude Code: `/plugin marketplace add h0ffmann/ptbr-writer#v0.4.0`, then
   `/plugin install ptbr-writer@ptbr-writer`. To update, remove the marketplace and add it again
   with the new tag; in a repository, change the `ref`.
 - Pin in a repository's `.claude/settings.json`:
-  `{"extraKnownMarketplaces": {"ptbr-writer": {"source": {"source": "github", "repo": "h0ffmann/ptbr-writer", "ref": "v0.3.0"}}}, "enabledPlugins": {"ptbr-writer@ptbr-writer": true}}`.
+  `{"extraKnownMarketplaces": {"ptbr-writer": {"source": {"source": "github", "repo": "h0ffmann/ptbr-writer", "ref": "v0.4.0"}}}, "enabledPlugins": {"ptbr-writer@ptbr-writer": true}}`.
 - `scripts/install_current.sh` (curl it inside Claude Code with `!`, then `/reload-plugins`)
   installs the tip of `main`, or `PTBR_REF`; `main` is not a fixed version.
 - OpenCode: `scripts/install-opencode.sh vX.Y.Z` copies `ptbr-writer`, `ptbr` and `cientifico` as
