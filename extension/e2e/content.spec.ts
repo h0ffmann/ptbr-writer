@@ -140,6 +140,8 @@ test.describe('controller', () => {
     await typeAndWait(page);
     expect(server.calls[0].system).toContain('Nível pedido: `descritivo`');
     await ext.setSettings({ sites: { '127.0.0.1': { enabled: true, level: 'estrito' } } });
+    // The new level is in once the old underlines go: a keystroke before that would be dropped with the old watcher.
+    await expect(page.locator('.ptbr-underline')).toHaveCount(0, { timeout: UI_TIMEOUT });
     await page.keyboard.type(' ');
     await expect(page.locator('.ptbr-underline')).toHaveCount(1, { timeout: UI_TIMEOUT });
     expect(server.calls.length).toBe(2);
