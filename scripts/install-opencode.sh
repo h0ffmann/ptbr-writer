@@ -20,8 +20,10 @@ fi
 
 skill() { # skill <name> <source SKILL.md>
     mkdir -p "$dest/skills/$1"
-    cp -L "$2" "$dest/skills/$1/SKILL.md"
-    grep -q '^name:' "$dest/skills/$1/SKILL.md" || sed -i "0,/^---\$/s//---\nname: $1/" "$dest/skills/$1/SKILL.md"
+    # awk, not sed -i: BSD sed (macOS) has neither GNU's `0,/re/` nor a bare -i.
+    if grep -q '^name:' "$2"; then cp -L "$2" "$dest/skills/$1/SKILL.md"
+    else awk -v n="$1" '!d && /^---$/ {print; print "name: " n; d=1; next} {print}' "$2" > "$dest/skills/$1/SKILL.md"
+    fi
 }
 rm -rf "$dest/skills/ptbr-writer" "$dest/skills/ptbr" "$dest/skills/cientifico" "$dest/ptbr-writer"
 skill ptbr-writer "$src/SKILL.md"
