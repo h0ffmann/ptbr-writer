@@ -257,6 +257,16 @@ pub enum CheckError {
     Auth,
     #[serde(rename = "rate-limit")]
     RateLimit,
+    /// The provider refused the request (400, 404): most often a model the key cannot use.
+    #[serde(rename = "request")]
+    Request,
+    /// The provider failed or is overloaded (5xx).
+    #[serde(rename = "busy")]
+    Busy,
+    /// The reply was cut at max_tokens.
+    #[serde(rename = "truncated")]
+    Truncated,
+    /// A reply that cannot be read.
     #[serde(rename = "provider")]
     Provider,
     #[serde(rename = "network")]

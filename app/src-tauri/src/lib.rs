@@ -40,7 +40,10 @@ pub fn message(e: CheckError) -> &'static str {
         CheckError::Network => "Sem resposta do provider: verifique a conexão.",
         CheckError::Local => "Ollama inacessível em 127.0.0.1:11434 (just ext-ollama).",
         CheckError::LocalOllaya => "Ollaya inacessível em 127.0.0.1:11435 (just ext-ollaya).",
-        CheckError::Provider | CheckError::Reload => "O provider não devolveu uma correção completa.",
+        CheckError::Request => "O provider recusou o pedido: confira o modelo em Configurações.",
+        CheckError::Busy => "O provider está fora do ar ou sobrecarregado: tente de novo em instantes.",
+        CheckError::Truncated => "A resposta do provider veio cortada: revise um trecho menor.",
+        CheckError::Provider | CheckError::Reload => "O provider devolveu uma resposta que não dá para ler.",
     }
 }
 
