@@ -92,10 +92,12 @@ pub fn build_request(p: ProviderId, s: &Settings, system: &str, user: &str) -> H
                 ("anthropic-version", "2023-06-01".into()),
                 ("anthropic-dangerous-direct-browser-access", "true".into()),
             ],
+            // Thinking is on and cannot be turned off on these models, and it counts against max_tokens: low
+            // effort and room for it. They refuse temperature with a 400.
             &json!({
                 "model": s.models.claude,
-                "max_tokens": 2048,
-                "temperature": 0,
+                "max_tokens": 16000,
+                "output_config": { "effort": "low" },
                 "system": system,
                 "messages": [{ "role": "user", "content": user }],
             }),
@@ -181,6 +183,9 @@ pub fn classify_error(status: Option<u16>, p: Option<ProviderId>) -> CheckError 
         (_, None) => CheckError::Network,
         (_, Some(401 | 403)) => CheckError::Auth,
         (_, Some(429)) => CheckError::RateLimit,
+        // The request itself: a model the key cannot use, or a parameter the model refuses.
+        (_, Some(400 | 404 | 422)) => CheckError::Request,
+        (_, Some(500..=599)) => CheckError::Busy,
         _ => CheckError::Provider,
     }
 }
@@ -364,8 +369,22 @@ mod tests {
         );
         assert_eq!(
             body(&r),
-            json!({ "model": base().models.claude, "max_tokens": 2048, "temperature": 0, "system": "SYS", "messages": [{ "role": "user", "content": "USER" }] })
+            json!({ "model": base().models.claude, "max_tokens": 16000, "output_config": { "effort": "low" }, "system": "SYS", "messages": [{ "role": "user", "content": "USER" }] })
         );
+    }
+
+    #[test]
+    fn claude_models_get_no_sampling_parameters() {
+        // Every model the settings offer answers temperature, top_p or top_k with a 400.
+        for model in crate::settings::models(ProviderId::Claude) {
+            let mut s = base();
+            s.models.claude = (*model).into();
+            let b = body(&build_request(ProviderId::Claude, &s, "SYS", "USER"));
+            assert_eq!(b["model"], *model);
+            for p in ["temperature", "top_p", "top_k", "thinking"] {
+                assert!(b.get(p).is_none(), "{model}: {p}");
+            }
+        }
     }
 
     #[test]
@@ -488,7 +507,11 @@ mod tests {
         assert_eq!(classify_error(Some(401), None), CheckError::Auth);
         assert_eq!(classify_error(Some(403), None), CheckError::Auth);
         assert_eq!(classify_error(Some(429), None), CheckError::RateLimit);
-        assert_eq!(classify_error(Some(500), None), CheckError::Provider);
+        assert_eq!(classify_error(Some(400), None), CheckError::Request);
+        assert_eq!(classify_error(Some(404), None), CheckError::Request);
+        assert_eq!(classify_error(Some(500), None), CheckError::Busy);
+        assert_eq!(classify_error(Some(529), None), CheckError::Busy);
+        assert_eq!(classify_error(Some(302), None), CheckError::Provider);
         assert_eq!(classify_error(None, None), CheckError::Network);
     }
 
@@ -496,7 +519,7 @@ mod tests {
     fn ollama_down_or_refusing_the_extension_origin_is_local() {
         assert_eq!(classify_error(None, Some(ProviderId::Ollama)), CheckError::Local);
         assert_eq!(classify_error(Some(403), Some(ProviderId::Ollama)), CheckError::Local);
-        assert_eq!(classify_error(Some(500), Some(ProviderId::Ollama)), CheckError::Provider);
+        assert_eq!(classify_error(Some(500), Some(ProviderId::Ollama)), CheckError::Busy);
         assert_eq!(classify_error(Some(403), Some(ProviderId::Claude)), CheckError::Auth);
     }
 
@@ -504,7 +527,7 @@ mod tests {
     fn ollaya_down_or_refusing_the_extension_origin_is_local_ollaya() {
         assert_eq!(classify_error(None, Some(ProviderId::Ollaya)), CheckError::LocalOllaya);
         assert_eq!(classify_error(Some(403), Some(ProviderId::Ollaya)), CheckError::LocalOllaya);
-        assert_eq!(classify_error(Some(404), Some(ProviderId::Ollaya)), CheckError::Provider);
+        assert_eq!(classify_error(Some(404), Some(ProviderId::Ollaya)), CheckError::Request);
     }
 
     #[test]

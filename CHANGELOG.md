@@ -3,6 +3,16 @@
 Uma versão só: a tag `vX.Y.Z`, o `version` de `plugins/ptbr-writer/.claude-plugin/plugin.json` e o
 cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, depois do merge, cria a tag; `release.yml` publica a release.
 
+## Unreleased
+
+- A Claude volta a revisar no app e na extensão: o pedido mandava `temperature: 0`, que os três modelos
+  oferecidos (`claude-haiku-5-5`, `claude-sonnet-5-5`, `claude-opus-5-5`) recusam com 400, e a janela só dizia
+  "O provider não devolveu uma correção completa". Sai o `temperature`; entram `output_config.effort: "low"` e
+  `max_tokens` 16000, porque nesses modelos o raciocínio não desliga e conta no limite. Um teste confere o
+  pedido de cada modelo da lista.
+- O erro do provider diz o que houve: pedido recusado (400, 404: "confira o modelo"), provider fora do ar
+  (5xx), resposta cortada no limite, ou resposta ilegível. Antes os quatro davam a mesma mensagem.
+
 ## v0.4.0 — 2026-10-29
 
 - O app de desktop (`app/`, Tauri 2.12): Linux, macOS e Windows, Rust na janela (wasm) e no núcleo, que

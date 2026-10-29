@@ -83,7 +83,7 @@ async fn check<F: Fetch>(req: &CheckRequest, fetch: &F, settings: &Settings, abo
         return NOTHING;
     }
     if is_truncated(provider, &json) {
-        return CheckResult::Err(CheckError::Provider);
+        return CheckResult::Err(CheckError::Truncated);
     }
     let parsed = parse_suggestions(&read_text(provider, &json));
     let mut suggestions = filter_suggestions(&req.text, &parsed, settings.rewrite, &settings.never_fix);
@@ -112,7 +112,7 @@ async fn check_decisions<F: Fetch>(req: &CheckRequest, fetch: &F, settings: &Set
     let asks = requests.into_iter().map(|(ask, http)| async move {
         let json = fetch_json(fetch, http, abort, ProviderId::Ollaya).await?;
         if is_truncated(ProviderId::Ollaya, &json) {
-            return Err(CheckError::Provider);
+            return Err(CheckError::Truncated);
         }
         Ok(read_decision(&json, &ask))
     });
@@ -519,7 +519,7 @@ mod tests {
         cut["state_truncated"] = json!(true);
         assert_eq!(
             block_on(handle_check(&CheckRequest { text: text.into(), ..req() }, &ok_fetch(cut, 200), &ollaya)),
-            CheckResult::Err(CheckError::Provider)
+            CheckResult::Err(CheckError::Truncated)
         );
     }
 
@@ -555,18 +555,18 @@ mod tests {
     }
 
     #[test]
-    fn a_truncated_reply_provider_not_no_problems() {
+    fn a_truncated_reply_is_truncated_not_no_problems() {
         let mut cut = claude_body();
         cut["stop_reason"] = json!("max_tokens");
         assert_eq!(
             block_on(handle_check(&req(), &ok_fetch(cut, 200), &settings())),
-            CheckResult::Err(CheckError::Provider)
+            CheckResult::Err(CheckError::Truncated)
         );
         let ds = json!({ "choices": [{ "finish_reason": "length", "message": { "content": "[{\"original\":" } }] });
         let ds_settings = Settings { provider: ProviderId::Deepseek, ..settings() };
         assert_eq!(
             block_on(handle_check(&req(), &ok_fetch(ds, 200), &ds_settings)),
-            CheckResult::Err(CheckError::Provider)
+            CheckResult::Err(CheckError::Truncated)
         );
     }
 
