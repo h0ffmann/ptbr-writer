@@ -260,7 +260,7 @@ plugin-eval *args:
 pdf-bench:
     scripts/pdf-bench.sh
 
-# Release X.Y.Z in two runs: a chore/release-vX.Y.Z PR (plugin.json, CHANGELOG), then, after its merge, the tag on main.
+# Release X.Y.Z in two runs: a chore/release-vX.Y.Z PR (plugin.json, .zenodo.json, app/, CHANGELOG), then, after its merge, the tag on main.
 release version:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -276,6 +276,10 @@ release version:
         due=$(just release-due | tail -n +2 || true)
         [ -n "$due" ] || { git switch -q -; git branch -q -D "chore/release-v$v"; echo "release: nothing in the plugin changed since the last tag" >&2; exit 1; }
         jq --arg v "$v" '.version = $v' "$json" > "$json.new" && mv "$json.new" "$json"
+        # The same version in what release-check (.zenodo.json) and app-test (app/) compare with plugin.json.
+        jq --arg v "v$v" '.version = $v' .zenodo.json > .zenodo.json.new && mv .zenodo.json.new .zenodo.json
+        awk -v v="$v" '/^\[workspace.package\]/ {w=1} w && /^version = / {$0 = "version = \"" v "\""; w=0} {print}' app/Cargo.toml > app/Cargo.toml.new && mv app/Cargo.toml.new app/Cargo.toml
+        awk -v v="$v" '/^name = "ptbr-app(-ui|-wire)?"$/ {n=1; print; next} n && /^version = / {$0 = "version = \"" v "\""} {n=0; print}' app/Cargo.lock > app/Cargo.lock.new && mv app/Cargo.lock.new app/Cargo.lock
         files=$(sed 's/^ *//; s/ *$//; s/.*/`&`/' <<<"$due" | paste -sd, - | sed 's/,/, /g')
         awk -v v="$v" -v day="$(date -u +%F)" -v files="$files" '!done && /^## / {print "## v" v " — " day "\n\n- (descreva a release) mudou: " files "\n"; done=1} {print}' CHANGELOG.md > CHANGELOG.new && mv CHANGELOG.new CHANGELOG.md
         # No terminal (an agent's shell, CI): no editor; the placeholder check below says what to do.
@@ -284,7 +288,7 @@ release version:
         just plugin-check
         git commit -qam "release: v$v" -m "Tested: just plugin-check" -m "Co-Authored-By: Claude <noreply@anthropic.com>"
         git push -q -u origin "chore/release-v$v"
-        gh pr create --base main --title "release: v$v" --body "plugin.json e CHANGELOG.md em v$v. Depois do merge: \`just release $v\` no main cria a tag."
+        gh pr create --base main --title "release: v$v" --body "plugin.json, .zenodo.json, app/ e CHANGELOG.md em v$v. Depois do merge: \`just release $v\` no main cria a tag."
     else
         [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] || { echo "release: check out origin/main first (git switch main && git pull)" >&2; exit 1; }
         just release-check "v$v"
@@ -295,6 +299,7 @@ release version:
         echo "release: v$v pushed; waiting for release.yml to publish it"
         for _ in $(seq 60); do gh release view "v$v" >/dev/null 2>&1 && break; sleep 10; done
         gh release view "v$v" >/dev/null 2>&1 || { echo "release: no GitHub release v$v after 10 min; see the release workflow" >&2; exit 1; }
+        echo "release: the app job attaches the installers (macOS arm64 .dmg, Linux, Windows) when it ends: gh release view v$v"
         echo "release: v$v is out; waiting for Zenodo's DOI"
         for _ in $(seq 60); do just doi 2>/dev/null | grep -q "^v$v"$'\t' && break; sleep 10; done
         just doi | grep "^v$v"$'\t' || { echo "release: no DOI for v$v after 10 min; run just doi later" >&2; exit 1; }
@@ -306,6 +311,8 @@ release-check tag: plugin-check
     test "{{ tag }}" = "v$(jq -r .version plugins/ptbr-writer/.claude-plugin/plugin.json)"
     # Zenodo archives the release with the metadata of .zenodo.json: its version must be the tag's.
     test "{{ tag }}" = "$(jq -r .version .zenodo.json)"
+    # The app's installers carry app/Cargo.toml's version in their names (release.yml's app job).
+    test "{{ tag }}" = "v$(awk -F'"' '/^version = / {print $2; exit}' app/Cargo.toml)"
 
 # Write each README's reading time (the plugin's calculator) under its language line.
 reading-time:
