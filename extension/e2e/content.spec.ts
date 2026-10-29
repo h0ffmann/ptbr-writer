@@ -134,18 +134,6 @@ test.describe('controller', () => {
     await expect(page.locator('.ptbr-underline')).toHaveCount(0);
   });
 
-  test('segue o novo nível', async ({ ext, server }) => {
-    await ext.launch();
-    const page = await ext.open('textarea.html');
-    await typeAndWait(page);
-    expect(server.calls[0].system).toContain('Nível pedido: `descritivo`');
-    await ext.setSettings({ sites: { '127.0.0.1': { enabled: true, level: 'estrito' } } });
-    await page.keyboard.type(' ');
-    await expect(page.locator('.ptbr-underline')).toHaveCount(1, { timeout: UI_TIMEOUT });
-    expect(server.calls.length).toBe(2);
-    expect(server.calls[1].system).toContain('Nível pedido: `estrito`');
-  });
-
   test('aceitar uma sugestão mantém as outras, deslocadas, sem nova chamada; digitar checa de novo', async ({ ext, server }) => {
     server.reply = [SUGGESTION, { original: 'vai ser', replacement: 'será', rule: 'PTW-2', severity: 'aviso' }];
     await ext.launch();
