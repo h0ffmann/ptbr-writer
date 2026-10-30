@@ -15,7 +15,7 @@ em duas linhas.
 ## Uso
 
 ```
-/gramatico
+/ptbr-writer
 ```
 
 - \"tire a ambiguidade deste texto\"
