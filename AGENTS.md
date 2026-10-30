@@ -103,11 +103,11 @@ Facts that left the README when it was cut to 10 minutes. They stay true only wh
 so; check the file before you repeat one.
 
 **Install.**
-- Inside Claude Code: `/plugin marketplace add piabrota/gramatico#v0.4.0`, then
+- Inside Claude Code: `/plugin marketplace add piabrota/gramatico#v0.4.1`, then
   `/plugin install gramatico@gramatico`. To update, remove the marketplace and add it again
   with the new tag; in a repository, change the `ref`.
 - Pin in a repository's `.claude/settings.json`:
-  `{"extraKnownMarketplaces": {"gramatico": {"source": {"source": "github", "repo": "piabrota/gramatico", "ref": "v0.4.0"}}}, "enabledPlugins": {"gramatico@gramatico": true}}`.
+  `{"extraKnownMarketplaces": {"gramatico": {"source": {"source": "github", "repo": "piabrota/gramatico", "ref": "v0.4.1"}}}, "enabledPlugins": {"gramatico@gramatico": true}}`.
 - `scripts/install_current.sh` (curl it inside Claude Code with `!`, then `/reload-plugins`)
   installs the tip of `main`, or `PTBR_REF`; `main` is not a fixed version.
 - OpenCode: `scripts/install-opencode.sh vX.Y.Z` copies `ptbr-writer`, `ptbr` and `cientifico` as

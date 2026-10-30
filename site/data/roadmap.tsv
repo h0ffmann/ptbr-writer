@@ -3,8 +3,8 @@ SKILL.md	em andamento	regras PTW e níveis de rigor; as regras ainda estão marc
 evals	em andamento	um caso de regressão por regra científica, escrito e ainda não rodado por um harness ⚠	evals/cientifico.md
 skill científica	em andamento	skill própria para texto científico, com regras CIE; casos de regressão em evals/cientifico-cie.md, escritos e ainda não rodados ⚠	skills/cientifico/SKILL.md
 roteamento	feito	route escolhe a skill e o nível antes de carregar uma skill, para que só ela entre no contexto	skills/ptbr-routing/routes.tsv
-plugin	feito	plugin do Claude Code: instalado com um comando, na versão da release (v0.4.0); o OpenCode lê o SKILL.md direto	plugins/gramatico/.claude-plugin/plugin.json
-distribuição	feito	uma versão para código e plugin: a tag vX.Y.Z vira release (release.yml) e outros repositórios fixam o marketplace nela; v0.4.0 é a versão oficial	CHANGELOG.md
+plugin	feito	plugin do Claude Code: instalado com um comando, na versão da release (v0.4.1); o OpenCode lê o SKILL.md direto	plugins/gramatico/.claude-plugin/plugin.json
+distribuição	feito	uma versão para código e plugin: a tag vX.Y.Z vira release (release.yml) e outros repositórios fixam o marketplace nela; v0.4.1 é a versão oficial	CHANGELOG.md
 extensão do Chrome	em andamento	extensão de navegador que sublinha num campo de texto o que o nível pede para mudar; dev local, carregada sem compactação, ainda fora da Chrome Web Store; também roda no Firefox 128+	extension/xtask/src/main.rs
 FOSS (Ollama, Ollaya)	em andamento	providers locais de código aberto na extensão, sem chave e sem nuvem: o Ollama (MIT) escreve a troca e o Ollaya (Apache-2.0) aponta a regra ou escolhe o estilo; latência e acerto em pt-BR não medidos ⚠	extension/src/providers.rs
 retórica	planejado	skill de retórica a partir do Fédon e do Fedro, de Platão, e do Phaedrus de Robert M. Pirsig; só o esqueleto existe, sem regras	skills/retorica/SKILL.md

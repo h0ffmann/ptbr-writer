@@ -46,15 +46,15 @@ configuração e os arquivos. A borda laranja marca onde você entra e o que voc
 
 ## instalar
 
-A versão oficial é a [v0.4.0](https://github.com/piabrota/gramatico/releases/tag/v0.4.0). Num
+A versão oficial é a [v0.4.1](https://github.com/piabrota/gramatico/releases/tag/v0.4.1). Num
 terminal:
 
 ```console
-claude plugin install gramatico --marketplace piabrota/gramatico#v0.4.0
+claude plugin install gramatico --marketplace piabrota/gramatico#v0.4.1
 ```
 
 Para fixar a versão num repositório, ponha no `.claude/settings.json` dele o marketplace
-`piabrota/gramatico` com `"ref": "v0.4.0"` em `extraKnownMarketplaces` e ative
+`piabrota/gramatico` com `"ref": "v0.4.1"` em `extraKnownMarketplaces` e ative
 `gramatico@gramatico` em `enabledPlugins`. Para atualizar, troque a tag.
 
 ### OpenCode

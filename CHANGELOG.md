@@ -1,9 +1,9 @@
 # Changelog
 
-Uma versão só: a tag `vX.Y.Z`, o `version` de `plugins/ptbr-writer/.claude-plugin/plugin.json` e o
+Uma versão só: a tag `vX.Y.Z`, o `version` de `plugins/gramatico/.claude-plugin/plugin.json` e o
 cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, depois do merge, cria a tag; `release.yml` publica a release.
 
-## Unreleased
+## v0.4.1 — 2026-10-30
 
 - Ícone novo: um G grande, como o do esquadro e compasso, nas cores da bandeira do Brasil, desenhado em
   Nix puro (`drawings/`, a caneta de piabrota/nix-os) e salvo em SVG e como gráfico do Desmos. Troca a pena

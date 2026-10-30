@@ -1,6 +1,6 @@
 {
   "name": "gramatico",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Reescreve texto técnico em pt-BR por nível de rigor (PTW), com a skill científica (CIE) e o alias /ptbr",
   "author": {
     "name": "h0ffmann"
