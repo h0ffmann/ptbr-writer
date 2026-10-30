@@ -3,7 +3,7 @@
 #   empty Claude Code config (scripts/plugin-smoke.sh). No login, no tokens, under a minute.
 # pdf-bench: only by hand, with pdf_bench: the .pdf toolchain's size and first-run time on a runner
 #   whose Nix store is empty, the case of a person with Nix and no pandoc.
-# eval: only by hand (Actions → plugin → Run workflow). Runs plugins/ptbr-writer/evals/ against a
+# eval: only by hand (Actions → plugin → Run workflow). Runs plugins/gramatico/evals/ against a
 #   model, with and without the plugin, on ANTHROPIC_API_KEY: a key from the Console organization
 #   linked to a Max plan draws on its monthly API credits. --max-cost-usd caps the run.
 name: plugin
@@ -76,7 +76,7 @@ jobs:
           CASE: ${{ inputs.case }}
         run: |
           [ -n "$ANTHROPIC_API_KEY" ] || { echo "::error::set the ANTHROPIC_API_KEY secret first"; exit 1; }
-          claude plugin eval plugins/ptbr-writer --trust-plugin --no-publish \
+          claude plugin eval plugins/gramatico --trust-plugin --no-publish \
             --runs "$RUNS" --max-cost-usd "$MAX_COST" ${CASE:+--case "$CASE"} \
             --output-dir eval-results --report eval-results/report.html
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

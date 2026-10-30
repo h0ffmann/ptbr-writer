@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# opencode-smoke — install ptbr-writer for OpenCode from this checkout into an empty directory, the
+# opencode-smoke — install gramatico for OpenCode from this checkout into an empty directory, the
 # way scripts/install-opencode.sh does for a third party, and check what they get: the three skills
 # as real files with `name` (= folder) and `description`, no links, the binaries, and the plugin
 # (called with a fake message: `ptbr ...` gets one instruction, anything else gets nothing).
@@ -20,9 +20,9 @@ for s in ptbr-writer ptbr cientifico; do
     [ "$(sed -n 's/^name: *//p' "$f" | head -1)" = "$s" ] || fail "skills/$s/SKILL.md: name is not \"$s\""
     grep -q '^description: .' "$f" || fail "skills/$s/SKILL.md has no description"
 done
-[ -f "$dest/ptbr-writer/bin/run.sh" ] || fail "bin/run.sh is missing"
-for f in "$dest"/ptbr-writer/bin/linux-*/ptbr; do [ -x "$f" ] || fail "${f#"$dest"/} is not executable"; done
-[ -f "$dest/plugins/ptbr-writer.js" ] || fail "plugins/ptbr-writer.js is missing"
+[ -f "$dest/gramatico/bin/run.sh" ] || fail "bin/run.sh is missing"
+for f in "$dest"/gramatico/bin/linux-*/ptbr; do [ -x "$f" ] || fail "${f#"$dest"/} is not executable"; done
+[ -f "$dest/plugins/gramatico.js" ] || fail "plugins/gramatico.js is missing"
 
 # The plugin, called as OpenCode calls it (the hook `chat.message`).
 cat > "$dest/call.mjs" <<'JS'
@@ -36,6 +36,6 @@ const run = async (text) => {
 const [a, b] = [await run("ptbr escreva um runbook"), await run("escreva um runbook")]
 if (a !== 2 || b !== 1) { console.error(`parts: ptbr=${a} (want 2), other=${b} (want 1)`); process.exit(1) }
 JS
-if command -v node >/dev/null; then node "$dest/call.mjs" "$dest/plugins/ptbr-writer.js" || fail "the plugin did not add (or added too much)"
+if command -v node >/dev/null; then node "$dest/call.mjs" "$dest/plugins/gramatico.js" || fail "the plugin did not add (or added too much)"
 else echo "opencode-smoke: no node; plugin call skipped" >&2; fi
 echo "opencode-smoke: ok (ptbr-writer, ptbr, cientifico; plugin ask-levels)"

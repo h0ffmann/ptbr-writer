@@ -2,7 +2,7 @@
 
 Leitura estimada: ~6 min (1019 palavras, 5 links, 3 blocos de código)
 
-Este documento registra como a extensão do ptbr-writer foi construída, carregada e testada no
+Este documento registra como a extensão do gramatico foi construída, carregada e testada no
 Firefox em 2026-10-21, com o provider local Ollama + Qwen. O objetivo é que outra pessoa repita
 cada passo e compare o resultado. Um `⚠` marca o que ninguém checou.
 
@@ -12,14 +12,14 @@ cada passo e compare o resultado. Um `⚠` marca o que ninguém checou.
 > reinicia o serviço:
 >
 > ```bash
-> sudo mkdir -p /etc/systemd/system/ollama.service.d && printf '[Service]\nEnvironment="OLLAMA_ORIGINS=chrome-extension://*,moz-extension://*"\n' | sudo tee /etc/systemd/system/ollama.service.d/ptbr-writer.conf && sudo systemctl daemon-reload && sudo systemctl restart ollama
+> sudo mkdir -p /etc/systemd/system/ollama.service.d && printf '[Service]\nEnvironment="OLLAMA_ORIGINS=chrome-extension://*,moz-extension://*"\n' | sudo tee /etc/systemd/system/ollama.service.d/gramatico.conf && sudo systemctl daemon-reload && sudo systemctl restart ollama
 > ```
 >
 > Com o override, qualquer extensão instalada no navegador pode chamar o Ollama, não só a
-> ptbr-writer. Para desfazer:
+> gramatico. Para desfazer:
 >
 > ```bash
-> sudo rm /etc/systemd/system/ollama.service.d/ptbr-writer.conf && sudo systemctl daemon-reload && sudo systemctl restart ollama
+> sudo rm /etc/systemd/system/ollama.service.d/gramatico.conf && sudo systemctl daemon-reload && sudo systemctl restart ollama
 > ```
 
 ## A workstation
@@ -49,7 +49,7 @@ O Firefox não roda o `background.service_worker` do manifesto MV3 do Chrome. O
 que a reescrita em Rust substituiu) gera o mesmo pacote com duas diferenças no manifesto:
 
 - `background.scripts: ["background.js"]` no lugar do service worker;
-- `browser_specific_settings.gecko`: o id `ptbr-writer@h0ffmann` e o Firefox mínimo 128.0.
+- `browser_specific_settings.gecko`: o id `gramatico@piabrota` e o Firefox mínimo 128.0.
 
 O comando `just ext-build-firefox` gera `extension/dist-firefox/` com 13 arquivos: `manifest.json`,
 `background.js`, `content.js`, `content.css`, `popup.html`, `popup.js`, `options.html`, `options.js`,
@@ -73,7 +73,7 @@ provider **Ollama + Qwen (local)** no popup. O dono relatou duas observações:
   `GET /api/tags` e junta os modelos instalados aos sugeridos. Os modelos instalados de antes do
   experimento apareceram sem `(baixar)`.
 - **O botão Baixar não pareceu funcionar direito.** ⚠ A mensagem e o modelo não foram registrados.
-  A issue [#63](https://github.com/h0ffmann/ptbr-writer/issues/63) lista as hipóteses: o popup fecha
+  A issue [#63](https://github.com/piabrota/gramatico/issues/63) lista as hipóteses: o popup fecha
   e cancela o pedido, e o `stream: false` não mostra progresso.
 
 ⚠ Os sublinhados, o cartão e o **Aceitar** não foram registrados.
@@ -92,7 +92,7 @@ Um cliente MCP por stdio rodou o servidor com `--headless`:
   No Ubuntu, o `/usr/bin/firefox` é um script que chama o snap, e o geckodriver não o abre.
 - Com `--firefox-path /snap/firefox/current/usr/lib/firefox/firefox`, o
   `install_extension` (type `path`, `extension/dist-firefox`) respondeu
-  `Extension installed (temporary): ID: ptbr-writer@h0ffmann`.
+  `Extension installed (temporary): ID: gramatico@piabrota`.
 
 O `scripts/firefox-mcp.sh` passa esse binário sempre que ele existe.
 
@@ -118,7 +118,7 @@ parou com `the Ollama at 127.0.0.1:11434 refuses extensions (HTTP 403)` e mostro
   `qwen2.5-coder:7b`. Nenhuma sugestão do Qwen apareceu na extensão.
 - ⚠ A latência de uma revisão com o `qwen3.6:27b` não foi medida.
 - ⚠ O pedido de permissão do Firefox no `change` do seletor de provider não foi testado. Se o
-  Firefox não mostrar o pedido, libere `127.0.0.1:11434` em `about:addons` → ptbr-writer →
+  Firefox não mostrar o pedido, libere `127.0.0.1:11434` em `about:addons` → gramatico →
   **Permissões**.
 - A suíte e2e (`just ext-e2e`) roda só no Chromium.
 
@@ -127,7 +127,7 @@ parou com `the Ollama at 127.0.0.1:11434 refuses extensions (HTTP 403)` e mostro
 1. Clone o repo e entre no shell de desenvolvimento:
 
    ```bash
-   git clone https://github.com/h0ffmann/ptbr-writer && cd ptbr-writer && nix develop
+   git clone https://github.com/piabrota/gramatico && cd gramatico && nix develop
    ```
 
 2. Rode o comando do aviso, no topo deste documento.
@@ -146,7 +146,7 @@ parou com `the Ollama at 127.0.0.1:11434 refuses extensions (HTTP 403)` e mostro
 
 5. No Firefox, abra `about:debugging#/runtime/this-firefox`, clique em **Carregar extensão
    temporária…** e escolha `extension/dist-firefox/manifest.json`.
-6. Em `about:addons` → ptbr-writer → **Permissões**, libere os sites e `127.0.0.1:11434`.
+6. Em `about:addons` → gramatico → **Permissões**, libere os sites e `127.0.0.1:11434`.
 7. No popup, escolha **Ollama (local)** e o modelo baixado.
 8. Abra o WhatsApp Web, escreva 3 palavras ou mais num campo e espere 1 s.
 

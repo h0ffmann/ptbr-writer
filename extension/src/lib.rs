@@ -1,4 +1,4 @@
-//! The ptbr-writer browser extension in Rust. The pure modules (types, rules, suggestions,
+//! The gramatico browser extension in Rust. The pure modules (types, rules, suggestions,
 //! decisions, settings, hosts, providers, background's check, content::text) build and test on the
 //! host; the browser side (`chrome`, the wasm parts of settings, sites, providers, background) only
 //! on wasm32. One wasm binary, four entry points, one per extension context.

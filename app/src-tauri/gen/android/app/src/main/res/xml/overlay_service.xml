@@ -8,4 +8,4 @@
     android:canRetrieveWindowContent="true"
     android:notificationTimeout="100"
     android:description="@string/overlay_description"
-    android:settingsActivity="io.github.h0ffmann.ptbr_writer.MainActivity" />
+    android:settingsActivity="io.github.piabrota.gramatico.MainActivity" />

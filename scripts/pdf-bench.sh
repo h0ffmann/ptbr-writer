@@ -9,7 +9,7 @@
 set -euo pipefail
 
 root=$(git rev-parse --show-toplevel)
-rev=$(sed -n 's/^PICASSO_REV=//p' "$root/plugins/ptbr-writer/scripts/to-pdf.sh")
+rev=$(sed -n 's/^PICASSO_REV=//p' "$root/plugins/gramatico/scripts/to-pdf.sh")
 ref="github:h0ffmann/picasso/$rev?dir=labs/ptbr-pdf#to-pdf"
 tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
 

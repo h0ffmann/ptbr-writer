@@ -8,14 +8,14 @@ import gleam/string
 import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
-import ptbr_writer_site/content.{
+import gramatico_site/content.{
   type Level, type Link, type Origin, type Planned, type Recipe, type Rule,
   type Step,
 }
 
-pub const repo = "https://github.com/h0ffmann/ptbr-writer"
+pub const repo = "https://github.com/piabrota/gramatico"
 
-const blob = "https://github.com/h0ffmann/ptbr-writer/blob/main/"
+const blob = "https://github.com/piabrota/gramatico/blob/main/"
 
 /// The two public-domain images of the cover, credited to their Wikimedia Commons pages.
 const commons = "https://commons.wikimedia.org/wiki/File:"
@@ -26,7 +26,7 @@ const orwell =
 
 /// The star count, drawn by shields.io: an image, so the page still loads no JavaScript.
 const stars =
-  "https://img.shields.io/github/stars/h0ffmann/ptbr-writer?style=social&label=star"
+  "https://img.shields.io/github/stars/piabrota/gramatico?style=social&label=star"
 
 pub fn view() -> Element(msg) {
   html.main([], [
@@ -179,7 +179,7 @@ fn cover() -> Element(msg) {
       // `just site` copies WHITEPAPER.pdf and WHITEPAPER.en.pdf.
       pdf_pill(
         "whitepaper/WHITEPAPER.en.pdf",
-        "the ptbr-writer whitepaper, in English",
+        "the gramatico whitepaper, in English",
         "Whitepaper (EN)",
       ),
       // The Zenodo record, without the DOI's number: Zenodo resolves the repository's latest DOI.
@@ -265,7 +265,7 @@ const ollama_icon = "https://ollama.com/public/ollama.png"
 const ollaya_icon = "https://ollaya.dev/favicon.svg"
 
 // Archify's mark at the revision vendor/archify pins.
-// Zenodo's mark, from Zenodo's own site, and the concept DOI of ptbr-writer, which always resolves
+// Zenodo's mark, from Zenodo's own site, and the concept DOI of gramatico, which always resolves
 // to the newest version (v0.3.0 was 10.5281/zenodo.23554532; CITATION.cff has both). The page shows
 // the mark, never the number.
 const zenodo_icon =
@@ -577,7 +577,7 @@ fn whitepaper() -> Element(msg) {
       html.iframe([
         attribute.class("preview"),
         attribute.src(pdf),
-        attribute.title("o whitepaper do ptbr-writer, em português (PDF)"),
+        attribute.title("o whitepaper do gramatico, em português (PDF)"),
         attribute.attribute("loading", "lazy"),
       ]),
       html.p([attribute.class("sub")], [
@@ -587,7 +587,7 @@ fn whitepaper() -> Element(msg) {
         html.a(
           [
             attribute.href(pdf),
-            attribute.download("ptbr-writer-whitepaper.pdf"),
+            attribute.download("gramatico-whitepaper.pdf"),
           ],
           [html.text("baixe o PDF")],
         ),
@@ -687,7 +687,7 @@ fn figuras() -> Element(msg) {
 fn awesome() -> Element(msg) {
   section(
     "awesome",
-    "awesome-ptbr-writer",
+    "awesome-gramatico",
     "outros projetos para quem escreve texto técnico em português. o primeiro é o PTC original, de onde este fork vem; os outros foram achados numa lista curada, que vai ao lado.",
     [html.ul([attribute.class("awesome")], list.map(content.awesome, link))],
   )
@@ -766,7 +766,7 @@ fn footer() -> Element(msg) {
         html.text(content.revision),
       ]),
       html.text(" · MPL-2.0 · "),
-      html.a([attribute.href(repo)], [html.text("h0ffmann/ptbr-writer")]),
+      html.a([attribute.href(repo)], [html.text("piabrota/gramatico")]),
     ]),
     made_with_line("made-with"),
     html.p([], [

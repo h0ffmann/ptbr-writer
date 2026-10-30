@@ -14,7 +14,7 @@ on:
       - extension/Cargo.toml
       - SKILL.md
       - skills/cientifico/SKILL.md
-      - plugins/ptbr-writer/.claude-plugin/plugin.json
+      - plugins/gramatico/.claude-plugin/plugin.json
       - scripts/app.sh
       - scripts/app-capture.*
       - scripts/app-android-capture.sh
@@ -27,7 +27,7 @@ on:
       - extension/Cargo.toml
       - SKILL.md
       - skills/cientifico/SKILL.md
-      - plugins/ptbr-writer/.claude-plugin/plugin.json
+      - plugins/gramatico/.claude-plugin/plugin.json
       - scripts/app.sh
       - scripts/app-capture.*
       - scripts/app-android-capture.sh
@@ -77,7 +77,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
-          name: ptbr-writer-app-${{ runner.os }}
+          name: gramatico-app-${{ runner.os }}
           path: |
             app/target/release/bundle/
             docs/img/app/
@@ -134,7 +134,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
-          name: ptbr-writer-app-Android
+          name: gramatico-app-Android
           path: |
             app/target/android/
             docs/img/app/android-*

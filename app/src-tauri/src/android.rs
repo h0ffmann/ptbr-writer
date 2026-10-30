@@ -1,4 +1,4 @@
-//! The overlay's JNI entry points: `io.github.h0ffmann.ptbr_writer.Ptbr` (gen/android) calls them
+//! The overlay's JNI entry points: `io.github.piabrota.gramatico.Ptbr` (gen/android) calls them
 //! from the accessibility service's worker thread. Each one turns Java strings into Rust ones and
 //! back; the work is overlay.rs's. A panic becomes an `{"error"}`, never an unwind into the JVM.
 
@@ -10,7 +10,7 @@ use std::panic::{UnwindSafe, catch_unwind};
 use std::path::Path;
 
 fn guarded(f: impl FnOnce() -> String + UnwindSafe) -> String {
-    catch_unwind(f).unwrap_or_else(|_| r#"{"error":"Erro interno do ptbr-writer."}"#.into())
+    catch_unwind(f).unwrap_or_else(|_| r#"{"error":"Erro interno do gramatico."}"#.into())
 }
 
 fn string(env: &mut JNIEnv, s: &JString) -> String {
@@ -23,7 +23,7 @@ fn out(env: &mut JNIEnv, s: String) -> jstring {
 
 /// `Ptbr.check(dataDir, text)`: dataDir is the folder Tauri's app_config_dir is on Android.
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_io_github_h0ffmann_ptbr_1writer_Ptbr_check<'l>(
+pub extern "system" fn Java_io_github_piabrota_gramatico_Ptbr_check<'l>(
     mut env: JNIEnv<'l>,
     _: JClass<'l>,
     dir: JString<'l>,
@@ -35,7 +35,7 @@ pub extern "system" fn Java_io_github_h0ffmann_ptbr_1writer_Ptbr_check<'l>(
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_io_github_h0ffmann_ptbr_1writer_Ptbr_accept<'l>(
+pub extern "system" fn Java_io_github_piabrota_gramatico_Ptbr_accept<'l>(
     mut env: JNIEnv<'l>,
     _: JClass<'l>,
     id: jint,
@@ -45,7 +45,7 @@ pub extern "system" fn Java_io_github_h0ffmann_ptbr_1writer_Ptbr_accept<'l>(
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_io_github_h0ffmann_ptbr_1writer_Ptbr_ignore<'l>(
+pub extern "system" fn Java_io_github_piabrota_gramatico_Ptbr_ignore<'l>(
     mut env: JNIEnv<'l>,
     _: JClass<'l>,
     id: jint,
@@ -55,6 +55,6 @@ pub extern "system" fn Java_io_github_h0ffmann_ptbr_1writer_Ptbr_ignore<'l>(
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_io_github_h0ffmann_ptbr_1writer_Ptbr_clear<'l>(_: JNIEnv<'l>, _: JClass<'l>) {
+pub extern "system" fn Java_io_github_piabrota_gramatico_Ptbr_clear<'l>(_: JNIEnv<'l>, _: JClass<'l>) {
     let _ = catch_unwind(overlay::clear);
 }

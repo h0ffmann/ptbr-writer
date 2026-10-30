@@ -111,7 +111,7 @@ ui() {
 
 check_version() {
     local plugin crate
-    plugin="$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "$root/plugins/ptbr-writer/.claude-plugin/plugin.json" | head -1)"
+    plugin="$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "$root/plugins/gramatico/.claude-plugin/plugin.json" | head -1)"
     crate="$(sed -n 's/^version = "\(.*\)"/\1/p' "$app/Cargo.toml" | head -1)"
     [ "$plugin" = "$crate" ] || die "app/Cargo.toml has $crate, plugin.json has $plugin: one version for both"
 }
@@ -206,8 +206,8 @@ android_build() {
     local version
     version="$(sed -n 's/^version = "\(.*\)"/\1/p' "$app/Cargo.toml" | head -1)"
     mkdir -p "$app/target/android"
-    cp "$app/src-tauri/gen/android/app/build/outputs/apk/universal/debug/app-universal-debug.apk" "$app/target/android/ptbr-writer-$version-arm64-debug.apk"
-    echo "app-android-build: app/target/android/ptbr-writer-$version-arm64-debug.apk"
+    cp "$app/src-tauri/gen/android/app/build/outputs/apk/universal/debug/app-universal-debug.apk" "$app/target/android/gramatico-$version-arm64-debug.apk"
+    echo "app-android-build: app/target/android/gramatico-$version-arm64-debug.apk"
 }
 
 # clippy and the unit tests' build for Android: android.rs and the cfg(target_os = "android") code
@@ -249,8 +249,8 @@ build() {
     ui
     (cd "$app/src-tauri" && cargo-tauri tauri build "$@")
     if [ "$os" = macos ]; then
-        codesign --verify --deep --strict "$app/target/release/bundle/macos/ptbr-writer.app"
-        echo "app-build: the bundle's signature is valid ($(codesign -dv "$app/target/release/bundle/macos/ptbr-writer.app" 2>&1 | sed -n 's/^Signature=//p'))"
+        codesign --verify --deep --strict "$app/target/release/bundle/macos/gramatico.app"
+        echo "app-build: the bundle's signature is valid ($(codesign -dv "$app/target/release/bundle/macos/gramatico.app" 2>&1 | sed -n 's/^Signature=//p'))"
     fi
 }
 

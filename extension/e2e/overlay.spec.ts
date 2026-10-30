@@ -9,10 +9,10 @@ test('um sublinhado por sugestão no shadow root, nada dentro do editor', async 
   const page = await ext.open('editable.html');
   await typeAndWait(page, TYPED, '#reply');
   await expect(page.locator('.ptbr-underline')).toHaveCount(2);
-  await expect(page.locator('#ptbr-writer-root .ptbr-underline-erro')).toHaveCount(1);
-  await expect(page.locator('#ptbr-writer-root .ptbr-underline-aviso')).toHaveCount(1);
+  await expect(page.locator('#gramatico-root .ptbr-underline-erro')).toHaveCount(1);
+  await expect(page.locator('#gramatico-root .ptbr-underline-aviso')).toHaveCount(1);
   expect(await page.locator('#field').innerHTML()).not.toContain('ptbr');
-  expect(await page.evaluate(() => document.getElementById('ptbr-writer-root')?.parentElement?.tagName)).toBe('HTML');
+  expect(await page.evaluate(() => document.getElementById('gramatico-root')?.parentElement?.tagName)).toBe('HTML');
 });
 
 test('o cartão de um clique: regra com título, troca, Aceitar, Ignorar e Sempre ignorar; Ignorar tira a sugestão', async ({ ext, server }) => {

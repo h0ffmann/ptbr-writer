@@ -3,7 +3,7 @@
 import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
-import ptbr_writer_site/content
+import gramatico_site/content
 
 pub fn document(body: Element(msg)) -> Element(msg) {
   titled(content.title, content.lede, body)

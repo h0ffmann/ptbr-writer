@@ -110,7 +110,7 @@ background.
 ## Fonts
 
 The site loads Fraunces 600 and 800 (`opsz 9..144`), Source Serif 4 400, 600 and 400 italic, and
-JetBrains Mono 400 from Google Fonts (`site/src/ptbr_writer_site/page.gleam:45`), and stores no
+JetBrains Mono 400 from Google Fonts (`site/src/gramatico_site/page.gleam:45`), and stores no
 font file (`DESIGN.md:34`). The extension cannot do that: a content script must not fetch a font
 from another host, and an extension page should work offline. So the extension bundles the files.
 
@@ -167,7 +167,7 @@ The file names above are the pattern, not a fact (⚠): use the names the pinned
   click. It is inline, not in STYLE.
 - `.ptbr-mirror` (`overlay.rs` STYLE line 11 and lines 718-771): it copies the host field's font
   to measure text. It never gets our font.
-- `:host { all: initial; }` (STYLE line 2) and `#ptbr-writer-root` in `content.css` (position,
+- `:host { all: initial; }` (STYLE line 2) and `#gramatico-root` in `content.css` (position,
   zero size, `z-index: 2147483647`, `pointer-events: none`, all `!important`). They are the
   isolation: nothing of the host leaks in, nothing of ours leaks out. Our styles live inside the
   shadow root, `content.css` touches only the host element (and now `@font-face`, which is

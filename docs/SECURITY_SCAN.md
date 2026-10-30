@@ -56,5 +56,5 @@ reaches only the eval job, on `workflow_dispatch`. `actionlint`: 0.
 
 - `extension/src/options.ts:31` writes `innerHTML` from a fixed template; host names and model names
   go through `textContent`.
-- The `ptbr` binaries are checked against `plugins/ptbr-writer/bin/tools.lock` (sha256) by
+- The `ptbr` binaries are checked against `plugins/gramatico/bin/tools.lock` (sha256) by
   `just tools-check`.

@@ -1,10 +1,10 @@
 # AGENTS.md
 
-Instructions for AI agents working on `ptbr-writer`.
+Instructions for AI agents working on `gramatico`.
 
 ## Goal
 
-`ptbr-writer` is a personalized, OpenCode-first rewrite of the [Português Técnico Controlado (PTC)](https://github.com/kayquer/portugues-tecnico-controlado) rules for Brazilian Portuguese technical writing.
+`gramatico` is a personalized, OpenCode-first rewrite of the [Português Técnico Controlado (PTC)](https://github.com/kayquer/portugues-tecnico-controlado) rules for Brazilian Portuguese technical writing.
 
 ## Goals
 
@@ -19,10 +19,10 @@ Instructions for AI agents working on `ptbr-writer`.
 - **Commit trailers.** Use `Tested:` and `Co-Authored-By: Claude <noreply@anthropic.com>`.
 - **An author level respects the author's rights.** A level that imitates a writer (`machado-writer`, `saramago-writer`) never copies a passage; it cites the author as `REUSE.md` says, and `machado-writer` always cites Machado de Assis. Check that a new author's work is in the public domain before adding one, and write its rule in `REUSE.md`.
 - **No credits in a skill's body.** A skill file (`SKILL.md`, `skills/*/SKILL.md`) holds instructions only: no credits, sources, links, commit pins, author names or history. They are loaded into other people's context. Credits go to `README.md` and `site/data/origins.tsv`.
-- **No Python.** Python is not allowed in this repository. The plugin's runtime tools are static Rust binaries built by h0ffmann/picasso's `labs/ptbr-tools` and pinned by `plugins/ptbr-writer/bin/tools.lock`; the site and its generators are Gleam.
+- **No Python.** Python is not allowed in this repository. The plugin's runtime tools are static Rust binaries built by h0ffmann/picasso's `labs/ptbr-tools` and pinned by `plugins/gramatico/bin/tools.lock`; the site and its generators are Gleam.
 - **No paid resources** without explicit human confirmation.
-- **No competitors.** No product or project that competes with ptbr-writer is named or compared to in code,
-  docs, data, commits, PRs or issues: describe what ptbr-writer does on its own terms.
+- **No competitors.** No product or project that competes with gramatico is named or compared to in code,
+  docs, data, commits, PRs or issues: describe what gramatico does on its own terms.
 
 ## Setup
 
@@ -39,7 +39,7 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 - `SKILL.md` — the skill prompt consumed by OpenCode / Claude Code.
 - `skills/ptbr/SKILL.md` — a symlink to `SKILL.md`: the alias `/ptbr`. Edit `SKILL.md`, never the link.
 - `skills/cientifico/SKILL.md` — the scientific-writing skill (rules CIE); applies PTW-1..17 and adds its own.
-- `skills/bipr/SKILL.md` — `/bipr`: the branch's commits to a pushed PR with a bilingual body (pt-BR, then the English mirror); user-invoked only (`disable-model-invocation`). The PR body ends with `skills/bipr/footer.md` (the favicon and "Generated with h0ffmann/ptbr-writer bipr skill"), kept out of SKILL.md because a skill body has no links; the skill may later move to a devkit or skills repo.
+- `skills/bipr/SKILL.md` — `/bipr`: the branch's commits to a pushed PR with a bilingual body (pt-BR, then the English mirror); user-invoked only (`disable-model-invocation`). The PR body ends with `skills/bipr/footer.md` (the favicon and "Generated with piabrota/gramatico bipr skill"), kept out of SKILL.md because a skill body has no links; the skill may later move to a devkit or skills repo.
 - `scripts/install_current.sh` — installs the plugin from the tip of main (or `PTBR_REF`), no release: removes the old install and marketplace, installs again (main keeps the last version number, so `plugin update` sees nothing). For trying unreleased work; the tag stays the stable install.
 - `.mcp.json` + `scripts/firefox-mcp.sh` — the Firefox MCP (Mozilla's `@mozilla/firefox-devtools-mcp`, pinned in the script, throwaway profile; on Ubuntu the snap's real binary, since geckodriver cannot start the `/usr/bin/firefox` wrapper): lets an agent install `extension/dist-firefox` (`install_extension`, type `path`) and drive the page. A dev tool, not part of the plugin.
 - `.opencode.json` — OpenCode configuration pointing to local `llamacpp/qwen3.6-27b`.
@@ -53,11 +53,11 @@ just opencode-qwen # serve Qwen3.6-27B and run OpenCode
 - `REUSE.md` — reuse rules for the author levels (citation, public domain, style only).
 - `ISSUE_LABELS.md` — the labels of issues and PRs (type, area, level, status, priority); `just labels` syncs them to GitHub.
 - `.github/CODEOWNERS` — @h0ffmann and @robkler own every path; GitHub asks one of them to review each PR.
-- `plugins/ptbr-writer/` — the Claude Code plugin, listed by `.claude-plugin/marketplace.json`; its `skills/` are symlinks to the repo's skills (no copies). Code and plugin share one version: `plugin.json`'s `version`, a `CHANGELOG.md` heading and the tag `vX.Y.Z` (`just release X.Y.Z`: a release PR, then the tag on main; `release.yml` runs `just release-check`). Installs see a change only when the version moves: a change to a plugin file (`just release-due` lists them) is not out until a release. A new skill in the plugin needs its link.
-- `plugins/ptbr-writer/bin/` — `run.sh` picks `bin/<os>-<arch>/<binary>` (warns when none); `tools.lock` pins the picasso rev and each binary's sha256; `just tools-fetch REV` refreshes, `just tools-check` verifies.
-- `plugins/ptbr-writer/hooks/` — `ask-levels.sh` runs the `ptbr ask-levels` binary (via `bin/run.sh`) on every prompt (UserPromptSubmit): a request that starts with `ptbr` gets one instruction built from `ptbr-writer.toml` (plugin defaults `ptbr-writer.default.toml` < `~/.config/ptbr-writer/` < `./ptbr-writer.toml` < the request); any other prompt gets nothing. Its self-test runs in `just plugin-check`.
-- `plugins/ptbr-writer/evals/` — `claude plugin eval` cases (prompt.md + graders/), run by hand: `just plugin-eval` on your login, or `plugin.yml` → Run workflow on `ANTHROPIC_API_KEY`. `scripts/plugin-smoke.sh` installs the plugin into an empty config; `plugin.yml` runs it when the plugin changes.
-- `scripts/install-opencode.sh` + `opencode/ptbr-writer.js` — the OpenCode install: from a tag, the skills `ptbr-writer`, `ptbr`, `cientifico` as real files (a `name:` is added where the source has none), the pinned binaries and the `ask-levels` plugin (`chat.message`, runs the same `ptbr ask-levels` via `bin/run.sh`). `scripts/opencode-smoke.sh` checks it in `just plugin-check`. Not in `release-due`: it is outside `plugins/ptbr-writer/`, but the tag must carry it.
+- `plugins/gramatico/` — the Claude Code plugin, listed by `.claude-plugin/marketplace.json`; its `skills/` are symlinks to the repo's skills (no copies). Code and plugin share one version: `plugin.json`'s `version`, a `CHANGELOG.md` heading and the tag `vX.Y.Z` (`just release X.Y.Z`: a release PR, then the tag on main; `release.yml` runs `just release-check`). Installs see a change only when the version moves: a change to a plugin file (`just release-due` lists them) is not out until a release. A new skill in the plugin needs its link.
+- `plugins/gramatico/bin/` — `run.sh` picks `bin/<os>-<arch>/<binary>` (warns when none); `tools.lock` pins the picasso rev and each binary's sha256; `just tools-fetch REV` refreshes, `just tools-check` verifies.
+- `plugins/gramatico/hooks/` — `ask-levels.sh` runs the `ptbr ask-levels` binary (via `bin/run.sh`) on every prompt (UserPromptSubmit): a request that starts with `ptbr` gets one instruction built from `ptbr-writer.toml` (plugin defaults `ptbr-writer.default.toml` < `~/.config/ptbr-writer/` < `./ptbr-writer.toml` < the request); any other prompt gets nothing. Its self-test runs in `just plugin-check`.
+- `plugins/gramatico/evals/` — `claude plugin eval` cases (prompt.md + graders/), run by hand: `just plugin-eval` on your login, or `plugin.yml` → Run workflow on `ANTHROPIC_API_KEY`. `scripts/plugin-smoke.sh` installs the plugin into an empty config; `plugin.yml` runs it when the plugin changes.
+- `scripts/install-opencode.sh` + `opencode/gramatico.js` — the OpenCode install: from a tag, the skills `ptbr-writer`, `ptbr`, `cientifico` as real files (a `name:` is added where the source has none), the pinned binaries and the `ask-levels` plugin (`chat.message`, runs the same `ptbr ask-levels` via `bin/run.sh`). `scripts/opencode-smoke.sh` checks it in `just plugin-check`. Not in `release-due`: it is outside `plugins/gramatico/`, but the tag must carry it.
 - `skills/ptbr-routing/` — the `ptbr-routing` skill: the `ptbr-route` binary (`bin/run.sh`) picks the skill and the level from `routes.tsv`, and `scripts/session-check.sh` is the SessionStart hook that offers the plugin; outside any plugin, vendored as `.claude/skills/ptbr-routing` (here a symlink). A new level in `SKILL.md` needs its row, or `just quality` fails.
 - `skills/retorica/SKILL.md` — a second skill, rhetoric from Plato's *Phaedo* and *Phaedrus* and Pirsig's Phaedrus (ZAMM); a skeleton with no rules yet.
 - `extension/` — the Chrome extension (Rust compiled to WebAssembly with wasm-bindgen; `cargo xtask build` in `extension/xtask`; Playwright for the browser tests): underlines in a text field what a level asks to change, through Claude or DeepSeek with the user's key, or locally through Ollama (an LLM writes the replacement) or Ollaya (a decision model, `extension/src/decisions.rs`: one `/api/decide` per sentence, "which rule does it break?", an underline with no replacement); the two are independent flags, and with both on (`ollayaStyle`) Ollaya picks the conversation style and Ollama writes in it, alone when Ollaya is down. One wasm, four entry points (`src/lib.rs`): the service worker and the pages run it as wasm; the content script runs the same module as JavaScript (binaryen's `wasm2js`, in the xtask), because the host page's CSP governs wasm compilation in the content script's world and github.com forbids it. The pure modules build and test on the host (`cargo test`); the DOM is covered by `extension/e2e/` (Chromium, a fake server, no real API; headless Chromium shows no permission prompt, so the test build grants `exemplo.test` and `tabs` and only the granted path is tested). It reads `SKILL.md` and `skills/cientifico/SKILL.md` at build (`src/skills.rs`); not part of the plugin. `just ext-build`, `just ext-test` (fmt, clippy on both targets, unit tests; part of `just quality`), `just ext-e2e`, `just ext-build-firefox` (Firefox 128+, `extension/dist-firefox/`), `just ext-ollama` (the Ollama provider, started with `OLLAMA_ORIGINS` for extension origins), `just ext-ollaya` (the Ollaya provider, with `OLLAYA_ORIGINS`; its models: `docs/SURVEY_DECISION_MODEL.md`); CI: `.github/workflows/extension.yml`, inside the flake's dev shell.
@@ -103,11 +103,11 @@ Facts that left the README when it was cut to 10 minutes. They stay true only wh
 so; check the file before you repeat one.
 
 **Install.**
-- Inside Claude Code: `/plugin marketplace add h0ffmann/ptbr-writer#v0.4.0`, then
-  `/plugin install ptbr-writer@ptbr-writer`. To update, remove the marketplace and add it again
+- Inside Claude Code: `/plugin marketplace add piabrota/gramatico#v0.4.0`, then
+  `/plugin install gramatico@gramatico`. To update, remove the marketplace and add it again
   with the new tag; in a repository, change the `ref`.
 - Pin in a repository's `.claude/settings.json`:
-  `{"extraKnownMarketplaces": {"ptbr-writer": {"source": {"source": "github", "repo": "h0ffmann/ptbr-writer", "ref": "v0.4.0"}}}, "enabledPlugins": {"ptbr-writer@ptbr-writer": true}}`.
+  `{"extraKnownMarketplaces": {"gramatico": {"source": {"source": "github", "repo": "piabrota/gramatico", "ref": "v0.4.0"}}}, "enabledPlugins": {"gramatico@gramatico": true}}`.
 - `scripts/install_current.sh` (curl it inside Claude Code with `!`, then `/reload-plugins`)
   installs the tip of `main`, or `PTBR_REF`; `main` is not a fixed version.
 - OpenCode: `scripts/install-opencode.sh vX.Y.Z` copies `ptbr-writer`, `ptbr` and `cientifico` as
@@ -119,10 +119,10 @@ so; check the file before you repeat one.
   yet.
 
 **Use.**
-- `/ptbr-writer:ptbr-writer` is the same as `/ptbr-writer:ptbr`. A `bipr` example and its cost:
+- `/gramatico:ptbr-writer` is the same as `/gramatico:ptbr`. A `bipr` example and its cost:
   `docs/bipr/exemplo-pr-49.md`.
-- A request that starts with `ptbr` uses `ptbr-writer.toml`; ptbr-writer named mid-sentence
-  triggers nothing. Layers, each over the one before: `plugins/ptbr-writer/ptbr-writer.default.toml`,
+- A request that starts with `ptbr` uses `ptbr-writer.toml`; gramatico named mid-sentence
+  triggers nothing. Layers, each over the one before: `plugins/gramatico/ptbr-writer.default.toml`,
   `~/.config/ptbr-writer/ptbr-writer.toml`, `./ptbr-writer.toml`, the request. An unknown value or a
   folder outside the root is ignored with a warning. Keys: `levels`, `formats` (`txt`, `md`, `pdf`,
   `notes`), `folder` (relative, no `..`), `print` (what the console shows in full), `languages`
@@ -133,7 +133,7 @@ so; check the file before you repeat one.
 - `.pdf`: the machine's pandoc and xelatex; without them, after asking, Nix builds picasso's
   `labs/ptbr-pdf` (`to-pdf`, Rust, Typst, fonts embedded) at `PICASSO_REV`. Measured with
   `just pdf-bench` on picasso v0.2.0, fresh GitHub runner, 4 cores
-  ([run](https://github.com/h0ffmann/ptbr-writer/actions/runs/39537436728)): 14 MiB download from 6
+  ([run](https://github.com/piabrota/gramatico/actions/runs/39537436728)): 14 MiB download from 6
   cache.nixos.org paths, 72 MiB on disk, 25 MiB built, 892 s the first time.
 - Planned levels, outside `SKILL.md`: `site/data/planned.tsv`.
 
@@ -168,7 +168,7 @@ so; check the file before you repeat one.
 counts) ÷ 238 per minute; ×1.15 when the mean sentence passes 20 words and ×1.15 when over 25% of
 words have 10+ letters; 10 s per non-empty code line; 5 s per link; rounded up, `< 1 min` up to 60 s.
 238 is Brysbaert (2019) for English non-fiction; ⚠ pt-BR uses the same rate unscaled, and the other
-numbers are this project's choices. `bash plugins/ptbr-writer/bin/run.sh reading-time FILE`.
+numbers are this project's choices. `bash plugins/gramatico/bin/run.sh reading-time FILE`.
 
 **Credits, pinned.** marola-research `041cedd`; ww3-gpu `319e4e2`; K-Dense scientific-writing
 `a1043ef`; labdaps `artigo` `246c164`; closed-source `563c339` and ouroboric `2858c11` (CIE

@@ -10,7 +10,7 @@ plat="$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m)"
 bin="$here/$plat/ptbr"
 if [ -x "$bin" ]; then exec "$bin" "$cmd" "$@"; fi
 
-msg="ptbr-writer: no binary for $plat (bin/$plat/ptbr); the plugin ships binaries for linux-x86_64 and linux-aarch64 only. Reading time and the ptbr question are off."
+msg="gramatico: no binary for $plat (bin/$plat/ptbr); the plugin ships binaries for linux-x86_64 and linux-aarch64 only. Reading time and the ptbr question are off."
 echo "$msg" >&2
 if [ "$cmd" = ask-levels ]; then
     input=$(cat 2>/dev/null || true)

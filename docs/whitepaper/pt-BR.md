@@ -1,5 +1,5 @@
 ---
-title: "ptbr-writer: português técnico controlado para pessoas e agentes"
+title: "gramatico: português técnico controlado para pessoas e agentes"
 subtitle: "Escrita agêntica em português brasileiro é uma abstração barata"
 author:
   - name: Matheus Hoffmann
@@ -22,10 +22,10 @@ keywords:
   - modelos de decisão
   - reprodutibilidade
 abstract: |
-  O ptbr-writer reescreve texto técnico em português brasileiro para uma leitura única: sujeito
+  O gramatico reescreve texto técnico em português brasileiro para uma leitura única: sujeito
   explícito, uma proposição por frase e termos consistentes. A semente é o Português Técnico
   Controlado (PTC), de kayquer: uma skill do Claude Code com regras de linguagem controlada em
-  português para um leitor que pode ser um modelo. O ptbr-writer adapta as 8 regras do PTC e
+  português para um leitor que pode ser um modelo. O gramatico adapta as 8 regras do PTC e
   acrescenta 5, num total de 13 regras, PTW-1 a PTW-13. Cada pedido passa por um de 5 níveis de
   rigor, de `estrito` a `smart-note`. Para texto com fontes, a skill `cientifico` acrescenta 12
   regras, CIE-1 a CIE-12. As mesmas regras chegam por três caminhos: um plugin do Claude Code, um
@@ -62,7 +62,7 @@ header-includes:
 Um runbook é lido por quem executa o procedimento e, cada vez mais, por um agente que o executa.
 Nenhum dos dois pode parar para perguntar "você quis dizer X ou Y?". O PTC, de kayquer, escreveu
 essa exigência como uma skill do Claude Code, com 8 regras para o português do Brasil [1]. O
-ptbr-writer parte dessa semente.
+gramatico parte dessa semente.
 
 A tese deste artigo é que escrita agêntica em português brasileiro é uma abstração barata. Barata
 porque a abstração inteira é texto: um arquivo de regras em Markdown, que qualquer agente que lê
@@ -82,7 +82,7 @@ integração ainda não foi feita ⚠.
 
 O PTC observa que o inglês obriga o sujeito, e por isso o ASD-STE100, a linguagem controlada da
 indústria aeroespacial, nunca precisou de uma regra para ele [1]. O português permite omitir o
-sujeito. A primeira regra do ptbr-writer, PTW-1, pede o sujeito explícito e evita o `-se`
+sujeito. A primeira regra do gramatico, PTW-1, pede o sujeito explícito e evita o `-se`
 apassivador, `o mesmo` e os clíticos ambíguos de terceira pessoa (`SKILL.md`). Uma frase como
 "deve-se verificar os logs" vira "verifique os logs".
 
@@ -136,10 +136,10 @@ tabela, ou o `just quality` falha.
 # Portabilidade
 
 As regras ficam num arquivo, `SKILL.md`, com 807 palavras (`wc -w`), e a skill `cientifico` tem
-1 087. Um agente que lê skills carrega esses arquivos sem adaptação. O ptbr-writer atende dois
+1 087. Um agente que lê skills carrega esses arquivos sem adaptação. O gramatico atende dois
 públicos, por caminhos diferentes.
 
-**Quem programa** usa o ptbr-writer no terminal e no repositório, por um agente de programação:
+**Quem programa** usa o gramatico no terminal e no repositório, por um agente de programação:
 
 - **Claude Code:** um plugin, instalado com um comando e fixado por tag. Um repositório fixa a
   versão no próprio `.claude/settings.json`, e todos que o abrem usam a mesma.
@@ -163,7 +163,7 @@ um binário Rust do `labs/ptbr-pdf` do picasso, num commit fixo. O `Cargo.lock` 
 Mono). A primeira compilação, num runner novo do GitHub com 4 núcleos, levou 892 s; da segunda vez
 em diante, o Nix reusa o que já compilou.
 
-![**De onde vem o .pdf.** Em uma frase: o `.pdf` sai do pandoc da máquina, se ele existir com o XeLaTeX; senão, de um binário Rust que o Nix compila a partir de um commit fixo do picasso, com cada biblioteca na versão do `Cargo.lock`. Como ler: da esquerda para a direita; a faixa do meio é o caminho sem pandoc, a de baixo são as bibliotecas Rust do binário, e a de cima, o caminho local e o arquivo pronto. Fora da figura: as dependências das dependências e o Nix em si. Evidência: `plugins/ptbr-writer/scripts/to-pdf.sh` e `docs/archify/pdf-dependencias.json`.](docs/img/pdf-dependencias.png){width=100%}
+![**De onde vem o .pdf.** Em uma frase: o `.pdf` sai do pandoc da máquina, se ele existir com o XeLaTeX; senão, de um binário Rust que o Nix compila a partir de um commit fixo do picasso, com cada biblioteca na versão do `Cargo.lock`. Como ler: da esquerda para a direita; a faixa do meio é o caminho sem pandoc, a de baixo são as bibliotecas Rust do binário, e a de cima, o caminho local e o arquivo pronto. Fora da figura: as dependências das dependências e o Nix em si. Evidência: `plugins/gramatico/scripts/to-pdf.sh` e `docs/archify/pdf-dependencias.json`.](docs/img/pdf-dependencias.png){width=100%}
 
 # A revisão como decisão
 
@@ -307,5 +307,5 @@ v0.3.0 é a primeira tag desde a v0.1.0.
    <https://github.com/alibaba/open-code-review/tree/375f64cd6f67a48a135da83cfcf59c52669a09cb>,
    commit `375f64c`, lido em 22 de outubro de 2026.
 
-O código, as regras e este texto estão em <https://github.com/h0ffmann/ptbr-writer>, sob a MPL-2.0.
+O código, as regras e este texto estão em <https://github.com/piabrota/gramatico>, sob a MPL-2.0.
 O modelo deste PDF vem do Paper Fabric de h0ffmann/closed-source, commit `563c339` (MIT).

@@ -1,9 +1,9 @@
-name = "ptbr_writer_site"
+name = "gramatico_site"
 version = "1.0.0"
 target = "javascript"
-description = "The site of ptbr-writer: every capability of the skill, read from SKILL.md"
+description = "The site of gramatico: every capability of the skill, read from SKILL.md"
 licences = ["MPL-2.0"]
-repository = { type = "github", user = "h0ffmann", repo = "ptbr-writer" }
+repository = { type = "github", user = "piabrota", repo = "gramatico" }
 
 [javascript]
 runtime = "nodejs"

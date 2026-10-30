@@ -1,4 +1,4 @@
-//! The ptbr-writer app: the browser extension's check (`ptbr_ext::background::handle_check`) behind
+//! The gramatico app: the browser extension's check (`ptbr_ext::background::handle_check`) behind
 //! five Tauri commands. The window (../ui, Rust compiled to wasm) only draws what they return. On
 //! Android the same library also serves the overlay service (overlay.rs, through android.rs), and
 //! both go to Claude only.
@@ -147,7 +147,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![boot, save_prefs, check, accept, ignore])
         .run(tauri::generate_context!())
-        .expect("the ptbr-writer window");
+        .expect("the gramatico window");
 }
 
 #[cfg(test)]

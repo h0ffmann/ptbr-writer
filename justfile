@@ -4,7 +4,7 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 _cargo := `command -v cargo || true`
 dev := if _cargo == "" { "nix develop " + justfile_directory() + " --no-update-lock-file -c" } else { "" }
 
-# ptbr-writer — recipes for developing and running the skill with OpenCode + local Qwen.
+# gramatico — recipes for developing and running the skill with OpenCode + local Qwen.
 
 default:
     @just --list
@@ -28,7 +28,7 @@ opencode-qwen *args:
       let p = import (builtins.getFlake (toString ./.)).inputs.nixpkgs {
         system = builtins.currentSystem; config = { allowUnfree = true; cudaSupport = true; };
       }; in p.llama-cpp')/bin/llama-server
-    log="${TMPDIR:-/tmp}/llama-server-ptbr-writer.log"
+    log="${TMPDIR:-/tmp}/llama-server-gramatico.log"
     echo "llama-server log: $log"
     LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:/run/opengl-driver/lib" "$srv" >"$log" 2>&1 &
     trap 'kill $!' EXIT
@@ -63,7 +63,7 @@ opencode-stop:
 opencode-logs *args="-n 40":
     #!/usr/bin/env bash
     set -euo pipefail
-    log="${TMPDIR:-/tmp}/llama-server-ptbr-writer.log"
+    log="${TMPDIR:-/tmp}/llama-server-gramatico.log"
     [ -f "$log" ] || { echo "no log at $log" >&2; exit 1; }
     tail {{ args }} "$log"
 
@@ -96,11 +96,11 @@ pins:
     lock="$(jq -r '.nodes["gleam-website"].locked.rev' flake.lock)"
     sub="$(git ls-files -s forks/picasso | cut -d' ' -f2)"
     [ "$lock" = "$sub" ] || { echo "pins: flake.lock has picasso $lock, forks/picasso is $sub" >&2; exit 1; }
-    pdf="$(sed -n 's/^PICASSO_REV=//p' plugins/ptbr-writer/scripts/to-pdf.sh)"
+    pdf="$(sed -n 's/^PICASSO_REV=//p' plugins/gramatico/scripts/to-pdf.sh)"
     [ "$pdf" = "$sub" ] || { echo "pins: to-pdf.sh has picasso $pdf, forks/picasso is $sub" >&2; exit 1; }
     graph="$(jq -r '.nodes["code-graph"].locked.rev' flake.lock)"
     [ "$graph" = "$sub" ] || { echo "pins: flake.lock has code-graph $graph, forks/picasso is $sub" >&2; exit 1; }
-    tools="$(sed -n 's/^rev=//p' plugins/ptbr-writer/bin/tools.lock)"
+    tools="$(sed -n 's/^rev=//p' plugins/gramatico/bin/tools.lock)"
     [ "$tools" = "$sub" ] || { echo "pins: tools.lock has picasso $tools, forks/picasso is $sub" >&2; exit 1; }
     echo "pins: picasso $sub"
     just tools-check
@@ -192,12 +192,12 @@ route +request:
 tools-fetch rev:
     #!/usr/bin/env bash
     set -euo pipefail
-    lock=plugins/ptbr-writer/bin/tools.lock
+    lock=plugins/gramatico/bin/tools.lock
     { echo "rev={{ rev }}"; echo "lab=labs/ptbr-tools"; echo "# sha256  size  path"; } > "$lock.new"
     for t in "x86_64 static" "aarch64 static-aarch64"; do
         set -- $t
         out=$(nix build "github:h0ffmann/picasso/{{ rev }}?dir=labs/ptbr-tools#$2" --no-link --print-out-paths 2>/dev/null) || { echo "tools-fetch: no $1 build, skipped" >&2; continue; }
-        for d in plugins/ptbr-writer/bin/linux-$1 skills/ptbr-routing/bin/linux-$1; do
+        for d in plugins/gramatico/bin/linux-$1 skills/ptbr-routing/bin/linux-$1; do
             mkdir -p "$d"; install -m 755 "$out/bin/ptbr" "$d/ptbr"
             echo "$(sha256sum "$d/ptbr" | cut -d' ' -f1)  $(stat -c %s "$d/ptbr")  $d/ptbr" >> "$lock.new"
         done
@@ -209,7 +209,7 @@ tools-fetch rev:
 tools-check:
     #!/usr/bin/env bash
     set -euo pipefail
-    lock=plugins/ptbr-writer/bin/tools.lock
+    lock=plugins/gramatico/bin/tools.lock
     grep -qE '^rev=[0-9a-f]{40}$' "$lock" || { echo "tools-check: $lock has no rev" >&2; exit 1; }
     n=0
     while read -r sha size path; do
@@ -225,13 +225,13 @@ plugin-check:
     #!/usr/bin/env bash
     set -euo pipefail
     jq . .claude-plugin/marketplace.json >/dev/null
-    v=$(jq -r .version plugins/ptbr-writer/.claude-plugin/plugin.json)
+    v=$(jq -r .version plugins/gramatico/.claude-plugin/plugin.json)
     [[ $v =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "plugin-check: version $v is not X.Y.Z" >&2; exit 1; }
     grep -q "^## v$v " CHANGELOG.md || { echo "plugin-check: CHANGELOG.md has no v$v" >&2; exit 1; }
-    for f in plugins/ptbr-writer/skills/*/SKILL.md; do test -e "$f" || { echo "plugin-check: $f is a broken link" >&2; exit 1; }; done
+    for f in plugins/gramatico/skills/*/SKILL.md; do test -e "$f" || { echo "plugin-check: $f is a broken link" >&2; exit 1; }; done
     bash skills/ptbr-routing/scripts/session-check.sh --self-test
-    bash plugins/ptbr-writer/hooks/ask-levels.sh --self-test
-    bash plugins/ptbr-writer/bin/run.sh reading-time --self-test
+    bash plugins/gramatico/hooks/ask-levels.sh --self-test
+    bash plugins/gramatico/bin/run.sh reading-time --self-test
     bash scripts/opencode-smoke.sh
     echo "plugin-check: ok (v$v)"
 
@@ -239,7 +239,7 @@ plugin-check:
 release-due:
     #!/usr/bin/env bash
     set -euo pipefail
-    files=$(find -L plugins/ptbr-writer .claude-plugin -path "*/evals" -prune -o -type f -exec realpath --relative-to=. {} + | sort -u)
+    files=$(find -L plugins/gramatico .claude-plugin -path "*/evals" -prune -o -type f -exec realpath --relative-to=. {} + | sort -u)
     last=$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)
     if [ -z "$last" ]; then changed=$files; since="(no release yet)"
     else changed=$(git diff --name-only "$last" HEAD -- $files); since="since $last"; fi
@@ -254,7 +254,7 @@ plugin-smoke:
 
 # Run the plugin's eval cases on your own Claude login, once each: just plugin-eval --case 'estrito*'.
 plugin-eval *args:
-    claude plugin eval plugins/ptbr-writer --trust-plugin --no-publish --runs 1 {{ args }}
+    claude plugin eval plugins/gramatico --trust-plugin --no-publish --runs 1 {{ args }}
 
 # What the .pdf output downloads and builds on a machine with Nix and no pandoc, timed into an empty store.
 pdf-bench:
@@ -264,7 +264,7 @@ pdf-bench:
 release version:
     #!/usr/bin/env bash
     set -euo pipefail
-    v="{{ version }}"; json=plugins/ptbr-writer/.claude-plugin/plugin.json
+    v="{{ version }}"; json=plugins/gramatico/.claude-plugin/plugin.json
     [[ $v =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "release: $v is not X.Y.Z" >&2; exit 1; }
     [ -z "$(git status --porcelain)" ] || { echo "release: the tree is not clean" >&2; exit 1; }
     git fetch -q origin main --tags
@@ -293,8 +293,8 @@ release version:
         [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] || { echo "release: check out origin/main first (git switch main && git pull)" >&2; exit 1; }
         just release-check "v$v"
         # Zenodo mints the DOI when it sees the GitHub release that release.yml publishes from this tag.
-        gh api repos/h0ffmann/ptbr-writer/hooks --jq 'any(.[]; .active and (.config.url | startswith("https://zenodo.org/")))' | grep -qx true || { echo "release: Zenodo's webhook is not on for this repository; turn it on in Zenodo's GitHub page first" >&2; exit 1; }
-        git tag -a "v$v" -m "ptbr-writer v$v"
+        gh api repos/piabrota/gramatico/hooks --jq 'any(.[]; .active and (.config.url | startswith("https://zenodo.org/")))' | grep -qx true || { echo "release: Zenodo's webhook is not on for this repository; turn it on in Zenodo's GitHub page first" >&2; exit 1; }
+        git tag -a "v$v" -m "gramatico v$v"
         git push -q origin "v$v"
         echo "release: v$v pushed; waiting for release.yml to publish it"
         for _ in $(seq 60); do gh release view "v$v" >/dev/null 2>&1 && break; sleep 10; done
@@ -308,7 +308,7 @@ release version:
 
 # The tag a release pushes must be the plugin's version: just release-check v0.2.0 (release.yml runs it).
 release-check tag: plugin-check
-    test "{{ tag }}" = "v$(jq -r .version plugins/ptbr-writer/.claude-plugin/plugin.json)"
+    test "{{ tag }}" = "v$(jq -r .version plugins/gramatico/.claude-plugin/plugin.json)"
     # Zenodo archives the release with the metadata of .zenodo.json: its version must be the tag's.
     test "{{ tag }}" = "$(jq -r .version .zenodo.json)"
     # The app's installers carry app/Cargo.toml's version in their names (release.yml's app job).
@@ -336,7 +336,7 @@ reading-time:
 _reading-badge file lang:
     #!/usr/bin/env bash
     set -euo pipefail
-    line=$(bash plugins/ptbr-writer/bin/run.sh reading-time --lang "{{ lang }}" "{{ file }}")
+    line=$(bash plugins/gramatico/bin/run.sh reading-time --lang "{{ lang }}" "{{ file }}")
     min=$(sed -E 's/^[^:]+: ([^(]*[^ (]) *\(.*$/\1/' <<<"$line")
     enc=$(sed -e 's/ /%20/g' -e 's/</%3C/g' <<<"$min")
     if [ "{{ lang }}" = en ]; then
@@ -355,7 +355,7 @@ quality: pins saramago-check plugin-check figure-check whitepaper-check node-che
     jq . .opencode.json >/dev/null
     # The READMEs are for people: at most 10 minutes of reading each, by the plugin's own calculator. The site
     # renders the tables of site/data/ (rules, roadmap, awesome, planned levels); the READMEs link to it.
-    for r in "README.md pt-BR" "README.en.md en"; do set -- $r; min=$(bash plugins/ptbr-writer/bin/run.sh reading-time --lang "$2" "$1" | sed -E 's/^[^~<]*[~<] ?([0-9]+) min.*/\1/'); [ "$min" -le 10 ] || { echo "quality: $1 takes ~$min min to read; the cap is 10 (move detail to AGENTS.md or the site)" >&2; exit 1; }; done
+    for r in "README.md pt-BR" "README.en.md en"; do set -- $r; min=$(bash plugins/gramatico/bin/run.sh reading-time --lang "$2" "$1" | sed -E 's/^[^~<]*[~<] ?([0-9]+) min.*/\1/'); [ "$min" -le 10 ] || { echo "quality: $1 takes ~$min min to read; the cap is 10 (move detail to AGENTS.md or the site)" >&2; exit 1; }; done
     # A table row lives in its table: none before the first heading (#74: a bad edit put two at the top).
     for r in README.md README.en.md; do ! awk '/^## /{exit} /^\| /{f=1} END{exit !f}' "$r" || { echo "quality: $r has a table row before its first heading" >&2; exit 1; }; done
     # Every Archify figure is indexed in both READMEs, by its published page.
@@ -388,7 +388,7 @@ ext-ollama model="qwen3.6:27b":
     pull() { ollama list | awk 'NR>1 {print $1}' | grep -qx "{{ model }}" || ollama pull "{{ model }}"; }
     if curl -sf -m 2 "$api" >/dev/null; then
         # One already serves: it must accept the extension's origin, or every check is a 403.
-        code=$(curl -s -o /dev/null -w '%{http_code}' -m 2 -H 'Origin: chrome-extension://ptbr-writer' "$api")
+        code=$(curl -s -o /dev/null -w '%{http_code}' -m 2 -H 'Origin: chrome-extension://gramatico' "$api")
         if [ "$code" != 200 ]; then
             echo "ext-ollama: the Ollama at $OLLAMA_HOST refuses extensions (HTTP $code). Stop it, or for the" >&2
             echo "systemd service run 'sudo systemctl edit ollama', add under [Service]" >&2
@@ -400,7 +400,7 @@ ext-ollama model="qwen3.6:27b":
         echo "ext-ollama: {{ model }} ready at $OLLAMA_HOST"
         exit 0
     fi
-    log="${TMPDIR:-/tmp}/ollama-ptbr-writer.log"
+    log="${TMPDIR:-/tmp}/ollama-gramatico.log"
     echo "ollama log: $log"
     ollama serve >"$log" 2>&1 &
     srv=$!
@@ -426,7 +426,7 @@ ext-ollaya model="decima":
     pull() { ollaya pull "{{ model }}"; }
     if curl -sf -m 2 "$api" >/dev/null; then
         # One already serves: it must accept the extension's origin, or every check is a 403.
-        code=$(curl -s -o /dev/null -w '%{http_code}' -m 2 -H 'Origin: chrome-extension://ptbr-writer' "$api")
+        code=$(curl -s -o /dev/null -w '%{http_code}' -m 2 -H 'Origin: chrome-extension://gramatico' "$api")
         if [ "$code" != 200 ]; then
             echo "ext-ollaya: the Ollaya at $OLLAYA_HOST refuses extensions (HTTP $code). Stop it, or for the" >&2
             echo "systemd service run 'sudo systemctl edit ollaya', add under [Service]" >&2
@@ -438,7 +438,7 @@ ext-ollaya model="decima":
         echo "ext-ollaya: {{ model }} ready at $OLLAYA_HOST"
         exit 0
     fi
-    log="${TMPDIR:-/tmp}/ollaya-ptbr-writer.log"
+    log="${TMPDIR:-/tmp}/ollaya-gramatico.log"
     echo "ollaya log: $log"
     ollaya serve >"$log" 2>&1 &
     srv=$!
@@ -539,7 +539,7 @@ whitepaper:
 whitepaper-check:
     for pdf in WHITEPAPER.pdf WHITEPAPER.en.pdf; do p=$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}'); [ "$p" -le 8 ] || { echo "whitepaper-check: $pdf has $p pages; the cap is 8" >&2; exit 1; }; done; echo "whitepaper-check: ok"
 
-# The DOIs Zenodo minted for ptbr-writer, newest first, from Zenodo's public API (no token):
+# The DOIs Zenodo minted for gramatico, newest first, from Zenodo's public API (no token):
 # version, DOI, concept DOI (always the newest version), license, type, page.
 doi:
     #!/usr/bin/env bash

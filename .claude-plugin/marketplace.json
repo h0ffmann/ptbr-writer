@@ -1,13 +1,13 @@
 {
-  "name": "ptbr-writer",
+  "name": "gramatico",
   "description": "Escrita técnica em português brasileiro para Claude Code",
   "owner": {
-    "name": "h0ffmann"
+    "name": "piabrota"
   },
   "plugins": [
     {
-      "name": "ptbr-writer",
-      "source": "./plugins/ptbr-writer",
+      "name": "gramatico",
+      "source": "./plugins/gramatico",
       "description": "Reescreve texto técnico em pt-BR por nível de rigor (PTW), com a skill científica (CIE) e o alias /ptbr"
     }
   ]

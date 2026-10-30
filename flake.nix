@@ -1,5 +1,5 @@
 {
-  description = "ptbr-writer dev shell — OpenCode + local Qwen tooling";
+  description = "gramatico dev shell — OpenCode + local Qwen tooling";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -72,7 +72,7 @@
           ];
 
           shellHook = ''
-            echo "ptbr-writer dev shell"
+            echo "gramatico dev shell"
             echo "  just opencode-qwen   serve Qwen3.6-27B and run OpenCode"
             echo "  just opencode        run OpenCode against the configured server"
             echo "  just quality         run basic checks"

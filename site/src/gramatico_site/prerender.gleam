@@ -1,10 +1,10 @@
-//// `gleam run -m ptbr_writer_site/prerender > dist/index.html`: the whole page, rendered once at
+//// `gleam run -m gramatico_site/prerender > dist/index.html`: the whole page, rendered once at
 //// build time. It needs no JavaScript.
 
 import gleam/io
 import lustre/element
-import ptbr_writer_site/app
-import ptbr_writer_site/page
+import gramatico_site/app
+import gramatico_site/page
 
 pub fn render() -> String {
   app.view()
