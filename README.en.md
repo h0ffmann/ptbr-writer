@@ -48,15 +48,15 @@ the figure.
 
 ## install
 
-The official version is [v0.4.0](https://github.com/piabrota/gramatico/releases/tag/v0.4.0). In a
+The official version is [v0.4.1](https://github.com/piabrota/gramatico/releases/tag/v0.4.1). In a
 terminal:
 
 ```console
-claude plugin install gramatico --marketplace piabrota/gramatico#v0.4.0
+claude plugin install gramatico --marketplace piabrota/gramatico#v0.4.1
 ```
 
 To pin the version in a repository, put in its `.claude/settings.json` the marketplace
-`piabrota/gramatico` with `"ref": "v0.4.0"` under `extraKnownMarketplaces`, and enable
+`piabrota/gramatico` with `"ref": "v0.4.1"` under `extraKnownMarketplaces`, and enable
 `gramatico@gramatico` under `enabledPlugins`. To update, change the tag.
 
 ### OpenCode

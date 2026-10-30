@@ -2438,7 +2438,7 @@ dependencies = [
 
 [[package]]
 name = "ptbr-app"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "jni 0.21.1",
  "ptbr-app-wire",
@@ -2455,7 +2455,7 @@ dependencies = [
 
 [[package]]
 name = "ptbr-app-ui"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "js-sys",
  "ptbr-app-wire",
@@ -2468,7 +2468,7 @@ dependencies = [
 
 [[package]]
 name = "ptbr-app-wire"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "serde",
 ]
