@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install-opencode — install ptbr-writer into OpenCode from a release tag: the skills as real files
+# install-opencode — install gramatico into OpenCode from a release tag: the skills as real files
 # (links followed, `name:` added where the file has none, since OpenCode requires it), the pinned
 # ptbr binaries, and the ask-levels plugin. Never main: the tag is required.
 #
@@ -14,8 +14,8 @@ if [ "${2-}" = --project ]; then dest=$PWD/.opencode; else dest=${OPENCODE_CONFI
 tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
 if [ -n "${PTBR_SRC-}" ]; then src=$PTBR_SRC
 else
-    curl -fsSL "https://github.com/h0ffmann/ptbr-writer/archive/refs/tags/$tag.tar.gz" | tar -xz -C "$tmp"
-    src=$tmp/ptbr-writer-${tag#v}
+    curl -fsSL "https://github.com/piabrota/gramatico/archive/refs/tags/$tag.tar.gz" | tar -xz -C "$tmp"
+    src=$tmp/gramatico-${tag#v}
 fi
 
 skill() { # skill <name> <source SKILL.md>
@@ -25,14 +25,14 @@ skill() { # skill <name> <source SKILL.md>
     else awk -v n="$1" '!d && /^---$/ {print; print "name: " n; d=1; next} {print}' "$2" > "$dest/skills/$1/SKILL.md"
     fi
 }
-rm -rf "$dest/skills/ptbr-writer" "$dest/skills/ptbr" "$dest/skills/cientifico" "$dest/ptbr-writer"
+rm -rf "$dest/skills/ptbr-writer" "$dest/skills/ptbr" "$dest/skills/cientifico" "$dest/gramatico"
 skill ptbr-writer "$src/SKILL.md"
 skill ptbr "$src/skills/ptbr/SKILL.md"
 skill cientifico "$src/skills/cientifico/SKILL.md"
 
-mkdir -p "$dest/plugins" "$dest/ptbr-writer/scripts"
-cp -rL "$src/plugins/ptbr-writer/bin" "$dest/ptbr-writer/bin"
-cp -L "$src/plugins/ptbr-writer/scripts/to-pdf.sh" "$dest/ptbr-writer/scripts/"
-cp -L "$src/plugins/ptbr-writer/ptbr-writer.default.toml" "$dest/ptbr-writer/"
-cp -L "$src/opencode/ptbr-writer.js" "$dest/plugins/ptbr-writer.js"
-echo "ptbr-writer $tag installed in $dest (skills: ptbr-writer, ptbr, cientifico; plugin: ask-levels)"
+mkdir -p "$dest/plugins" "$dest/gramatico/scripts"
+cp -rL "$src/plugins/gramatico/bin" "$dest/gramatico/bin"
+cp -L "$src/plugins/gramatico/scripts/to-pdf.sh" "$dest/gramatico/scripts/"
+cp -L "$src/plugins/gramatico/ptbr-writer.default.toml" "$dest/gramatico/"
+cp -L "$src/opencode/gramatico.js" "$dest/plugins/gramatico.js"
+echo "gramatico $tag installed in $dest (skills: ptbr-writer, ptbr, cientifico; plugin: ask-levels)"

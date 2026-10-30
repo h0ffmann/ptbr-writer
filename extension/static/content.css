@@ -1,5 +1,5 @@
-/* Positions the host of the ptbr-writer overlay; its own styles live in its shadow root. */
-#ptbr-writer-root {
+/* Positions the host of the gramatico overlay; its own styles live in its shadow root. */
+#gramatico-root {
   position: absolute !important;
   top: 0 !important;
   left: 0 !important;

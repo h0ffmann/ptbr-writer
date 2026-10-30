@@ -5,6 +5,14 @@ cabeçalho abaixo andam juntos. `just release X.Y.Z` abre o PR da versão e, dep
 
 ## Unreleased
 
+- Ícone novo: um G grande, como o do esquadro e compasso, nas cores da bandeira do Brasil, desenhado em
+  Nix puro (`drawings/`, a caneta de piabrota/nix-os) e salvo em SVG e como gráfico do Desmos. Troca a pena
+  no site, no README e no app (desktop e Android); `just icon` o escreve e o check `icon` do flake confere.
+- O projeto passa a se chamar gramatico, em piabrota/gramatico: o plugin (`/plugin install gramatico@gramatico`),
+  o site (piabrota.github.io/gramatico), o app (`io.github.piabrota.gramatico`), a extensão
+  (`gramatico@piabrota` no Firefox) e a documentação. Ficam com o nome antigo, até o binário `ptbr` do picasso
+  mudar, os nomes que ele lê ou escreve: `ptbr-writer.toml`, `~/.config/ptbr-writer/`, a skill `ptbr-writer` e
+  o prefixo `ptbr-writer-` dos arquivos gerados.
 - A Claude volta a revisar no app e na extensão: o pedido mandava `temperature: 0`, que os três modelos
   oferecidos (`claude-haiku-5-5`, `claude-sonnet-5-5`, `claude-opus-5-5`) recusam com 400, e a janela só dizia
   "O provider não devolveu uma correção completa". Sai o `temperature`; entram `output_config.effort: "low"` e

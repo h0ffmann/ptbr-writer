@@ -22,7 +22,7 @@ use web_sys::{
     ShadowRoot, ShadowRootInit, ShadowRootMode, Window,
 };
 
-const HOST_ID: &str = "ptbr-writer-root";
+const HOST_ID: &str = "gramatico-root";
 
 const STYLE: &str = r#"
 :host { all: initial; }
@@ -447,7 +447,7 @@ impl Inner {
         };
         let _ = b.set_attribute("data-state", state);
         b.set_text_content(Some(text));
-        b.set_title(&format!("ptbr-writer: {text}"));
+        b.set_title(&format!("gramatico: {text}"));
         place_badge(el, b, scroll, buf);
     }
 

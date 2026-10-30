@@ -1,7 +1,7 @@
-name = "ptbr_writer_content"
+name = "gramatico_content"
 version = "1.0.0"
 target = "javascript"
-description = "Writes the content module of the ptbr-writer site from SKILL.md and the justfile"
+description = "Writes the content module of the gramatico site from SKILL.md and the justfile"
 
 [javascript]
 runtime = "nodejs"

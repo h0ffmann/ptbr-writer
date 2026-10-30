@@ -1,4 +1,4 @@
-# ptbr-writer: o que o plugin faz quando um pedido começa com `ptbr`.
+# gramatico: o que o plugin faz quando um pedido começa com `ptbr`.
 # Estes são os padrões. Copie para ./ptbr-writer.toml (o projeto) ou
 # ~/.config/ptbr-writer/ptbr-writer.toml (você) e mude o que quiser:
 # o projeto vence o usuário, o usuário vence estes padrões, e o pedido vence todos.

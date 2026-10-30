@@ -1,5 +1,5 @@
 ---
-title: "ptbr-writer: controlled technical Portuguese for people and agents"
+title: "gramatico: controlled technical Portuguese for people and agents"
 subtitle: "Agentic writing in Brazilian Portuguese is a cheap abstraction"
 author:
   - name: Matheus Hoffmann
@@ -22,10 +22,10 @@ keywords:
   - decision models
   - reproducibility
 abstract: |
-  ptbr-writer rewrites technical text in Brazilian Portuguese for a single reading: explicit
+  gramatico rewrites technical text in Brazilian Portuguese for a single reading: explicit
   subject, one proposition per sentence and consistent terms. Its seed is Português Técnico
   Controlado (PTC), by kayquer: a Claude Code skill with controlled-language rules in Portuguese for
-  a reader that may be a model. ptbr-writer adapts the 8 rules of PTC and adds 5, for 13 rules in
+  a reader that may be a model. gramatico adapts the 8 rules of PTC and adds 5, for 13 rules in
   total, PTW-1 to PTW-13. Each request goes through one of 5 levels of rigor, from `estrito` to
   `smart-note`. For text with sources, the `cientifico` skill adds 12 rules, CIE-1 to CIE-12. The
   same rules reach the writer by three paths: a Claude Code plugin, an installer for OpenCode and a
@@ -61,7 +61,7 @@ header-includes:
 
 A runbook is read by the person who runs the procedure and, more and more, by an agent that runs
 it. Neither can stop to ask "did you mean X or Y?". PTC, by kayquer, wrote this need down as a
-Claude Code skill, with 8 rules for Brazilian Portuguese [1]. ptbr-writer starts from that seed.
+Claude Code skill, with 8 rules for Brazilian Portuguese [1]. gramatico starts from that seed.
 
 The thesis of this paper is that agentic writing in Brazilian Portuguese is a cheap abstraction.
 It is cheap because the whole abstraction is text: one file of rules in Markdown, which any agent
@@ -81,7 +81,7 @@ done yet ⚠.
 
 PTC notes that English requires the subject, so ASD-STE100, the controlled language of the
 aerospace industry, never needed a rule for it [1]. Portuguese lets the writer drop the subject.
-The first rule of ptbr-writer, PTW-1, asks for an explicit subject and avoids the passive `-se`, `o
+The first rule of gramatico, PTW-1, asks for an explicit subject and avoids the passive `-se`, `o
 mesmo` ("the same") and ambiguous third-person clitics (`SKILL.md`). A sentence such as "deve-se
 verificar os logs" ("one must check the logs") becomes "verifique os logs" ("check the logs").
 
@@ -136,10 +136,10 @@ row in the table, or `just quality` fails.
 # Portability
 
 The rules live in one file, `SKILL.md`, with 807 words (`wc -w`), and the `cientifico` skill has
-1,087. An agent that reads skills loads these files with no change. ptbr-writer serves two
+1,087. An agent that reads skills loads these files with no change. gramatico serves two
 audiences, by different paths.
 
-**Developers** use ptbr-writer in the terminal and in the repository, through a coding agent:
+**Developers** use gramatico in the terminal and in the repository, through a coding agent:
 
 - **Claude Code:** a plugin, installed with one command and pinned by tag. A repository pins the
   version in its own `.claude/settings.json`, and everyone who opens it uses the same one.
@@ -163,7 +163,7 @@ when pandoc and XeLaTeX are there. Without them, and only with the user's permis
 Mono). The first build, on a fresh GitHub runner with 4 cores, took 892 s; from the second time on,
 Nix reuses what it built.
 
-![**Where the .pdf comes from.** Takeaway: the `.pdf` comes from the machine's pandoc, when it is there with XeLaTeX; otherwise, from a Rust binary that Nix builds from a pinned picasso commit, with each library at the version of `Cargo.lock`. How to read: left to right; the middle lane is the path without pandoc, the bottom one holds the binary's Rust libraries, and the top one, the local path and the finished file. Not shown: the dependencies of the dependencies and Nix itself. Evidence: `plugins/ptbr-writer/scripts/to-pdf.sh` and `docs/archify/en/pdf-dependencias.json`.](docs/img/en/pdf-dependencias.png){width=100%}
+![**Where the .pdf comes from.** Takeaway: the `.pdf` comes from the machine's pandoc, when it is there with XeLaTeX; otherwise, from a Rust binary that Nix builds from a pinned picasso commit, with each library at the version of `Cargo.lock`. How to read: left to right; the middle lane is the path without pandoc, the bottom one holds the binary's Rust libraries, and the top one, the local path and the finished file. Not shown: the dependencies of the dependencies and Nix itself. Evidence: `plugins/gramatico/scripts/to-pdf.sh` and `docs/archify/en/pdf-dependencias.json`.](docs/img/en/pdf-dependencias.png){width=100%}
 
 # The review as a decision
 
@@ -308,6 +308,6 @@ first tag since v0.1.0.
    <https://github.com/alibaba/open-code-review/tree/375f64cd6f67a48a135da83cfcf59c52669a09cb>,
    commit `375f64c`, read on 22 October 2026.
 
-The code, the rules and this text are at <https://github.com/h0ffmann/ptbr-writer>, under MPL-2.0.
+The code, the rules and this text are at <https://github.com/piabrota/gramatico>, under MPL-2.0.
 The template of this PDF comes from the Paper Fabric of h0ffmann/closed-source, commit `563c339`
 (MIT).

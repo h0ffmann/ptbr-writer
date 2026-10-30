@@ -1,13 +1,13 @@
 <div align="center">
 
-<img alt="A writing quill in a single line: original drawing" src="site/static/favicon.svg" width="120"/>
+<img alt="A big G, as in the square and compass, in the colours of the flag of Brazil: original drawing, in Nix" src="site/static/favicon.svg" width="120"/>
 
-# ptbr-writer
+# gramatico
 
-<sub><a href="#install">install</a> · <a href="#use">use</a> · <a href="#levels">levels</a> · <a href="#rules">rules</a> · <a href="#development">development</a> · <a href="#credits">credits</a> · <a href="CHANGELOG.md">versions</a> · <a href="https://h0ffmann.github.io/ptbr-writer/">the site</a></sub>
+<sub><a href="#install">install</a> · <a href="#use">use</a> · <a href="#levels">levels</a> · <a href="#rules">rules</a> · <a href="#development">development</a> · <a href="#credits">credits</a> · <a href="CHANGELOG.md">versions</a> · <a href="https://piabrota.github.io/gramatico/">the site</a></sub>
 
-[![site](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml/badge.svg)](https://github.com/h0ffmann/ptbr-writer/actions/workflows/site.yml)
-[![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fh0ffmann%2Fptbr-writer%2Fmain%2Fplugins%2Fptbr-writer%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=version&style=flat-square)](CHANGELOG.md)
+[![site](https://github.com/piabrota/gramatico/actions/workflows/site.yml/badge.svg)](https://github.com/piabrota/gramatico/actions/workflows/site.yml)
+[![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpiabrota%2Fgramatico%2Fmain%2Fplugins%2Fgramatico%2F.claude-plugin%2Fplugin.json&query=%24.version&prefix=v&label=version&style=flat-square)](CHANGELOG.md)
 [![license: MPL-2.0](https://img.shields.io/badge/license-MPL--2.0-1682D4?style=flat-square)](#license)
 [![estimated reading time: ~10 min](https://img.shields.io/badge/reading%20time-~10%20min-1682D4?style=flat-square)](#reading-time)
 [![plugin: Claude Code](https://img.shields.io/badge/plugin-Claude%20Code-1682D4?style=flat-square)](#install)
@@ -19,7 +19,7 @@
 
 </div>
 
-🇧🇷 [Leia em português](https://github.com/h0ffmann/ptbr-writer/blob/main/README.md) · this is the English version
+🇧🇷 [Leia em português](https://github.com/piabrota/gramatico/blob/main/README.md) · this is the English version
 
 ## in one minute
 
@@ -48,16 +48,16 @@ the figure.
 
 ## install
 
-The official version is [v0.4.0](https://github.com/h0ffmann/ptbr-writer/releases/tag/v0.4.0). In a
+The official version is [v0.4.0](https://github.com/piabrota/gramatico/releases/tag/v0.4.0). In a
 terminal:
 
 ```console
-claude plugin install ptbr-writer --marketplace h0ffmann/ptbr-writer#v0.4.0
+claude plugin install gramatico --marketplace piabrota/gramatico#v0.4.0
 ```
 
 To pin the version in a repository, put in its `.claude/settings.json` the marketplace
-`h0ffmann/ptbr-writer` with `"ref": "v0.4.0"` under `extraKnownMarketplaces`, and enable
-`ptbr-writer@ptbr-writer` under `enabledPlugins`. To update, change the tag.
+`piabrota/gramatico` with `"ref": "v0.4.0"` under `extraKnownMarketplaces`, and enable
+`gramatico@gramatico` under `enabledPlugins`. To update, change the tag.
 
 ### OpenCode
 
@@ -126,9 +126,9 @@ install by hand.
 
 | Command | Does |
 | :------ | :--- |
-| `/ptbr-writer:ptbr` | rewrites at the requested level, or classifies the text and states the level |
-| `/ptbr-writer:cientifico` | scientific text with sources: paper, proposal, report |
-| `/ptbr-writer:bipr` | opens the branch's PR with the body in pt-BR and the English mirror |
+| `/gramatico:ptbr` | rewrites at the requested level, or classifies the text and states the level |
+| `/gramatico:cientifico` | scientific text with sources: paper, proposal, report |
+| `/gramatico:bipr` | opens the branch's PR with the body in pt-BR and the English mirror |
 
 Or describe the task: "rewrite this runbook in controlled Portuguese".
 
@@ -161,13 +161,13 @@ leve: ...` uses `leve`. The files are named `ptbr-writer-<date>-<goal>-<level>.<
 ## rules
 
 Rules PTW-1 to PTW-17 are in [`SKILL.md`](SKILL.md). The `cientifico` skill adds the CIE rules. The
-[site](https://h0ffmann.github.io/ptbr-writer/) shows each rule with its origin, the roadmap, the
+[site](https://piabrota.github.io/gramatico/) shows each rule with its origin, the roadmap, the
 related projects and the figures:
 
-- [Claude Code plugin flow](https://h0ffmann.github.io/ptbr-writer/figuras/em-um-minuto.html)
-- [Browser extension flow](https://h0ffmann.github.io/ptbr-writer/figuras/extensao-fluxo.html)
-- [Local model flow](https://h0ffmann.github.io/ptbr-writer/figuras/modelo-local.html)
-- [Where the .pdf comes from](https://h0ffmann.github.io/ptbr-writer/figuras/pdf-dependencias.html)
+- [Claude Code plugin flow](https://piabrota.github.io/gramatico/figuras/em-um-minuto.html)
+- [Browser extension flow](https://piabrota.github.io/gramatico/figuras/extensao-fluxo.html)
+- [Local model flow](https://piabrota.github.io/gramatico/figuras/modelo-local.html)
+- [Where the .pdf comes from](https://piabrota.github.io/gramatico/figuras/pdf-dependencias.html)
 
 The whitepaper, in 8 pages, is in [`WHITEPAPER.en.pdf`](WHITEPAPER.en.pdf) and, in Portuguese, in
 [`WHITEPAPER.pdf`](WHITEPAPER.pdf).
@@ -201,6 +201,8 @@ just quality     # everything CI checks
 - Reading time: Brysbaert (2019), *Journal of Memory and Language* 109, 104047.
 - Browser extension: @robkler, in #51.
 - Figures: Archify, by @tt-a1i (MIT). Plugin and routing: marola-dev/marola-devkit, by @brunogbv.
+- Icon: a G drawn by hand in pure Nix, with piabrota/nix-os's pen (`drawings/pen.nix`, from pirsig);
+  see [`docs/drawings`](docs/drawings/README.md).
 - Site: Lustre (MIT), the Gleam stdlib (Apache-2.0), fonts from Google Fonts (SIL OFL), and the flag
   and Machado de Assis's signature from Wikimedia Commons, in the public domain.
 
@@ -208,9 +210,9 @@ The pinned commit of each source is in [`AGENTS.md`](AGENTS.md).
 
 ## license
 
-MPL-2.0. See [`LICENSE`](LICENSE). Who distributes a modified file of ptbr-writer publishes that
+MPL-2.0. See [`LICENSE`](LICENSE). Who distributes a modified file of gramatico publishes that
 file under the MPL. The versions before v0.3.0 stay MIT. What comes from third parties keeps
 each one's license and notice.
 
-<sub>ptbr-writer is a conceptual, independent fork of Português Técnico Controlado (PTC), by kayquer
+<sub>gramatico is a conceptual, independent fork of Português Técnico Controlado (PTC), by kayquer
 (MIT). The original methodology and rules are from there.</sub>

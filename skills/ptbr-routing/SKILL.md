@@ -13,5 +13,5 @@ resposta é uma linha: a skill a carregar e o nível.
 - Sem correspondência: carregue `ptbr-writer` sem nível. Ela classifica o texto e declara o nível.
 - Mais de um nível empatado: escolha um e declare-o na saída.
 - `smart-note + <nível>`: aplique as regras do nível e entregue em notas.
-- Com o plugin instalado, a skill `X` é `ptbr-writer:X`.
+- Com o plugin instalado, a skill `X` é `gramatico:X`.
 - Sem o binário para o seu sistema: leia `routes.tsv`, ao lado deste arquivo, uma linha por nível com suas palavras.

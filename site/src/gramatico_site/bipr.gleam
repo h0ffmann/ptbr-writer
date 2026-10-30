@@ -1,33 +1,35 @@
-//// `gleam run -m ptbr_writer_site/bipr > dist/bipr.html`: the /bipr page. Its description, steps
+//// `gleam run -m gramatico_site/bipr > dist/bipr.html`: the /bipr page. Its description, steps
 //// and footer come from skills/bipr/ through `content`; the screenshots are of PR #49, the PR the
 //// skill opened for itself.
 
 import gleam/io
 import gleam/list
+import gramatico_site/app
+import gramatico_site/content
+import gramatico_site/page
 import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
-import ptbr_writer_site/app
-import ptbr_writer_site/content
-import ptbr_writer_site/page
 
-const pr = "https://github.com/h0ffmann/ptbr-writer/pull/49"
+const pr = "https://github.com/piabrota/gramatico/pull/49"
 
-const blob = "https://github.com/h0ffmann/ptbr-writer/blob/main/"
+const blob = "https://github.com/piabrota/gramatico/blob/main/"
 
 const install_current =
-  "! curl -fsSL https://raw.githubusercontent.com/h0ffmann/ptbr-writer/main/scripts/install_current.sh | bash"
+  "! curl -fsSL https://raw.githubusercontent.com/piabrota/gramatico/main/scripts/install_current.sh | bash"
 
 pub fn view() -> Element(msg) {
   html.main([], [
     html.header([attribute.class("cover wrap")], [
       html.p([attribute.class("kicker")], [
-        html.a([attribute.href("index.html")], [html.text("← ptbr-writer")]),
+        html.a([attribute.href("index.html")], [html.text("← gramatico")]),
       ]),
       html.div([attribute.class("brand")], [
         html.img([
           attribute.src("favicon.svg"),
-          attribute.alt("uma pena de escrever, numa linha só"),
+          attribute.alt(
+            "um G grande, como o do esquadro e compasso, nas cores da bandeira do Brasil",
+          ),
           attribute.class("mark"),
         ]),
         html.h1([], [html.text("/bipr")]),
@@ -72,7 +74,7 @@ pub fn view() -> Element(msg) {
           html.img([
             attribute.src("img/bipr-pr49-rodape.png"),
             attribute.alt(
-              "o rodapé no GitHub: o favicon do ptbr-writer e Generated with h0ffmann/ptbr-writer bipr skill",
+              "o rodapé no GitHub: o favicon do gramatico e Generated with piabrota/gramatico bipr skill",
             ),
           ]),
         ]),
@@ -104,7 +106,7 @@ pub fn view() -> Element(msg) {
 
 pub fn render() -> String {
   view()
-  |> page.titled("/bipr · ptbr-writer", content.bipr_description, _)
+  |> page.titled("/bipr · gramatico", content.bipr_description, _)
   |> element.to_document_string
 }
 

@@ -65,7 +65,7 @@ mod browser {
                 spawn(async move { set_enabled(on).await })
             }
         });
-        head.append_child(&el("label").child(&enabled).text(" ptbr-writer ligado"))?;
+        head.append_child(&el("label").child(&enabled).text(" gramatico ligado"))?;
 
         let site = section(&root);
         let url = active_tab().await?.and_then(|t| t.url);

@@ -1,4 +1,4 @@
-package io.github.h0ffmann.ptbr_writer
+package io.github.piabrota.gramatico
 
 import android.accessibilityservice.AccessibilityService
 import android.content.ComponentName
@@ -228,13 +228,13 @@ class OverlayService : AccessibilityService() {
         val c = checked
         val list = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(14), dp(10), dp(14), dp(12)) }
         val head = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        head.addView(text(if (c == null) "ptbr-writer" else "ptbr-writer · ${c.cards.size} ${if (c.cards.size == 1) "correção" else "correções"}", 15f, INK, bold = true),
+        head.addView(text(if (c == null) "gramatico" else "gramatico · ${c.cards.size} ${if (c.cards.size == 1) "correção" else "correções"}", 15f, INK, bold = true),
             LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         head.addView(button("×", primary = false) { closePanel() })
         list.addView(head)
         if (c == null) {
             list.addView(text(error ?: "", 14f, ERRO))
-            list.addView(button("Abrir ptbr-writer", primary = true) {
+            list.addView(button("Abrir gramatico", primary = true) {
                 closePanel()
                 startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             })

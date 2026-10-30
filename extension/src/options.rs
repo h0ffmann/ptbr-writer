@@ -21,7 +21,7 @@ use web_sys::{
 
 // The page's fixed markup, as the TypeScript's innerHTML.
 const PAGE: &str = r#"
-    <h1>ptbr-writer</h1>
+    <h1>gramatico</h1>
     <p><label><input id="enabled" type="checkbox"> Ativado</label></p>
     <div id="provider-fields"></div>
     <p><button id="save" type="button">Salvar</button> <span id="status" role="status"></span></p>

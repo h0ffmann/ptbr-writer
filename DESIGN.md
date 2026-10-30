@@ -67,8 +67,10 @@ Técnico Controlado without leading the page.
 
 ## Logos and pictures
 
-No logo is stored. The favicon, also the README's picture, is an original one-line drawing of a
-writing quill. Two public-domain images from Wikimedia Commons are stored in `site/static/img/` and
+No logo is stored but the project's own icon. The favicon, also the README's picture and the app's icon,
+is an original drawing in pure Nix (`drawings/`, see `docs/drawings/README.md`): a big G, as the G of
+the square and compass, in the colours of the flag of Brazil. `just icon` writes it and `nix flake
+check` checks it. Two public-domain images from Wikimedia Commons are stored in `site/static/img/` and
 credited in the footer: the flag of Brazil (`Flag_of_Brazil.svg`) and Machado de Assis's signature
 (`Assinatura_de_Machado_de_Assis.png`, the 960 px rendering). Machado is credited by name, as
 `REUSE.md` asks.
@@ -85,7 +87,7 @@ their owners' marks, not licensed here.
 
 ## Layout
 
-- The cover: a mono kicker, the quill beside the title, and the `--review` pen's stroke under it.
+- The cover: a mono kicker, the G beside the title, and the `--review` pen's stroke under it.
 - A notebook page behind the whole page: blue rules every 32 px (`--rule-ink`) and the red margin
   line (`--margin-ink`) left of the text. Visible, but under the text.
 - pt-BR first: the cover's kicker opens with the flag of Brazil and a green "pt-BR first" pill.

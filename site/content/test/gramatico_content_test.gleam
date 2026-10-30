@@ -1,15 +1,13 @@
 import gleam/list
 import gleeunit
-import ptbr_writer_content.{
-  type Origin, Level, Link, Planned, Recipe, Rule, Step,
-} as c
+import gramatico_content.{type Origin, Level, Link, Planned, Recipe, Rule, Step} as c
 
 pub fn main() -> Nil {
   gleeunit.main()
 }
 
 const skill =
-  "# ptbr-writer
+  "# gramatico
 
 Reescreva texto técnico
 em duas linhas.
@@ -47,7 +45,7 @@ Corte gerúndios.
 "
 
 pub fn title_and_lede_test() {
-  assert c.title(skill) == "ptbr-writer"
+  assert c.title(skill) == "gramatico"
   assert c.lede(skill) == "Reescreva texto técnico em duas linhas."
 }
 
@@ -215,9 +213,9 @@ pub fn numbered_and_preamble_test() {
 // The install command comes from plugin.json; a missing field leaves it empty, and main fails.
 pub fn install_test() {
   let plugin =
-    "{\n  \"name\": \"ptbr-writer\",\n  \"version\": \"0.2.0\",\n  \"repository\": \"https://github.com/h0ffmann/ptbr-writer\"\n}"
+    "{\n  \"name\": \"gramatico\",\n  \"version\": \"0.2.0\",\n  \"repository\": \"https://github.com/piabrota/gramatico\"\n}"
   assert c.install(plugin)
-    == "claude plugin install ptbr-writer --marketplace h0ffmann/ptbr-writer#v0.2.0"
+    == "claude plugin install gramatico --marketplace piabrota/gramatico#v0.2.0"
   assert c.json_string(plugin, "version") == "0.2.0"
   assert c.install("{\"name\": \"x\"}") == ""
 }

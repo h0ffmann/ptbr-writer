@@ -102,7 +102,7 @@ export class Ext {
     const cdp = await this.context.newCDPSession(p);
     const world = new Promise<number>((ok) =>
       cdp.on('Runtime.executionContextCreated', ({ context: c }) => {
-        if (c.name === 'ptbr-writer') ok(c.id);
+        if (c.name === 'gramatico') ok(c.id);
       }),
     );
     await cdp.send('Runtime.enable');

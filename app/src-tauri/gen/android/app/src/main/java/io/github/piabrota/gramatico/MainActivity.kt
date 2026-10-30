@@ -1,4 +1,4 @@
-package io.github.h0ffmann.ptbr_writer
+package io.github.piabrota.gramatico
 
 import android.content.Intent
 import android.os.Bundle

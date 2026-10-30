@@ -16,10 +16,10 @@ val tauriProperties = Properties().apply {
 
 android {
     compileSdk = 37
-    namespace = "io.github.h0ffmann.ptbr_writer"
+    namespace = "io.github.piabrota.gramatico"
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
-        applicationId = "io.github.h0ffmann.ptbr_writer"
+        applicationId = "io.github.piabrota.gramatico"
         minSdk = 24
         targetSdk = 37
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()

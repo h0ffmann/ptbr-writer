@@ -8,7 +8,7 @@ set -euo pipefail
 # A step that fails says which one: adb often exits non-zero without a word.
 trap 'echo "app-android-capture: line $LINENO failed: $BASH_COMMAND" >&2' ERR
 apk="$1" port="$2" text="$3" out="$4"
-pkg=io.github.h0ffmann.ptbr_writer
+pkg=io.github.piabrota.gramatico
 mkdir -p "$out"
 
 shot() { adb exec-out screencap -p >"$out/$1"; test -s "$out/$1"; echo "app-android-capture: $out/$1"; }

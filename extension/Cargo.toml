@@ -7,7 +7,7 @@ name = "ptbr-ext"
 version = "0.3.0"
 edition = "2024"
 publish = false
-description = "The ptbr-writer browser extension, Rust compiled to WebAssembly"
+description = "The gramatico browser extension, Rust compiled to WebAssembly"
 license = "MPL-2.0"
 
 [lib]

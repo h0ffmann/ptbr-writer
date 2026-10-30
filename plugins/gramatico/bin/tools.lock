@@ -1,7 +1,7 @@
 rev=5da5237ba6f3fc51de0a10bc746a1ce0ad89e33e
 lab=labs/ptbr-tools
 # sha256  size  path
-35f848fe44dabd967998b71a60632b91651fa97573a1a7113f619bfcc3023f2a  570112  plugins/ptbr-writer/bin/linux-x86_64/ptbr
+35f848fe44dabd967998b71a60632b91651fa97573a1a7113f619bfcc3023f2a  570112  plugins/gramatico/bin/linux-x86_64/ptbr
 35f848fe44dabd967998b71a60632b91651fa97573a1a7113f619bfcc3023f2a  570112  skills/ptbr-routing/bin/linux-x86_64/ptbr
-e8511d82690638e595b4ffaeba0306c2c748b9aa1b6aa602f051357650aea778  528696  plugins/ptbr-writer/bin/linux-aarch64/ptbr
+e8511d82690638e595b4ffaeba0306c2c748b9aa1b6aa602f051357650aea778  528696  plugins/gramatico/bin/linux-aarch64/ptbr
 e8511d82690638e595b4ffaeba0306c2c748b9aa1b6aa602f051357650aea778  528696  skills/ptbr-routing/bin/linux-aarch64/ptbr

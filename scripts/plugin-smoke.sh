@@ -15,8 +15,8 @@ export CLAUDE_CONFIG_DIR=$cfg
 
 claude plugin validate "$root" >/dev/null
 claude plugin marketplace add "$root" >/dev/null
-claude plugin install ptbr-writer@ptbr-writer >/dev/null
-details=$(claude plugin details ptbr-writer@ptbr-writer)
+claude plugin install gramatico@gramatico >/dev/null
+details=$(claude plugin details gramatico@gramatico)
 
 got=$(sed -n 's/^ *Skills ([0-9]*) *//p' <<<"$details")
 [ "$got" = "$want" ] || { echo "plugin-smoke: skills are \"$got\", want \"$want\"" >&2; exit 1; }

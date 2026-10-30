@@ -1,8 +1,8 @@
-# The citation of ptbr-writer. Written by hand from .zenodo.json; change the two together (title, authors,
+# The citation of gramatico. Written by hand from .zenodo.json; change the two together (title, authors,
 # version, keywords). The DOIs are the ones Zenodo minted (`just doi`); the concept DOI always resolves to the newest.
 cff-version: 1.2.0
-message: "If you cite ptbr-writer, cite it like this."
-title: "ptbr-writer: português técnico controlado para pessoas e agentes"
+message: "If you cite gramatico, cite it like this."
+title: "gramatico: português técnico controlado para pessoas e agentes"
 type: software
 version: v0.3.0
 doi: "10.5281/zenodo.23554531"
@@ -22,8 +22,8 @@ authors:
     given-names: "Rob Kler"
     orcid: "https://orcid.org/0009-0003-3102-4996"
     affiliation: "@robkler"
-repository-code: "https://github.com/h0ffmann/ptbr-writer"
-url: "https://h0ffmann.github.io/ptbr-writer/"
+repository-code: "https://github.com/piabrota/gramatico"
+url: "https://piabrota.github.io/gramatico/"
 license: MPL-2.0
 keywords: [technical writing, Brazilian Portuguese, controlled language, ASD-STE100, scientific writing, Claude Code, Claude Code plugin, OpenCode, browser extension, decision models, Ollama, Ollaya, reproducibility, Brazil]
 references:
@@ -34,7 +34,7 @@ references:
     repository-code: "https://github.com/kayquer/portugues-tecnico-controlado"
     commit: cfdffad0ed98cdebfb7f591481889090a4f4e65b
     license: MIT
-    notes: "The seed of ptbr-writer's agentic idea: a Claude Code skill with the 8 rules ptbr-writer adapts."
+    notes: "The seed of gramatico's agentic idea: a Claude Code skill with the 8 rules gramatico adapts."
   - type: software
     title: "Ollama"
     authors:

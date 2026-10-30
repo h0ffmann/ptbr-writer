@@ -1,6 +1,6 @@
 # ISSUE_LABELS.md
 
-Este arquivo lista os rótulos das issues e dos pull requests do ptbr-writer. Cada item tem um `tipo/*` e ao menos uma `área/*`. Um item aberto tem também um `status/*` e uma `prioridade/*`. Um item sobre um nível de rigor ou um nível de autor leva o rótulo `nível/*`.
+Este arquivo lista os rótulos das issues e dos pull requests do gramatico. Cada item tem um `tipo/*` e ao menos uma `área/*`. Um item aberto tem também um `status/*` e uma `prioridade/*`. Um item sobre um nível de rigor ou um nível de autor leva o rótulo `nível/*`.
 
 O formato segue o `ISSUE_LABELS.md` do closed-source: uma família por seção, uma tabela por família, e a cor e a descrição de cada rótulo escritas aqui. Aqui as famílias têm nome em português, e as áreas são as partes deste repositório.
 
@@ -21,7 +21,7 @@ As palavras são as dos assuntos de commit (`feat`, `fix`, `docs`, `chore`).
 | Rótulo | Cor | Significa |
 |---|---|---|
 | `área/skill` | `#C2E0C6` | `SKILL.md`, `skills/` e as regras PTW e CIE |
-| `área/plugin` | `#C2E0C6` | `plugins/ptbr-writer`: manifesto, comandos e hooks do Claude Code |
+| `área/plugin` | `#C2E0C6` | `plugins/gramatico`: manifesto, comandos e hooks do Claude Code |
 | `área/opencode` | `#C2E0C6` | A distribuição e o uso no OpenCode, com o Qwen local |
 | `área/eval` | `#BFD4F2` | `evals/` e o `claude plugin eval`: casos de regressão e métricas |
 | `área/pdf` | `#BFD4F2` | A saída em PDF, pelo `to-pdf.sh` e pelo picasso |

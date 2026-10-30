@@ -24,7 +24,7 @@ for _ in $(seq 60); do
     kill -0 "$pid" 2>/dev/null || { echo "app-capture: the app exited" >&2; exit 1; }
     case "$os" in
         macos) [ -n "$(mac_window)" ] && break ;;
-        linux) xwininfo -root -tree 2>/dev/null | grep -q '"ptbr-writer"' && break ;;
+        linux) xwininfo -root -tree 2>/dev/null | grep -q '"gramatico"' && break ;;
         windows) powershell -NoProfile -Command "if ((Get-Process -Id $winpid).MainWindowHandle -ne 0) { exit 0 } else { exit 1 }" && break ;;
     esac
     sleep 0.5

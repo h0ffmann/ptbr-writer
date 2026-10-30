@@ -129,7 +129,7 @@ fn copy_dir(from: &Path, to: &Path) -> Result<(), String> {
 }
 
 fn manifest(root: &Path, test: bool, firefox: bool) -> Result<Value, String> {
-    let plugin_path = root.join("../plugins/ptbr-writer/.claude-plugin/plugin.json");
+    let plugin_path = root.join("../plugins/gramatico/.claude-plugin/plugin.json");
     let plugin: Value =
         serde_json::from_str(&fs::read_to_string(&plugin_path).map_err(|e| format!("{}: {e}", plugin_path.display()))?)
             .map_err(|e| e.to_string())?;
@@ -151,7 +151,7 @@ fn manifest(root: &Path, test: bool, firefox: bool) -> Result<Value, String> {
     accessible.extend(local);
     let mut m = json!({
         "manifest_version": 3,
-        "name": "ptbr-writer",
+        "name": "gramatico",
         "version": plugin["version"],
         "description": plugin["description"],
         "permissions": permissions,
@@ -173,7 +173,7 @@ fn manifest(root: &Path, test: bool, firefox: bool) -> Result<Value, String> {
     if firefox {
         m["background"] = json!({ "scripts": ["background.js"], "type": "module" });
         m["browser_specific_settings"] =
-            json!({ "gecko": { "id": "ptbr-writer@h0ffmann", "strict_min_version": "128.0" } });
+            json!({ "gecko": { "id": "gramatico@piabrota", "strict_min_version": "128.0" } });
     }
     Ok(m)
 }
