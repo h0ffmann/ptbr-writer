@@ -1,6 +1,6 @@
 <div align="center">
 
-<img alt="A writing quill in a single line: original drawing" src="site/static/favicon.svg" width="120"/>
+<img alt="A big G, as in the square and compass, in the colours of the flag of Brazil: original drawing, in Nix" src="site/static/favicon.svg" width="120"/>
 
 # ptbr-writer
 
@@ -201,6 +201,8 @@ just quality     # everything CI checks
 - Reading time: Brysbaert (2019), *Journal of Memory and Language* 109, 104047.
 - Browser extension: @robkler, in #51.
 - Figures: Archify, by @tt-a1i (MIT). Plugin and routing: marola-dev/marola-devkit, by @brunogbv.
+- Icon: a G drawn by hand in pure Nix, with piabrota/nix-os's pen (`drawings/pen.nix`, from pirsig);
+  see [`docs/drawings`](docs/drawings/README.md).
 - Site: Lustre (MIT), the Gleam stdlib (Apache-2.0), fonts from Google Fonts (SIL OFL), and the flag
   and Machado de Assis's signature from Wikimedia Commons, in the public domain.
 

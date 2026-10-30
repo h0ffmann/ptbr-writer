@@ -12,7 +12,7 @@
 #   release-files
 #                after build: each installer's .sha256, and their paths (release.yml attaches them)
 #   test         fmt, clippy (host and wasm32), unit tests, the version check
-#   icons        app/src-tauri/icons from icons/icon.svg (the site's favicon on paper), desktop sizes only
+#   icons        app/src-tauri/icons from icons/icon.svg (the site's favicon, `just icon`), desktop sizes only
 #   screenshot   the demo build against the fake provider, its window to docs/img/app/<os>.png
 #
 # Android (gen/android; macOS or Linux, the Java 17+ JDK, the Android SDK in ANDROID_HOME):

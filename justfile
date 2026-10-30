@@ -558,3 +558,12 @@ node-check:
     case "${v%%.*}" in 22) min=22.23.4 ;; 24) min=24.22.1 ;; 26) min=26.12.1 ;; *) min= ;; esac
     [ -n "$min" ] && [ "$(printf '%s\n%s\n' "$min" "$v" | sort -V | head -1)" = "$min" ] || { echo "node-check: node $v is affected or unsupported; use 22.23.4+, 24.22.1+ or 26.12.1+ (#83)" >&2; exit 1; }
     echo "node-check: node $v (minimum $min)"
+
+# Write the icon (site/static/favicon.svg, app/src-tauri/icons/icon.svg and its Desmos state,
+# docs/drawings/icon.desmos.json) from drawings/*.nix; `scripts/app.sh icons` then makes the app's
+# PNGs from it.
+icon:
+    art=$(nix build .#icon-art --no-link --print-out-paths) && \
+    cat "$art/icon.svg" > site/static/favicon.svg && \
+    cat "$art/icon.svg" > app/src-tauri/icons/icon.svg && \
+    cat "$art/icon.desmos.json" > docs/drawings/icon.desmos.json

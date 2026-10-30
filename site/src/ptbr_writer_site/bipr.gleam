@@ -27,7 +27,7 @@ pub fn view() -> Element(msg) {
       html.div([attribute.class("brand")], [
         html.img([
           attribute.src("favicon.svg"),
-          attribute.alt("uma pena de escrever, numa linha só"),
+          attribute.alt("um G grande, como o do esquadro e compasso, nas cores da bandeira do Brasil"),
           attribute.class("mark"),
         ]),
         html.h1([], [html.text("/bipr")]),

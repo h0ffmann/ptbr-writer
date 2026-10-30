@@ -1,6 +1,6 @@
 <div align="center">
 
-<img alt="Uma pena de escrever, numa linha só: desenho original" src="site/static/favicon.svg" width="120"/>
+<img alt="Um G grande, como o do esquadro e compasso, nas cores da bandeira do Brasil: desenho original, em Nix" src="site/static/favicon.svg" width="120"/>
 
 # ptbr-writer
 
@@ -198,6 +198,8 @@ just quality     # tudo o que o CI checa
 - Tempo de leitura: Brysbaert (2019), *Journal of Memory and Language* 109, 104047.
 - Extensão de navegador: @robkler, no #51.
 - Figuras: Archify, de @tt-a1i (MIT). Plugin e roteamento: marola-dev/marola-devkit, de @brunogbv.
+- Ícone: um G desenhado à mão em Nix puro, com a caneta de piabrota/nix-os (`drawings/pen.nix`, vinda
+  do pirsig); veja [`docs/drawings`](docs/drawings/README.md).
 - Site: Lustre (MIT), a stdlib do Gleam (Apache-2.0), fontes do Google Fonts (SIL OFL), e a
   bandeira e a assinatura de Machado de Assis do Wikimedia Commons, em domínio público.
 

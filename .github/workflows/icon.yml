@@ -1,0 +1,25 @@
+# icon — the icon (drawings/, pure Nix): its tests pass, the committed files (the favicon, the app's
+# icon.svg and the Desmos state) are its output, and the Nix is formatted. `just icon` writes them.
+name: icon
+
+on:
+  pull_request:
+    paths: [drawings/**, flake.nix, flake.lock, site/static/favicon.svg, app/src-tauri/icons/icon.svg, docs/drawings/**, .github/workflows/icon.yml]
+  push:
+    branches: [main]
+    paths: [drawings/**, flake.nix, flake.lock, site/static/favicon.svg, app/src-tauri/icons/icon.svg, docs/drawings/**, .github/workflows/icon.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  icon:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@448cde739abec1eaf0646249e3d25bb8d9bc7702 # v31.11.2
+      - run: nix build .#checks.x86_64-linux.icon --no-update-lock-file --print-build-logs
+      - run: nix run nixpkgs#nixpkgs-fmt -- --check flake.nix drawings/*.nix
