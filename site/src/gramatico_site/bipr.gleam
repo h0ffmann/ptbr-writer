@@ -4,12 +4,12 @@
 
 import gleam/io
 import gleam/list
-import lustre/attribute
-import lustre/element.{type Element}
-import lustre/element/html
 import gramatico_site/app
 import gramatico_site/content
 import gramatico_site/page
+import lustre/attribute
+import lustre/element.{type Element}
+import lustre/element/html
 
 const pr = "https://github.com/piabrota/gramatico/pull/49"
 
@@ -27,7 +27,9 @@ pub fn view() -> Element(msg) {
       html.div([attribute.class("brand")], [
         html.img([
           attribute.src("favicon.svg"),
-          attribute.alt("um G grande, como o do esquadro e compasso, nas cores da bandeira do Brasil"),
+          attribute.alt(
+            "um G grande, como o do esquadro e compasso, nas cores da bandeira do Brasil",
+          ),
           attribute.class("mark"),
         ]),
         html.h1([], [html.text("/bipr")]),

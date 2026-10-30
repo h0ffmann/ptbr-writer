@@ -1,12 +1,12 @@
 import gleam/list
 import gleam/string
 import gleeunit
-import lustre/element
-import lustre/element/html
 import gramatico_site/app
 import gramatico_site/bipr
 import gramatico_site/content
 import gramatico_site/prerender
+import lustre/element
+import lustre/element/html
 
 pub fn main() -> Nil {
   gleeunit.main()
@@ -145,10 +145,7 @@ pub fn smart_note_test() {
 pub fn star_pill_test() {
   let page = prerender.render()
   assert string.contains(page, "star me")
-  assert string.contains(
-    page,
-    "img.shields.io/github/stars/piabrota/gramatico",
-  )
+  assert string.contains(page, "img.shields.io/github/stars/piabrota/gramatico")
 }
 
 pub fn inline_link_test() {

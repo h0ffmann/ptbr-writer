@@ -5,13 +5,13 @@
 import gleam/list
 import gleam/result
 import gleam/string
-import lustre/attribute
-import lustre/element.{type Element}
-import lustre/element/html
 import gramatico_site/content.{
   type Level, type Link, type Origin, type Planned, type Recipe, type Rule,
   type Step,
 }
+import lustre/attribute
+import lustre/element.{type Element}
+import lustre/element/html
 
 pub const repo = "https://github.com/piabrota/gramatico"
 
@@ -111,7 +111,9 @@ fn cover() -> Element(msg) {
     html.div([attribute.class("brand")], [
       html.img([
         attribute.src("favicon.svg"),
-        attribute.alt("um G grande, como o do esquadro e compasso, nas cores da bandeira do Brasil"),
+        attribute.alt(
+          "um G grande, como o do esquadro e compasso, nas cores da bandeira do Brasil",
+        ),
         attribute.class("mark"),
       ]),
       html.h1([], [html.text(content.title)]),

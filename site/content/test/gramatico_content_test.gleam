@@ -1,8 +1,6 @@
 import gleam/list
 import gleeunit
-import gramatico_content.{
-  type Origin, Level, Link, Planned, Recipe, Rule, Step,
-} as c
+import gramatico_content.{type Origin, Level, Link, Planned, Recipe, Rule, Step} as c
 
 pub fn main() -> Nil {
   gleeunit.main()

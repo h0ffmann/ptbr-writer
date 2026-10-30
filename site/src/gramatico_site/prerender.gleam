@@ -2,9 +2,9 @@
 //// build time. It needs no JavaScript.
 
 import gleam/io
-import lustre/element
 import gramatico_site/app
 import gramatico_site/page
+import lustre/element
 
 pub fn render() -> String {
   app.view()

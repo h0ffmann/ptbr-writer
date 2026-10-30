@@ -1,9 +1,9 @@
 //// The HTML document around the page.
 
+import gramatico_site/content
 import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
-import gramatico_site/content
 
 pub fn document(body: Element(msg)) -> Element(msg) {
   titled(content.title, content.lede, body)
